@@ -35,7 +35,8 @@
                 <select class="form-control" id="assembly" data-bind="options: assemblies, value: chosenAssembly">
                 </select>
               </div>
-              <button type="submit" class="btn btn-primary" data-bind="enable: chosenAssembly">Search Database</button>
+              <button type="submit" class="btn btn-primary" data-bind="enable: chosenAssembly">
+                <span class="glyphicon glyphicon-shopping-cart"></span> Search Database</button>
             </form>
           </div>
         </div>
@@ -66,7 +67,8 @@
                 </select>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-lg btn-block" data-bind="">Search doRiNA</button>
+              <button type="submit" class="btn btn-primary btn-lg btn-block" data-bind="">
+                <span class="glyphicon glyphicon-search"></span> Search doRiNA</button>
             </form>
           </div>
         </div>
@@ -80,8 +82,14 @@
         </div>
         <div id="results" class="panel-collapse collapse">
           <div class="panel-body">
+            <div class="row">
+              <div class="col-md-3 col-md-offset-9 text-right">
+                <button type="button" class="btn btn-sm" data-bind="click: new_search">
+                  <span class="glyphicon glyphicon-repeat"></span> New search</button>
+              </div>
+            </div>
 
-            <table class="table table-striped">
+            <table class="table table-striped" id="result_table">
               <thead>
                 <tr>
                   <th>track name</th>
@@ -105,7 +113,28 @@
                 </tr>
               </tbody>
             </table>
+            <div class="row" data-bind="visible: pending">
+              <div class="col-md-3 col-md-offset-3">
+                <img src="{{url_for('static', filename='loading.gif')}}" alt="loading..." />
+              </div>
+              <div class="col-md-6">
+                Loading
+              </div>
+            </div>
 
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" class="btn btn-sm" data-bind="visible: more_results, click: load_more_results">
+                  Load more results
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                </button>
+              </div>
+
+              <div class="col-md-3 col-md-offset-3 text-right">
+                <button type="button" class="btn btn-sm" data-bind="click: new_search">
+                  <span class="glyphicon glyphicon-repeat"></span> New search</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
