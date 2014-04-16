@@ -60,8 +60,13 @@ function DoRiNAViewModel() {
         search_path += self.chosenAssembly();
 
         $.getJSON(search_path, function(data) {
+            self.rbps.removeAll();
+            self.mirnas.removeAll();
             for (var i in data['RBP']) {
                 self.rbps.push(new Regulator(i, data['RBP'][i]));
+            }
+            for (var i in data['miRNA']) {
+                self.mirnas.push(new Regulator(i, data['miRNA'][i]));
             }
             $('#chooseDatabase').collapse('hide');
             $('#search').collapse('show');
