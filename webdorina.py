@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, jsonify
-from dorina import utils, config
+from flask import Flask, render_template, jsonify, request
+from flask_redis import Redis
+from dorina import utils, config, run
+import json
 
 # basic doRiNA settings
 #datadir = "/home/kblin/mpi/code/data"
 datadir = "/data/projects/doRiNA2/"
+RESULT_TTL = 60
+MAX_RESULTS = 100
 
 app = Flask(__name__)
+redis_store = Redis(app)
 
 @app.route('/')
 def index():
@@ -62,12 +67,44 @@ def list_regulators(clade, genome, assembly):
 
 @app.route('/search', methods=['POST'])
 def search():
-    results = [
-        dict(track='FAKE', gene='FAKE1', data_source='PAR-CLIP', score=42,
-             site="FAKE_0123456", location="chr23:1234-5678", strand="+")
-    ]
-    return jsonify(dict(results=results))
 
+    query = {}
+
+    query['genes'] = ['all']
+    query['match_a'] = 'any'
+    query['region_a'] = 'any'
+
+    query['genome'] = request.form.get('assembly', None)
+    query['set_a'] = request.form.getlist('set_a[]')
+    offset = request.form.get('offset', 0, int)
+
+    query_key = "results:%s" % json.dumps(query, sort_keys=True)
+
+    print query_key
+
+    if redis_store.exists(query_key):
+        redis_store.expire(query_key, RESULT_TTL)
+        result = map(json.loads, redis_store.lrange(query_key, offset + 0, offset + MAX_RESULTS - 1))
+        next_offset = offset + MAX_RESULTS
+        more_results = True if redis_store.llen(query_key) > offset + MAX_RESULTS else False
+        return jsonify(dict(results=result, more_results=more_results,
+                       next_offset=next_offset))
+
+    #FIXME: Just return part of the data for now
+    result = run.analyse(datadir=datadir, **query)
+    result.sort(key=lambda x: x['score'], reverse=True)
+
+    print "returning %s rows" % len(result)
+
+    for res in result:
+        redis_store.rpush(query_key, json.dumps(res))
+    redis_store.expire(query_key, RESULT_TTL)
+
+    more_results = True if len(result) > MAX_RESULTS + offset else False
+
+    return jsonify(dict(results=result[:MAX_RESULTS],
+                        more_results=more_results,
+                        next_offset=MAX_RESULTS + offset))
 
 if __name__ == "__main__":
     app.run(debug=True)
