@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
 from flask import Flask, render_template, jsonify
-from argparse import Namespace
 from dorina import utils, config
 
 # basic doRiNA settings
-options = Namespace()
-options.data = Namespace()
-#options.data.path = "/home/kblin/mpi/code/data"
-options.data.path = "/data/projects/doRiNA2/"
+#datadir = "/home/kblin/mpi/code/data"
+datadir = "/data/projects/doRiNA2/"
 
 app = Flask(__name__)
 
@@ -19,16 +16,14 @@ def index():
 
 @app.route('/clades')
 def list_clades():
-    config.set_config(options)
-    available_genomes = utils.get_genomes()
+    available_genomes = utils.get_genomes(datadir=datadir)
     clades = available_genomes.keys()
     return jsonify(dict(clades=clades))
 
 
 @app.route('/genomes/<clade>')
 def list_genomes(clade):
-    config.set_config(options)
-    available_genomes = utils.get_genomes()
+    available_genomes = utils.get_genomes(datadir=datadir)
     if not clade in available_genomes:
         return jsonify(dict(clade=''))
     genomes = available_genomes[clade].keys()
@@ -38,8 +33,7 @@ def list_genomes(clade):
 
 @app.route('/assemblies/<clade>/<genome>')
 def list_assemblies(clade, genome):
-    config.set_config(options)
-    available_genomes = utils.get_genomes()
+    available_genomes = utils.get_genomes(datadir=datadir)
     if not clade in available_genomes:
         return jsonify(dict(clade=''))
     if not genome in available_genomes[clade]:
@@ -51,8 +45,7 @@ def list_assemblies(clade, genome):
 
 @app.route('/regulators/<clade>/<genome>/<assembly>')
 def list_regulators(clade, genome, assembly):
-    config.set_config(options)
-    available_regulators = utils.get_regulators()
+    available_regulators = utils.get_regulators(datadir=datadir)
     if not clade in available_regulators:
         return jsonify(dict(clade=''))
     if not genome in available_regulators[clade]:
