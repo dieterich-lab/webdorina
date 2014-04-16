@@ -26,6 +26,10 @@ function DoRiNAViewModel() {
 
     self.results = ko.observableArray([]);
 
+    self.more_results = ko.observable(false);
+    self.offset = ko.observable(0);
+    self.pending = ko.observable(true);
+
     self.get_clades = function() {
         $.getJSON("clades", function(data) {
             self.clades.removeAll();
@@ -73,21 +77,54 @@ function DoRiNAViewModel() {
         });
     };
 
-    self.run_simple_search = function() {
-        var regulators = self.selected_rbps() + self.selected_mirnas();
+    self.run_search = function(keep_data) {
+        var regulators = [];
+        var rbps = self.selected_rbps();
+        var mirnas = self.selected_mirnas();
+
+        for (var i in rbps) {
+            regulators.push(rbps[i].name);
+        }
+        for (var i in mirnas) {
+            regulators.push(mirnas[i].name);
+        }
+
         var search_data = {
-            regulators: regulators,
-            assembly: self.chosenAssembly()
+            set_a: regulators,
+            assembly: self.chosenAssembly(),
+            offset: self.offset()
         };
+        self.pending(true);
         $('#search').collapse('hide');
         $('#results').collapse('show');
-        $.post('search', search_data, function(data) {
-            console.log(data.results);
+        if (!keep_data) {
             self.results.removeAll();
+        }
+        $.post('search', search_data, function(data) {
+            self.pending(false);
+            self.more_results(data.more_results);
             for (var i in data.results) {
                 self.results.push(data.results[i]);
             }
+            if (data.next_offset) {
+                self.offset(data.next_offset);
+            }
         });
+    };
+
+    self.run_simple_search = function() {
+        self.run_search(false);
+    };
+
+    self.load_more_results = function() {
+        self.run_search(true);
+    };
+
+    self.new_search = function() {
+        $('#search').collapse('hide');
+        $('#results').collapse('hide');
+        $('#chooseDatabase').collapse('show');
+        self.more_results(false);
     };
 
 }
