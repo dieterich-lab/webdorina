@@ -2,7 +2,9 @@
 
 from flask import Flask, render_template, jsonify, request
 from flask_redis import Redis
-from dorina import utils, config, run
+from rq import Queue
+from dorina import utils, config
+from run import run_analyse
 import json
 
 # basic doRiNA settings
@@ -67,7 +69,6 @@ def list_regulators(clade, genome, assembly):
 
 @app.route('/search', methods=['POST'])
 def search():
-
     query = {}
 
     query['genes'] = ['all']
@@ -79,6 +80,7 @@ def search():
     offset = request.form.get('offset', 0, int)
 
     query_key = "results:%s" % json.dumps(query, sort_keys=True)
+    query_pending_key = "%s_pending" % query_key
 
     print query_key
 
@@ -87,24 +89,21 @@ def search():
         result = map(json.loads, redis_store.lrange(query_key, offset + 0, offset + MAX_RESULTS - 1))
         next_offset = offset + MAX_RESULTS
         more_results = True if redis_store.llen(query_key) > offset + MAX_RESULTS else False
-        return jsonify(dict(results=result, more_results=more_results,
+        return jsonify(dict(state='done', results=result, more_results=more_results,
                        next_offset=next_offset))
 
-    #FIXME: Just return part of the data for now
-    result = run.analyse(datadir=datadir, **query)
-    result.sort(key=lambda x: x['score'], reverse=True)
 
-    print "returning %s rows" % len(result)
+    if redis_store.get(query_pending_key):
+        return jsonify(dict(state='pending'))
 
-    for res in result:
-        redis_store.rpush(query_key, json.dumps(res))
-    redis_store.expire(query_key, RESULT_TTL)
+    redis_store.set(query_pending_key, True)
+    redis_store.expire(query_pending_key, 30)
 
-    more_results = True if len(result) > MAX_RESULTS + offset else False
+    q = Queue(connection=redis_store.connection)
+    q.enqueue(run_analyse, datadir, query_key, query_pending_key, query)
 
-    return jsonify(dict(results=result[:MAX_RESULTS],
-                        more_results=more_results,
-                        next_offset=MAX_RESULTS + offset))
+    return jsonify(dict(state='pending'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
