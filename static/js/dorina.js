@@ -8,7 +8,7 @@ function Regulator(name, data) {
     self.references = data.references;
 }
 
-function DoRiNAViewModel() {
+function DoRiNAViewModel(net) {
     var self = this;
     self.clades = ko.observableArray([]);
     self.genomes = ko.observableArray([]);
@@ -31,7 +31,7 @@ function DoRiNAViewModel() {
     self.pending = ko.observable(true);
 
     self.get_clades = function() {
-        $.getJSON("clades", function(data) {
+        net.getJSON("clades", function(data) {
             self.clades.removeAll();
             for (var i in data.clades) {
                 self.clades.push(data.clades[i]);
@@ -40,7 +40,7 @@ function DoRiNAViewModel() {
     };
 
     self.get_genomes = function(clade) {
-        $.getJSON("genomes/" + clade, function(data) {
+        net.getJSON("genomes/" + clade, function(data) {
             self.genomes.removeAll();
             for (var i in data.genomes) {
                 self.genomes.push(data.genomes[i]);
@@ -49,7 +49,7 @@ function DoRiNAViewModel() {
     };
 
     self.get_assemblies = function(clade, genome) {
-        $.getJSON("assemblies/" + clade + "/" + genome, function(data) {
+        net.getJSON("assemblies/" + clade + "/" + genome, function(data) {
             self.assemblies.removeAll();
             for (var i in data.assemblies) {
                 self.assemblies.push(data.assemblies[i]);
@@ -63,7 +63,7 @@ function DoRiNAViewModel() {
         search_path += self.chosenGenome() + "/";
         search_path += self.chosenAssembly();
 
-        $.getJSON(search_path, function(data) {
+        net.getJSON(search_path, function(data) {
             self.rbps.removeAll();
             self.mirnas.removeAll();
             for (var i in data['RBP']) {
@@ -100,7 +100,7 @@ function DoRiNAViewModel() {
         if (!keep_data) {
             self.results.removeAll();
         }
-        $.post('search', search_data, function(data) {
+        net.post('search', search_data, function(data) {
             self.pending(false);
             self.more_results(data.more_results);
             for (var i in data.results) {

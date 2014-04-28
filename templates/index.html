@@ -145,6 +145,7 @@
   <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
   <script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dorina.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dorina.net.js') }}"></script>
   <script type="text/javascript">
 
     function cladeChanged() {
@@ -161,7 +162,7 @@
     }
 
     $(document).ready(function() {
-        var viewmodel = new DoRiNAViewModel();
+        var viewmodel = new DoRiNAViewModel(new DoRiNANet());
         ko.applyBindings(viewmodel);
         SetViewModel(viewmodel);
         $('#clade').change(cladeChanged);
