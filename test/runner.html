@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Runner</title>
+  <link rel="stylesheet" href="mocha.css" />
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="../static/js/jquery.js"></script>
+  <script src="../static/js/knockout.js"></script>
+  <script src="../static/js/dorina.js"></script>
+  <script src="should.js"></script>
+  <script src="mocha.js"></script>
+  <script>mocha.setup('bdd');</script>
+  <script src="test_regulator.js"></script>
+  <script src="test_dorina.js"></script>
+  <script>
+    if (window.mochaPhantomJS) {
+      mochaPhantomJS.run();
+    } else {
+      mocha.run();
+    }
+  </script>
+</body>
+</html>
