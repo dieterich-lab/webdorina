@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from os import path
 from flask import Flask, render_template, jsonify, request
 from flask_redis import Redis
 from rq import Queue
@@ -8,8 +9,8 @@ from run import run_analyse
 import json
 
 # basic doRiNA settings
-#datadir = "/home/kblin/mpi/code/data"
-datadir = "/data/projects/doRiNA2/"
+datadir = path.join(path.dirname(__file__), 'test', 'data')
+#datadir = "/data/projects/doRiNA2/"
 RESULT_TTL = 60
 MAX_RESULTS = 100
 
