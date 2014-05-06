@@ -1,4 +1,4 @@
 var DoRiNANet = function() {
-    var getJSON = $.getJSON;
-    var post = $.post;
+    this.getJSON = $.getJSON;
+    this.post = $.post;
 };

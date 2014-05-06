@@ -162,7 +162,8 @@
     }
 
     $(document).ready(function() {
-        var viewmodel = new DoRiNAViewModel(new DoRiNANet());
+        var net = new DoRiNANet();
+        var viewmodel = new DoRiNAViewModel(net);
         ko.applyBindings(viewmodel);
         SetViewModel(viewmodel);
         $('#clade').change(cladeChanged);
