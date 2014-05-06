@@ -8,25 +8,25 @@ describe('Regulator', function() {
 
     describe('#name', function() {
         it('should be the name passed to the constructor', function() {
-            reg.name.should.equal(name);
+            reg.name.should.eql(name);
         });
     });
 
     describe('#summary', function() {
         it('should be taken from the data object', function() {
-            reg.summary.should.equal(data.summary);
+            reg.summary.should.eql(data.summary);
         });
     });
 
     describe('#description', function() {
         it('should be taken from the data object', function() {
-            reg.description.should.equal(data.description);
+            reg.description.should.eql(data.description);
         });
     });
 
     describe('#references', function() {
         it('should be taken from the data object', function() {
-            reg.references.should.equal(data.references);
+            reg.references.should.eql(data.references);
         });
     });
 });
