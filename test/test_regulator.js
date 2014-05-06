@@ -10,9 +10,6 @@ describe('Regulator', function() {
         it('should be the name passed to the constructor', function() {
             reg.name.should.equal(name);
         });
-        it('should be a string', function() {
-            reg.name.should.be.type('string');
-        });
     });
 
     describe('#summary', function() {

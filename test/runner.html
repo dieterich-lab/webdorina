@@ -10,9 +10,12 @@
   <script src="../static/js/jquery.js"></script>
   <script src="../static/js/knockout.js"></script>
   <script src="../static/js/dorina.js"></script>
-  <script src="should.js"></script>
+  <script src="chai.js"></script>
+  <script src="chai-as-promised.js"></script>
   <script src="mocha.js"></script>
-  <script>mocha.setup('bdd');</script>
+  <script>mocha.setup('bdd');
+          chai.should();
+  </script>
   <script src="test_regulator.js"></script>
   <script src="test_dorina.js"></script>
   <script>
