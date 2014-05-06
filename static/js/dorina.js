@@ -10,6 +10,7 @@ function Regulator(name, data) {
 
 function DoRiNAViewModel(net) {
     var self = this;
+    self.retry_after = 1000;
     self.clades = ko.observableArray([]);
     self.genomes = ko.observableArray([]);
     self.assemblies = ko.observableArray([]);
@@ -101,6 +102,13 @@ function DoRiNAViewModel(net) {
             self.results.removeAll();
         }
         net.post('search', search_data, function(data) {
+            if (data.state == 'pending') {
+                setTimeout(function() {
+                    self.run_search(keep_data);
+                }, self.retry_after);
+                return;
+            }
+
             self.pending(false);
             self.more_results(data.more_results);
             for (var i in data.results) {
