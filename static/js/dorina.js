@@ -32,7 +32,7 @@ function DoRiNAViewModel(net) {
     self.pending = ko.observable(true);
 
     self.get_clades = function() {
-        net.getJSON("clades", function(data) {
+        return net.getJSON("clades").then(function(data) {
             self.clades.removeAll();
             for (var i in data.clades) {
                 self.clades.push(data.clades[i]);
@@ -41,7 +41,7 @@ function DoRiNAViewModel(net) {
     };
 
     self.get_genomes = function(clade) {
-        net.getJSON("genomes/" + clade, function(data) {
+        return net.getJSON("genomes/" + clade).then(function(data) {
             self.genomes.removeAll();
             for (var i in data.genomes) {
                 self.genomes.push(data.genomes[i]);
@@ -50,7 +50,7 @@ function DoRiNAViewModel(net) {
     };
 
     self.get_assemblies = function(clade, genome) {
-        net.getJSON("assemblies/" + clade + "/" + genome, function(data) {
+        return net.getJSON("assemblies/" + clade + "/" + genome).then(function(data) {
             self.assemblies.removeAll();
             for (var i in data.assemblies) {
                 self.assemblies.push(data.assemblies[i]);
@@ -64,7 +64,7 @@ function DoRiNAViewModel(net) {
         search_path += self.chosenGenome() + "/";
         search_path += self.chosenAssembly();
 
-        net.getJSON(search_path, function(data) {
+        return net.getJSON(search_path).then(function(data) {
             self.rbps.removeAll();
             self.mirnas.removeAll();
             for (var i in data['RBP']) {
@@ -101,7 +101,7 @@ function DoRiNAViewModel(net) {
         if (!keep_data) {
             self.results.removeAll();
         }
-        net.post('search', search_data, function(data) {
+        return net.post('search', search_data).then(function(data) {
             if (data.state == 'pending') {
                 setTimeout(function() {
                     self.run_search(keep_data);
