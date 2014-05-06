@@ -150,7 +150,6 @@ Called fake_store.get(
         data = dict(match_a='any', assembly='hg19', set_a=['scifi'])
         rv = self.client.post('/search', data=data)
 
-        # Should return "pending"
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
