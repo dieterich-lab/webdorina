@@ -58,12 +58,11 @@ function DoRiNAViewModel(net) {
         });
     };
 
-    self.show_simple_search = function() {
+    self.get_regulators = function(clade, genome, assembly) {
         var search_path = "regulators/";
-        search_path += self.chosenClade() + "/";
-        search_path += self.chosenGenome() + "/";
-        search_path += self.chosenAssembly();
-
+        search_path += clade + "/";
+        search_path += genome + "/";
+        search_path += assembly;
         return net.getJSON(search_path).then(function(data) {
             self.rbps.removeAll();
             self.mirnas.removeAll();
@@ -73,6 +72,12 @@ function DoRiNAViewModel(net) {
             for (var i in data['miRNA']) {
                 self.mirnas.push(new Regulator(i, data['miRNA'][i]));
             }
+        });
+    };
+
+    self.show_simple_search = function() {
+        self.get_regulators(self.chosenClade(), self.chosenGenome(),
+                            self.chosenAssembly()).then(function() {
             $('#chooseDatabase').collapse('hide');
             $('#search').collapse('show');
         });
@@ -96,8 +101,6 @@ function DoRiNAViewModel(net) {
             offset: self.offset()
         };
         self.pending(true);
-        $('#search').collapse('hide');
-        $('#results').collapse('show');
         if (!keep_data) {
             self.results.removeAll();
         }
@@ -114,14 +117,25 @@ function DoRiNAViewModel(net) {
             for (var i in data.results) {
                 self.results.push(data.results[i]);
             }
-            if (data.next_offset) {
+            if (data.more_results && data.next_offset) {
                 self.offset(data.next_offset);
             }
         });
     };
 
+    self.reset_search_state = function() {
+        self.more_results(false);
+        self.offset(0);
+    };
+
+
+    /* These functions break the ViewModel abstraction a bit, as they trigger
+     * view changes, but I can't think of a better way to implement this at the
+     * moment */
     self.run_simple_search = function() {
         self.run_search(false);
+        $('#search').collapse('hide');
+        $('#results').collapse('show');
     };
 
     self.load_more_results = function() {
@@ -129,10 +143,10 @@ function DoRiNAViewModel(net) {
     };
 
     self.new_search = function() {
+        self.reset_search_state();
         $('#search').collapse('hide');
         $('#results').collapse('hide');
         $('#chooseDatabase').collapse('show');
-        self.more_results(false);
     };
 
 }
