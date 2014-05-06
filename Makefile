@@ -1,10 +1,11 @@
+REPORTER ?= spec
 test: pythontest jstest
 
 pythontest:
 	nosetests -v
 
 jstest:
-	mocha-phantomjs test/runner.html
+	mocha-phantomjs --reporter $(REPORTER) test/runner.html
 
 
 coverage:
