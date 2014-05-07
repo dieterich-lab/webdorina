@@ -1,11 +1,13 @@
 # :set fileencoding=utf-8 :
 import fakeredis
 import json
+import unittest
 from os import path
 from flask.ext.testing import TestCase
 from dorina import utils
 from minimock import Mock, mock, restore, TraceTracker, assert_same_trace
 import webdorina
+import run
 
 class RedisStore(object):
     def __init__(self, name, tracker=None):
@@ -20,6 +22,92 @@ class RedisStore(object):
                 self.tt.call(name, *args, **kwargs)
                 return getattr(self.connection, attr)(*args, **kwargs)
         return wrapped_call
+
+
+class RunTestCase(unittest.TestCase):
+    def setUp(self):
+        run.Redis = fakeredis.FakeStrictRedis
+        self.r = fakeredis.FakeStrictRedis()
+        self.tt = TraceTracker()
+        self.return_value = []
+        mock('run.analyse', tracker=self.tt, returns_func=self.get_return_value)
+
+    def tearDown(self):
+        self.r.flushdb()
+        restore()
+
+    def get_return_value(self, *args, **kwargs):
+        return self.return_value
+
+    def test_run_analyse(self):
+        '''Test run_analyze()'''
+        expected_trace = '''Called run.analyse(
+    datadir='/fake/data/dir',
+    genome='hg19',
+    match_a='any',
+    region_a='any',
+    set_a=['scifi'])'''
+
+        query = dict(genome='hg19', set_a=['scifi'], match_a='any',
+                     region_a='any')
+
+        self.return_value = [
+            {'data_source': 'scifi',
+             'score': 5, 'track': 'chr1',
+             'gene': 'gene01.01',
+             'site': 'scifi_cds',
+             'strand': '+',
+             'location': 'chr1:250-260'
+            },
+            {'data_source': 'scifi',
+             'score': 2, 'track': 'chr1',
+             'gene': 'gene01.01',
+             'site': 'scifi_cds',
+             'strand': '+',
+             'location': 'chr1:250-260'
+             },
+             {'data_source': 'scifi',
+              'score': 7, 'track': 'chr1',
+              'gene': 'gene01.02',
+              'site': 'scifi_intron',
+              'strand': '+',
+              'location': 'chr1:2350-2360'}
+        ]
+
+        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query)
+        self.return_value.sort(key=lambda x: x['score'], reverse=True)
+        serialised_result = [ json.dumps(i) for i in self.return_value ]
+
+        assert_same_trace(self.tt, expected_trace)
+
+        self.assertTrue(self.r.exists('results:fake_key'))
+        self.assertEqual(3, self.r.llen('results:fake_key'))
+        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+
+    def test_run_analyse_no_results(self):
+        '''Test run_analyze() when no results are returned'''
+        query = dict(genome='hg19', set_a=['scifi'], match_a='any',
+                     region_a='any')
+
+        self.return_value = []
+
+        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query)
+        expected_result = [{
+            'data_source': 'no results found',
+            'score': -1,
+            'track': '',
+            'gene': '',
+            'site': '',
+            'strand': '',
+            'location': ''
+        }]
+
+        serialised_result = [ json.dumps(i) for i in expected_result ]
+
+        self.assertTrue(self.r.exists('results:fake_key'))
+        self.assertEqual(1, self.r.llen('results:fake_key'))
+        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+
 
 class DorinaTestCase(TestCase):
     def create_app(self):
