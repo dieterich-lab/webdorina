@@ -31,6 +31,8 @@ function DoRiNAViewModel(net) {
     self.offset = ko.observable(0);
     self.pending = ko.observable(true);
 
+    self.match_a = ko.observable('any');
+
     self.get_clades = function() {
         return net.getJSON("clades").then(function(data) {
             self.clades.removeAll();
@@ -98,6 +100,7 @@ function DoRiNAViewModel(net) {
         var search_data = {
             set_a: regulators,
             assembly: self.chosenAssembly(),
+            match_a: self.match_a(),
             offset: self.offset()
         };
         self.pending(true);
@@ -126,6 +129,7 @@ function DoRiNAViewModel(net) {
     self.reset_search_state = function() {
         self.more_results(false);
         self.offset(0);
+        self.match_a('any');
     };
 
 

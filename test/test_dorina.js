@@ -125,6 +125,7 @@ describe('DoRiNAViewModel', function() {
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
+                'match_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -142,11 +143,13 @@ describe('DoRiNAViewModel', function() {
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
+                'match_a': 'any',
                 'offset': 0
             });
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
+                'match_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -175,6 +178,7 @@ describe('DoRiNAViewModel', function() {
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
+                'match_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -195,6 +199,7 @@ describe('DoRiNAViewModel', function() {
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
+                'match_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -220,6 +225,13 @@ describe('DoRiNAViewModel', function() {
             vm.offset().should.eql(23);
             vm.reset_search_state();
             vm.offset().should.eql(0);
+        });
+
+        it('should reset the match_a field', function() {
+            vm.match_a('all');
+            vm.match_a().should.eql('all');
+            vm.reset_search_state();
+            vm.match_a().should.eql('any');
         });
 
     });
