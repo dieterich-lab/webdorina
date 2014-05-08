@@ -32,6 +32,7 @@ function DoRiNAViewModel(net) {
     self.pending = ko.observable(true);
 
     self.match_a = ko.observable('any');
+    self.region_a = ko.observable('any');
 
     self.get_clades = function() {
         return net.getJSON("clades").then(function(data) {
@@ -101,6 +102,7 @@ function DoRiNAViewModel(net) {
             set_a: regulators,
             assembly: self.chosenAssembly(),
             match_a: self.match_a(),
+            region_a: self.region_a(),
             offset: self.offset()
         };
         self.pending(true);
@@ -130,6 +132,7 @@ function DoRiNAViewModel(net) {
         self.more_results(false);
         self.offset(0);
         self.match_a('any');
+        self.region_a('any');
     };
 
 

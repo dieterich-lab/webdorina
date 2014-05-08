@@ -73,9 +73,9 @@ def search():
     query = {}
 
     query['genes'] = [u'all']
-    query['region_a'] = u'any'
 
     query['match_a'] = request.form.get('match_a', u'any')
+    query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
     query['set_a'] = request.form.getlist('set_a[]')
     offset = request.form.get('offset', 0, int)

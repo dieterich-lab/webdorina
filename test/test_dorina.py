@@ -296,3 +296,41 @@ Called webdorina.Queue.enqueue(
     'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}_pending',
     {'region_a': u'any', 'set_a': [u'scifi', u'fake01'], 'genes': [u'all'], 'match_a': u'all', 'genome': u'hg19'})''' % webdorina.datadir
         assert_same_trace(self.tt, expected_trace)
+
+
+    def test_search_nothing_cached_CDS_region(self):
+        '''Test search() in CDS regions with nothing in cache'''
+        data = dict(match_a='any', region_a='CDS', assembly='hg19')
+        data['set_a[]']=['scifi', 'fake01']
+        rv = self.client.post('/search', data=data)
+        key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending'
+
+        # Now a query should be pending
+        self.assertTrue(self.r.exists(key))
+
+        ttl = self.r.ttl(key)
+        self.assertGreater(ttl, 0)
+        self.assertLessEqual(ttl, webdorina.RESULT_TTL)
+
+        self.assertEqual(rv.json, dict(state="pending"))
+
+        # This query should trigger a defined set of calls
+        expected_trace = '''Called fake_store.exists(
+    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}')
+Called fake_store.get(
+    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending')
+Called fake_store.set(
+    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending',
+    True)
+Called fake_store.expire(
+    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending',
+    30)
+Called webdorina.Queue(
+    connection=<fakeredis.FakeStrictRedis object at ...>)
+Called webdorina.Queue.enqueue(
+    <function run_analyse at ...>,
+    %r,
+    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}',
+    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending',
+    {'region_a': u'CDS', 'set_a': [u'scifi', u'fake01'], 'genes': [u'all'], 'match_a': u'any', 'genome': u'hg19'})''' % webdorina.datadir
+        assert_same_trace(self.tt, expected_trace)

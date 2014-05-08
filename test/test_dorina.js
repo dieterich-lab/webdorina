@@ -126,11 +126,13 @@ describe('DoRiNAViewModel', function() {
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
                 'match_a': 'any',
+                'region_a': 'CDS',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
             vm.selected_mirnas().push(fake_mirna);
             vm.chosenAssembly('hg19');
+            vm.region_a('CDS');
 
             return vm.run_search(false);
         });
@@ -144,12 +146,14 @@ describe('DoRiNAViewModel', function() {
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
                 'match_a': 'any',
+                'region_a': 'any',
                 'offset': 0
             });
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
                 'match_a': 'any',
+                'region_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -179,6 +183,7 @@ describe('DoRiNAViewModel', function() {
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
                 'match_a': 'any',
+                'region_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -200,6 +205,7 @@ describe('DoRiNAViewModel', function() {
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
                 'match_a': 'any',
+                'region_a': 'any',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -234,5 +240,11 @@ describe('DoRiNAViewModel', function() {
             vm.match_a().should.eql('any');
         });
 
+        it('should reset the region_a field', function() {
+            vm.region_a('CDS');
+            vm.region_a().should.eql('CDS');
+            vm.reset_search_state();
+            vm.region_a().should.eql('any');
+        });
     });
 });
