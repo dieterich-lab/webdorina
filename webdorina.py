@@ -5,7 +5,7 @@ from flask import Flask, render_template, jsonify, request
 from flask_redis import Redis
 from rq import Queue
 from dorina import utils, config
-from run import run_analyse
+import run
 import json
 
 # basic doRiNA settings
@@ -72,8 +72,9 @@ def list_regulators(clade, genome, assembly):
 def search():
     query = {}
 
-    query['genes'] = [u'all']
-
+    query['genes'] = request.form.getlist('genes[]')
+    if len(query['genes']) < 1:
+        query['genes'] = [u'all']
     query['match_a'] = request.form.get('match_a', u'any')
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
@@ -92,7 +93,23 @@ def search():
         more_results = True if redis_store.llen(query_key) > offset + MAX_RESULTS else False
         return jsonify(dict(state='done', results=result, more_results=more_results,
                        next_offset=next_offset))
+    elif query['genes'][0] != u'all':
+        full_query = dict(query)
+        full_query['genes'] = [u'all']
+        full_query_key = "results:%s" % json.dumps(full_query, sort_keys=True)
+        full_query_pending_key = "%s_pending" % full_query_key
 
+        if redis_store.exists(full_query_key):
+            redis_store.expire(full_query_key, RESULT_TTL)
+            redis_store.set(query_pending_key, True)
+            redis_store.expire(query_pending_key, 30)
+            q = Queue(connection=redis_store.connection)
+            q.enqueue(run.filter, query['genes'], full_query_key, query_key, query_pending_key)
+            return jsonify(dict(state='pending'))
+
+        query = full_query
+        query_key = full_query_key
+        query_pending_key = full_query_pending_key
 
     if redis_store.get(query_pending_key):
         return jsonify(dict(state='pending'))
@@ -101,7 +118,7 @@ def search():
     redis_store.expire(query_pending_key, 30)
 
     q = Queue(connection=redis_store.connection)
-    q.enqueue(run_analyse, datadir, query_key, query_pending_key, query)
+    q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query)
 
     return jsonify(dict(state='pending'))
 
