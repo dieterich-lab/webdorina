@@ -31,6 +31,7 @@ function DoRiNAViewModel(net) {
     self.offset = ko.observable(0);
     self.pending = ko.observable(true);
 
+    self.genes = ko.observable('');
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
 
@@ -103,6 +104,7 @@ function DoRiNAViewModel(net) {
             assembly: self.chosenAssembly(),
             match_a: self.match_a(),
             region_a: self.region_a(),
+            genes: self.candidate_genes(),
             offset: self.offset()
         };
         self.pending(true);
@@ -133,7 +135,15 @@ function DoRiNAViewModel(net) {
         self.offset(0);
         self.match_a('any');
         self.region_a('any');
+        self.genes('');
     };
+
+    self.candidate_genes = ko.computed(function() {
+        if (self.genes() == '') {
+            return 'all';
+        }
+        return self.genes();
+    });
 
 
     /* These functions break the ViewModel abstraction a bit, as they trigger

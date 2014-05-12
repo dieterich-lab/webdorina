@@ -127,6 +127,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'CDS',
+                'genes': 'all',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -147,6 +148,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'any',
+                'genes': 'all',
                 'offset': 0
             });
             fn.expected_data.push({
@@ -154,6 +156,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'any',
+                'genes': 'all',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -184,6 +187,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'any',
+                'genes': 'all',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -206,6 +210,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'any',
+                'genes': 'all',
                 'offset': 0
             });
             vm.selected_rbps().push(fake_rbp);
@@ -245,6 +250,13 @@ describe('DoRiNAViewModel', function() {
             vm.region_a().should.eql('CDS');
             vm.reset_search_state();
             vm.region_a().should.eql('any');
+        });
+
+        it('should reset the genes field', function() {
+            vm.genes('foo');
+            vm.genes().should.eql('foo');
+            vm.reset_search_state();
+            vm.genes().should.eql('');
         });
     });
 });

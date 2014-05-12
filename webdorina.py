@@ -72,9 +72,7 @@ def list_regulators(clade, genome, assembly):
 def search():
     query = {}
 
-    query['genes'] = request.form.getlist('genes[]')
-    if len(query['genes']) < 1:
-        query['genes'] = [u'all']
+    query['genes'] = request.form.get('genes', u'all').split()
     query['match_a'] = request.form.get('match_a', u'any')
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)

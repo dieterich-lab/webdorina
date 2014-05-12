@@ -383,9 +383,8 @@ Called webdorina.Queue.enqueue(
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
-        data = dict(match_a='any', assembly='hg19')
+        data = dict(match_a='any', assembly='hg19', genes='fake01')
         data['set_a[]']=['scifi']
-        data['genes[]']=['fake01']
         rv = self.client.post('/search', data=data)
 
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
@@ -420,9 +419,8 @@ Called fake_store.llen(
             self.r.rpush(full_key, json.dumps(res))
 
 
-        data = dict(match_a='any', assembly='hg19')
+        data = dict(match_a='any', assembly='hg19', genes='fake01')
         data['set_a[]']=['scifi']
-        data['genes[]']=['fake01']
         rv = self.client.post('/search', data=data)
 
         # Now a query should be pending

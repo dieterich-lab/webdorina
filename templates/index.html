@@ -52,6 +52,11 @@
           <div class="panel-body">
             <form class="form-horizontal" role="form" data-bind="submit: run_simple_search">
               <div class="form-group">
+                  <label for="genes">Limit to a set of candidate genes</label>
+                  <textarea class="form-control" id="genes" data-bind="value: genes"></textarea>
+              </div>
+
+              <div class="form-group">
                 <label for="region_a">Look for binding sites in region:</label>
                 <select class="form-control" id="region_a" data-bind="value: region_a">
                   <option value="any">any</option>
@@ -62,6 +67,7 @@
                   <option value="intergenic">intergenic</option>
                 </select>
               </div>
+
               <div class="form-group">
                 <label for="rbps">RNA binding proteins</label>
                 <select class="form-control" id="rbps"
