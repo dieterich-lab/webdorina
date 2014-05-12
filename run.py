@@ -34,7 +34,6 @@ def filter(genes, full_query_key, query_key, query_pending_key):
     redis_store = Redis()
 
     full_results = redis_store.lrange(full_query_key, 0, -1)
-    print full_results
     for res_string in full_results:
         res = json.loads(res_string)
         if res['gene'] in genes:
