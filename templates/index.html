@@ -195,18 +195,7 @@
         $('#clade').change(cladeChanged);
         $('#genome').change(genomeChanged);
         viewmodel.get_clades();
-        setTimeout(function() {
-            $('#clade').val('mammals').change();
-            setTimeout(function() {
-                $('#genome').val('h_sapiens').change();
-                setTimeout(function() {
-                    $('#assembly').val('hg19').change();
-                }, 50);
-            }, 50);
-        }, 50);
     });
-
-
 
   </script>
 </body>
