@@ -92,7 +92,8 @@
                 </select>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-lg btn-block" data-bind="">
+              <button type="submit" class="btn btn-primary btn-lg btn-block"
+                data-bind="enable: selected_mirnas().length + selected_rbps().length > 0">
                 <span class="glyphicon glyphicon-search"></span> Search doRiNA</button>
             </form>
           </div>
