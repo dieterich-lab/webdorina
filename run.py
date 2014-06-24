@@ -4,6 +4,8 @@ from dorina.run import analyse
 
 def run_analyse(datadir, query_key, query_pending_key, query):
     redis_store = Redis()
+    # get rid of the now-unused genes parameter
+    query.pop('genes', None)
     result = analyse(datadir=datadir, **query)
     result.sort(key=lambda x: x['score'], reverse=True)
 
