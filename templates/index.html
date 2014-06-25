@@ -50,6 +50,15 @@
         $('#clade').change(cladeChanged);
         $('#genome').change(genomeChanged);
         viewmodel.get_clades();
+        $("[data-toggle='tooltip']").tooltip();
+
+        $('#genes').on('show.bs.collapse', function() {
+            $('#genes-icon').removeClass('glyphicon-plus')
+              .addClass('glyphicon-minus');
+        }).on('hide.bs.collapse', function() {
+            $('#genes-icon').removeClass('glyphicon-minus')
+              .addClass('glyphicon-plus');
+        });
     });
 
   </script>
