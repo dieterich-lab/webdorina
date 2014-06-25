@@ -21,9 +21,11 @@ function DoRiNAViewModel(net) {
 
     self.rbps = ko.observableArray([]);
     self.selected_rbps = ko.observableArray([]);
+    self.selected_rbps_setb = ko.observableArray([]);
 
     self.mirnas = ko.observableArray([]);
     self.selected_mirnas = ko.observableArray([]);
+    self.selected_mirnas_setb = ko.observableArray([]);
 
     self.results = ko.observableArray([]);
 
@@ -34,6 +36,9 @@ function DoRiNAViewModel(net) {
     self.genes = ko.observable('');
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
+
+    self.match_b = ko.observable('any');
+    self.region_b = ko.observable('any');
 
     self.get_clades = function() {
         return net.getJSON("clades").then(function(data) {
@@ -136,6 +141,13 @@ function DoRiNAViewModel(net) {
         self.match_a('any');
         self.region_a('any');
         self.genes('');
+    };
+
+    self.clear_selections = function() {
+        self.selected_mirnas.removeAll();
+        self.selected_rbps.removeAll();
+        self.selected_mirnas_setb.removeAll();
+        self.selected_rbps_setb.removeAll();
     };
 
     self.candidate_genes = ko.computed(function() {
