@@ -1,0 +1,65 @@
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#results">Results</a>
+          </h4>
+        </div>
+        <div id="results" class="panel-collapse collapse">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-3 col-md-offset-9 text-right">
+                <button type="button" class="btn btn-sm" data-bind="click: new_search">
+                  <span class="glyphicon glyphicon-repeat"></span> New search</button>
+              </div>
+            </div>
+
+            <table class="table table-striped" id="result_table">
+              <thead>
+                <tr>
+                  <th>track name</th>
+                  <th>gene symbol</th>
+                  <th>data source</th>
+                  <th>score</th>
+                  <th>target site in browser</th>
+                  <th>target site location</th>
+                  <th>genomic strand</th>
+                </tr>
+              </thead>
+              <tbody data-bind="foreach: results">
+                <tr>
+                  <td data-bind="text: track"></td>
+                  <td data-bind="text: gene"></td>
+                  <td data-bind="text: data_source"></td>
+                  <td data-bind="text: score"></td>
+                  <td data-bind="text: site"></td>
+                  <td data-bind="text: location"></td>
+                  <td data-bind="text: strand"></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row" data-bind="visible: pending">
+              <div class="col-md-3 col-md-offset-3">
+                <img src="{{url_for('static', filename='loading.gif')}}" alt="loading..." />
+              </div>
+              <div class="col-md-6">
+                Loading
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" class="btn btn-sm" data-bind="visible: more_results, click: load_more_results">
+                  Load more results
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                </button>
+              </div>
+
+              <div class="col-md-3 col-md-offset-3 text-right">
+                <button type="button" class="btn btn-sm" data-bind="click: new_search">
+                  <span class="glyphicon glyphicon-repeat"></span> New search</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
