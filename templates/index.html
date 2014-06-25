@@ -14,63 +14,9 @@
 
       {% include "choose_db.html" %}
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#search">Search</a>
-          </h4>
-        </div>
-        <div id="search" class="panel-collapse collapse">
-          <div class="panel-body">
-            <form class="form-horizontal" role="form" data-bind="submit: run_simple_search">
-              <div class="form-group">
-                  <label for="genes">Limit to a set of candidate genes</label>
-                  <textarea class="form-control" id="genes" data-bind="value: genes"></textarea>
-              </div>
+      {% include "search.html" %}
 
-              <div class="form-group">
-                <label for="region_a">Look for binding sites in region:</label>
-                <select class="form-control" id="region_a" data-bind="value: region_a">
-                  <option value="any">any</option>
-                  <option value="CDS">CDS</option>
-                  <option value="5prime">5' UTR</option>
-                  <option value="3prime">3' UTR</option>
-                  <option value="intron">intron</option>
-                  <option value="intergenic">intergenic</option>
-                </select>
-              </div>
 
-              <div class="form-group">
-                <label for="rbps">RNA binding proteins</label>
-                <select class="form-control" id="rbps"
-                 data-bind="options: rbps, selectedOptions: selected_rbps, optionsText: 'summary'"
-                 size="5" multiple="true">
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="mirnas">miRNAs</label>
-                <select class="form-control" id="mirnas"
-                 data-bind="options: mirnas, selectedOptions: selected_mirnas, optionsText: 'summary'"
-                 size="5" multiple="true">
-                </select>
-              </div>
-
-              <div class="form-group" data-bind="visible: selected_mirnas().length + selected_rbps().length > 1">
-                <label for="match_a">Regulators that must match:</label>
-                <select class="form-control" id="match_a" data-bind="value: match_a">
-                  <option>any</option>
-                  <option>all</option>
-                </select>
-              </div>
-
-              <button type="submit" class="btn btn-primary btn-lg btn-block"
-                data-bind="enable: selected_mirnas().length + selected_rbps().length > 0">
-                <span class="glyphicon glyphicon-search"></span> Search doRiNA</button>
-            </form>
-          </div>
-        </div>
-      </div>
 
       <div class="panel panel-default">
         <div class="panel-heading">
