@@ -11,36 +11,8 @@
     <h1 data-bind="click: new_search">doRiNA <small>a database of RNA interactions in post-transcriptional regulation</small></h1>
 
     <div class="panel-group" id="accordion">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#chooseDatabase">Choose a doRiNA database</a>
-          </h4>
-        </div>
-        <div id="chooseDatabase" class="panel-collapse collapse in">
-          <div class="panel-body">
-            <form class="form-inline" role="form" data-bind="submit: show_simple_search">
-              <div class="form-group">
-                <label for="clade">clade</label>
-                <select class="form-control" id="clade" data-bind="options: clades, value: chosenClade">
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="genome">genome</label>
-                <select class="form-control" id="genome" data-bind="options: genomes, value: chosenGenome">
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="assembly">assembly</label>
-                <select class="form-control" id="assembly" data-bind="options: assemblies, value: chosenAssembly">
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary" data-bind="enable: chosenAssembly">
-                <span class="glyphicon glyphicon-hdd"></span> Search Database</button>
-            </form>
-          </div>
-        </div>
-      </div>
+
+      {% include "choose_db.html" %}
 
       <div class="panel panel-default">
         <div class="panel-heading">
