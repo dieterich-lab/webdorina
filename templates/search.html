@@ -83,6 +83,43 @@
               </div>
 
               <div class="row form-group combinatorial collapse">
+                <div class="col-md-5">
+                  <label>Look for binding sites in region:</label>
+                  <div class="btn-group" data-toggle="buttons" data-bind="radio: region_b">
+                    <label class="btn btn-default">
+                      <input type="radio" name="region_b_group" value="any"> any
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="region_b_group" value="CDS"> CDS
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="region_b_group" value="5prime"> 5' UTR
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="region_b_group" value="3prime"> 3' UTR
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="region_b_group" value="intron"> intron
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="region_b_group" value="intergenic"> intergenic
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-3 col-md-offset-1" data-bind="visible: selected_mirnas_setb().length + selected_rbps_setb().length > 1">
+                  <label>Regulators that must match:</label>
+                  <div class="btn-group" data-toggle="buttons" data-bind="radio: match_b">
+                    <label class="btn btn-default">
+                      <input type="radio" name="match_b_group" value="any"> any
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="match_b_group" value="all"> all
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row form-group combinatorial collapse">
                 <div class="col-xs-6">
                   <label for="rbps">RNA binding proteins</label>
                   <select class="form-control" id="rbps_setb"
@@ -97,6 +134,39 @@
                    size="5" multiple="true">
                   </select>
                 </div>
+              </div>
+
+              <div class="row form-group combinatorial collapse">
+                <div class="col-md-4">
+                  <label>Define set operations</label>
+                </div>
+              </div>
+
+              <div class="row form-group combinatorial collapse">
+                <div class="col-md-7">
+                  Return binding sites of set A and set B being
+                  <span id="readable-set-operation" data-bind="text: readableSetOperation"></span>
+                </div>
+                <div class="col-md-4">
+                  <div class="btn-group" data-toggle="buttons" data-bind="radio: combinatorialOperation">
+                    <label class="btn btn-default">
+                      <input type="radio" name="set_op_group" value="and"> AND
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="set_op_group" value="or"> OR
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="set_op_group" value="xor"> XOR
+                    </label>
+                    <label class="btn btn-default">
+                      <input type="radio" name="set_op_group" value="not"> NOT
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group combinatorial collapse">
+                <!-- placeholder -->
               </div>
 
               <div class="row">

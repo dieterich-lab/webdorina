@@ -40,6 +40,21 @@ function DoRiNAViewModel(net) {
     self.match_b = ko.observable('any');
     self.region_b = ko.observable('any');
 
+    self.combinatorialOperation = ko.observable('or');
+
+    self.readableSetOperation = ko.computed(function() {
+        switch (self.combinatorialOperation()) {
+            case 'or':
+                return "found in set A or set B";
+            case 'and':
+                return "found in set A and set B";
+            case 'xor':
+                return "found either in set A or in set B, but not in both";
+            case 'not':
+                return "found in set A but not in set B";
+        }
+    }, self);
+
     self.get_clades = function() {
         return net.getJSON("clades").then(function(data) {
             self.clades.removeAll();
@@ -112,6 +127,28 @@ function DoRiNAViewModel(net) {
             genes: self.candidate_genes(),
             offset: self.offset()
         };
+
+        // if there's any selection made for set B regulators,
+        // send set B data
+        if (self.selected_mirnas_setb().length +
+            self.selected_rbps_setb().length > 0) {
+            var regulators_setb = [];
+            var rbps = self.selected_rbps_setb();
+            var mirnas = self.selected_mirnas_setb();
+
+            for (var i in rbps) {
+                regulators_setb.push(rbps[i].name);
+            }
+            for (var i in mirnas) {
+                regulators_setb.push(mirnas[i].name);
+            }
+
+            search_data.set_b = regulators_setb;
+            search_data.match_b= self.match_b();
+            search_data.region_b = self.region_b();
+            search_data.combinatorial_op = self.combinatorialOperation();
+        }
+
         self.pending(true);
         if (!keep_data) {
             self.results.removeAll();
@@ -139,7 +176,9 @@ function DoRiNAViewModel(net) {
         self.more_results(false);
         self.offset(0);
         self.match_a('any');
+        self.match_b('any');
         self.region_a('any');
+        self.region_b('any');
         self.genes('');
     };
 

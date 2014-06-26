@@ -119,7 +119,7 @@ describe('DoRiNAViewModel', function() {
              'methods': 'Fake methods for miRNA',
             'references': 'Fake references for miRNA'});
 
-        it('should use the selected values to build the post request', function() {
+        it('should use the selected set_a values to build the post request', function() {
             fn.expected_url.push('search');
             fn.return_data.push({'state': 'done'});
             fn.expected_data.push({
@@ -134,6 +134,31 @@ describe('DoRiNAViewModel', function() {
             vm.selected_mirnas().push(fake_mirna);
             vm.chosenAssembly('hg19');
             vm.region_a('CDS');
+
+            return vm.run_search(false);
+        });
+
+        it('should use the selected set_a and set_b values to build the post request', function() {
+            fn.expected_url.push('search');
+            fn.return_data.push({'state': 'done'});
+            fn.expected_data.push({
+                'set_a': ['fake_rbp'],
+                'assembly': 'hg19',
+                'match_a': 'any',
+                'region_a': 'CDS',
+                'genes': 'all',
+                'offset': 0,
+                'set_b': ['fake_mirna'],
+                'match_b': 'any',
+                'region_b': 'CDS',
+                'combinatorial_op': 'or'
+            });
+            vm.selected_rbps().push(fake_rbp);
+            vm.selected_mirnas_setb().push(fake_mirna);
+            vm.chosenAssembly('hg19');
+            vm.region_a('CDS');
+            vm.region_b('CDS');
+            vm.combinatorialOperation('or');
 
             return vm.run_search(false);
         });
@@ -250,6 +275,20 @@ describe('DoRiNAViewModel', function() {
             vm.region_a().should.eql('CDS');
             vm.reset_search_state();
             vm.region_a().should.eql('any');
+        });
+
+        it('should reset the match_b field', function() {
+            vm.match_b('all');
+            vm.match_b().should.eql('all');
+            vm.reset_search_state();
+            vm.match_b().should.eql('any');
+        });
+
+        it('should reset the region_b field', function() {
+            vm.region_b('CDS');
+            vm.region_b().should.eql('CDS');
+            vm.reset_search_state();
+            vm.region_b().should.eql('any');
         });
 
         it('should reset the genes field', function() {
