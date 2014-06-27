@@ -79,6 +79,15 @@ def search():
     query['set_a'] = request.form.getlist('set_a[]')
     offset = request.form.get('offset', 0, int)
 
+    query['set_b'] = request.form.getlist('set_b[]')
+    # werkzeug/Flask insists on returning an empty list, but dorina.analyse
+    #expects 'None'
+    if query['set_b'] == []:
+        query['set_b'] = None
+    query['match_b'] = request.form.get('match_b', u'any')
+    query['region_b'] = request.form.get('region_b', u'any')
+    query['combine'] = request.form.get('combinatorial_op', u'or')
+
     query_key = "results:%s" % json.dumps(query, sort_keys=True)
     query_pending_key = "%s_pending" % query_key
 

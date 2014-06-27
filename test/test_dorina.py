@@ -211,13 +211,17 @@ class DorinaTestCase(TestCase):
         '''Test search() with nothing in cache'''
         data = dict(match_a='any', assembly='hg19')
         data['set_a[]']=['scifi']
+        key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
+        key_pending = '{0}_pending'.format(key)
+
         rv = self.client.post('/search', data=data)
-        key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending'
 
         # Now a query should be pending
-        self.assertTrue(self.r.exists(key))
+        self.assertTrue(self.r.exists(key_pending))
 
-        ttl = self.r.ttl(key)
+        ttl = self.r.ttl(key_pending)
         self.assertGreater(ttl, 0)
         self.assertLessEqual(ttl, webdorina.RESULT_TTL)
 
@@ -225,30 +229,35 @@ class DorinaTestCase(TestCase):
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{0}')
 Called fake_store.get(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending')
+    '{1}')
 Called fake_store.set(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending',
+    '{1}',
     True)
 Called fake_store.expire(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending',
+    '{1}',
     30)
 Called webdorina.Queue(
     connection=<fakeredis.FakeStrictRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
-    %r,
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending',
-    {'region_a': u'any', 'set_a': [u'scifi'], 'genes': [u'all'], 'match_a': u'any', 'genome': u'hg19'})''' % webdorina.datadir
+    '{2}',
+    '{0}',
+    '{1}',
+    {{{3}}})'''.format(key, key_pending, webdorina.datadir,
+        "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi'], 'set_b': None, 'region_b': u'any'"
+            )
         assert_same_trace(self.tt, expected_trace)
 
 
     def test_search_query_pending(self):
         '''Test search() with a query for this key pending'''
-        key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending'
-        self.r.set(key, True)
+        key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
+        key_pending = '{0}_pending'.format(key)
+        self.r.set(key_pending, True)
 
         data = dict(match_a='any', assembly='hg19')
         data['set_a[]']=['scifi']
@@ -259,15 +268,17 @@ Called webdorina.Queue.enqueue(
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{0}')
 Called fake_store.get(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending')'''
+    '{1}')'''.format(key, key_pending)
         assert_same_trace(self.tt, expected_trace)
 
 
     def test_search_cached_results(self):
         '''Test search() with cached_results'''
-        key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}'
+        key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
         results = [
             dict(track='fake', gene='fake01', data_source='fake source', score=42),
             dict(track='fake', gene='fake02', data_source='fake source', score=23)
@@ -284,17 +295,17 @@ Called fake_store.get(
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{0}')
 Called fake_store.expire(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    %s)
+    '{0}',
+    {1})
 Called fake_store.lrange(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
+    '{0}',
     0,
-    %s)
+    {2})
 Called fake_store.llen(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
-    ''' % (webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
+    '{0}')
+    '''.format(key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -303,12 +314,15 @@ Called fake_store.llen(
         data = dict(match_a='all', assembly='hg19')
         data['set_a[]']=['scifi', 'fake01']
         rv = self.client.post('/search', data=data)
-        key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}_pending'
+        key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        key += '"match_a": "all", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi", "fake01"], "set_b": null}'
+        key_pending = '{0}_pending'.format(key)
 
         # Now a query should be pending
-        self.assertTrue(self.r.exists(key))
+        self.assertTrue(self.r.exists(key_pending))
 
-        ttl = self.r.ttl(key)
+        ttl = self.r.ttl(key_pending)
         self.assertGreater(ttl, 0)
         self.assertLessEqual(ttl, webdorina.RESULT_TTL)
 
@@ -316,23 +330,25 @@ Called fake_store.llen(
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}')
+    '{0}')
 Called fake_store.get(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}_pending')
+    '{1}')
 Called fake_store.set(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}_pending',
+    '{1}',
     True)
 Called fake_store.expire(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}_pending',
+    '{1}',
     30)
 Called webdorina.Queue(
     connection=<fakeredis.FakeStrictRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
-    %r,
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}',
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "all", "region_a": "any", "set_a": ["scifi", "fake01"]}_pending',
-    {'region_a': u'any', 'set_a': [u'scifi', u'fake01'], 'genes': [u'all'], 'match_a': u'all', 'genome': u'hg19'})''' % webdorina.datadir
+    '{2}',
+    '{0}',
+    '{1}',
+    {{{3}}})'''.format(key, key_pending, webdorina.datadir,
+        "'genes': [u'all'], 'match_a': u'all', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'"
+            )
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -340,13 +356,17 @@ Called webdorina.Queue.enqueue(
         '''Test search() in CDS regions with nothing in cache'''
         data = dict(match_a='any', region_a='CDS', assembly='hg19')
         data['set_a[]']=['scifi', 'fake01']
+        key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "CDS", '
+        key += '"region_b": "any", "set_a": ["scifi", "fake01"], "set_b": null}'
+        key_pending = '{0}_pending'.format(key)
+
         rv = self.client.post('/search', data=data)
-        key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending'
 
         # Now a query should be pending
-        self.assertTrue(self.r.exists(key))
+        self.assertTrue(self.r.exists(key_pending))
 
-        ttl = self.r.ttl(key)
+        ttl = self.r.ttl(key_pending)
         self.assertGreater(ttl, 0)
         self.assertLessEqual(ttl, webdorina.RESULT_TTL)
 
@@ -354,29 +374,33 @@ Called webdorina.Queue.enqueue(
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}')
+    '{0}')
 Called fake_store.get(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending')
+    '{1}')
 Called fake_store.set(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending',
+    '{1}',
     True)
 Called fake_store.expire(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending',
+    '{1}',
     30)
 Called webdorina.Queue(
     connection=<fakeredis.FakeStrictRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
-    %r,
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}',
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "CDS", "set_a": ["scifi", "fake01"]}_pending',
-    {'region_a': u'CDS', 'set_a': [u'scifi', u'fake01'], 'genes': [u'all'], 'match_a': u'any', 'genome': u'hg19'})''' % webdorina.datadir
+    '{2}',
+    '{0}',
+    '{1}',
+    {{{3}}})'''.format(key, key_pending, webdorina.datadir,
+        "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'CDS', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'"
+            )
         assert_same_trace(self.tt, expected_trace)
 
 
     def test_search_filtered_results_cached(self):
         '''Test search() with filtered results in cache'''
-        key = 'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}'
+        key = 'results:{"combine": "or", "genes": ["fake01"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
         results = [
             dict(track='fake', gene='fake01', data_source='fake source', score=42),
         ]
@@ -392,25 +416,28 @@ Called webdorina.Queue.enqueue(
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{0}')
 Called fake_store.expire(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    %s)
+    '{0}',
+    {1})
 Called fake_store.lrange(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
+    '{0}',
     0,
-    %s)
+    {2})
 Called fake_store.llen(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
-    ''' % (webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
+    '{0}')
+    '''.format(key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
         assert_same_trace(self.tt, expected_trace)
 
 
     def test_search_filtered_full_results_cached(self):
         '''Test search() with filter and full results in cache'''
-        full_key = 'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}'
-        key = 'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}'
-        key_pending = 'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending'
+        templ = 'results:{{"combine": "or", "genes": ["{0}"], "genome": "hg19", '
+        templ += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        templ += '"region_b": "any", "set_a": ["scifi"], "set_b": null}}'
+        full_key = templ.format('all')
+        key = templ.format('fake01')
+        key_pending = '{0}_pending'.format(key)
         results = [
             dict(track='fake', gene='fake01', data_source='fake source', score=42),
             dict(track='fake', gene='fake02', data_source='fake source', score=23)
@@ -439,36 +466,35 @@ Called fake_store.llen(
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{0}')
 Called fake_store.exists(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{2}')
 Called fake_store.expire(
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    %s)
+    '{2}',
+    {3})
 Called fake_store.set(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending',
+    '{1}',
     True)
 Called fake_store.expire(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending',
+    '{1}',
     30)
 Called webdorina.Queue(
     connection=<fakeredis.FakeStrictRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function filter at ...>,
     [u'fake01'],
-    'results:{"genes": ["all"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}_pending')
+    '{2}',
+    '{0}',
+    '{1}')
 Called fake_store.exists(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
+    '{0}')
 Called fake_store.expire(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
-    %s)
+    '{0}',
+    {3})
 Called fake_store.lrange(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}',
+    '{0}',
     0,
-    %s)
+    {4})
 Called fake_store.llen(
-    'results:{"genes": ["fake01"], "genome": "hg19", "match_a": "any", "region_a": "any", "set_a": ["scifi"]}')
-    ''' % (webdorina.RESULT_TTL, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
+    '{0}')'''.format(key, key_pending, full_key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
         assert_same_trace(self.tt, expected_trace)
