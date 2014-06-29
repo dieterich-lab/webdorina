@@ -31,7 +31,7 @@
                   <td data-bind="text: gene"></td>
                   <td data-bind="text: data_source"></td>
                   <td data-bind="text: score"></td>
-                  <td data-bind="text: site"></td>
+                  <td> <a data-bind="text: site, attr: {href: ($parent.ucsc_url() + location)}"></a></td>
                   <td data-bind="text: location"></td>
                   <td data-bind="text: strand"></td>
                 </tr>
