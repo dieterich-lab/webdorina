@@ -41,7 +41,7 @@ function DoRiNAViewModel(net) {
     self.region_b = ko.observable('any');
     self.ucsc_url = ko.computed(function() {
         var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
-        url += "hubUrl=https://bimsbproxy.mdc-berlin.de/dorina2/dorinaHub/hub.txt"
+        url += "&hubUrl=https://bimsbproxy.mdc-berlin.de/dorina2/dorinaHub/hub.txt"
         url += "&position="
         return url;
     }, self);
