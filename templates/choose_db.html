@@ -7,23 +7,39 @@
         <div id="chooseDatabase" class="panel-collapse collapse in">
           <div class="panel-body">
             <form class="form-inline" role="form" data-bind="submit: show_simple_search">
-              <div class="form-group">
-                <label for="clade">clade</label>
+              <div class="row">
+                <div class="form-group col-xs-2">
+                  <label for="clade">clade</label>
+                </div>
+                <div class="form-group col-xs-2">
+                  <label for="genome">genome</label>
+                </div>
+                <div class="form-group col-xs-2">
+                  <label for="assembly">assembly</label>
+                </div>
+              </div>
+              <div class="row">
+              <div class="form-group col-xs-2">
                 <select class="form-control" id="clade" data-bind="options: clades, value: chosenClade">
                 </select>
               </div>
-              <div class="form-group">
-                <label for="genome">genome</label>
+              <div class="form-group col-xs-2">
                 <select class="form-control" id="genome" data-bind="options: genomes, value: chosenGenome">
                 </select>
               </div>
-              <div class="form-group">
-                <label for="assembly">assembly</label>
+              <div class="form-group col-xs-2">
                 <select class="form-control" id="assembly" data-bind="options: assemblies, value: chosenAssembly">
                 </select>
               </div>
+              <div class="form-group col-xs-2">
               <button type="submit" class="btn btn-primary" data-bind="enable: chosenAssembly">
                 <span class="glyphicon glyphicon-hdd"></span> Search Database</button>
+              </div>
+              <div class="form-group col-xs-2" data-bind="visible: loading_regulators">
+                <p class="text-center">Loading regulators...</p>
+                </select>
+              </div>
+             </div>
             </form>
           </div>
         </div>

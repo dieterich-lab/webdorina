@@ -11,6 +11,7 @@ function Regulator(name, data) {
 function DoRiNAViewModel(net) {
     var self = this;
     self.retry_after = 1000;
+    self.loading_regulators = ko.observable(false);
     self.clades = ko.observableArray([]);
     self.genomes = ko.observableArray([]);
     self.assemblies = ko.observableArray([]);
@@ -31,7 +32,7 @@ function DoRiNAViewModel(net) {
 
     self.more_results = ko.observable(false);
     self.offset = ko.observable(0);
-    self.pending = ko.observable(true);
+    self.pending = ko.observable(false);
 
     self.genes = ko.observable('');
     self.match_a = ko.observable('any');
@@ -106,11 +107,15 @@ function DoRiNAViewModel(net) {
     };
 
     self.show_simple_search = function() {
-        self.get_regulators(self.chosenClade(), self.chosenGenome(),
-                            self.chosenAssembly()).then(function() {
-            $('#chooseDatabase').collapse('hide');
-            $('#search').collapse('show');
-        });
+        self.loading_regulators(true);
+        setTimeout(function() {
+            self.get_regulators(self.chosenClade(), self.chosenGenome(),
+                                self.chosenAssembly()).then(function() {
+                $('#chooseDatabase').collapse('hide');
+                $('#search').collapse('show');
+                self.loading_regulators(false);
+            });
+        }, 10);
     };
 
     self.run_search = function(keep_data) {

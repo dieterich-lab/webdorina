@@ -53,17 +53,26 @@ def list_assemblies(clade, genome):
 
 @app.route('/regulators/<clade>/<genome>/<assembly>')
 def list_regulators(clade, genome, assembly):
-    available_regulators = utils.get_regulators(datadir=datadir)
-    if not clade in available_regulators:
-        return jsonify(dict(clade=''))
-    if not genome in available_regulators[clade]:
-        return jsonify(dict(clade=clade, genome=''))
-    if not assembly in available_regulators[clade][genome]:
-        return jsonify(dict(clade=clade, genome=genome, assembly=''))
 
-    regulators = {}
-    for key, val in available_regulators[clade][genome][assembly].items():
-        regulators[key] = val
+    cache_key = "regulators:{0}:{1}:{2}".format(clade,genome,assembly)
+    if redis_store.exists(cache_key):
+        regulators = json.loads(redis_store.get(cache_key))
+    else:
+        available_regulators = utils.get_regulators(datadir=datadir)
+        if not clade in available_regulators:
+            return jsonify(dict(clade=''))
+        if not genome in available_regulators[clade]:
+            return jsonify(dict(clade=clade, genome=''))
+        if not assembly in available_regulators[clade][genome]:
+            return jsonify(dict(clade=clade, genome=genome, assembly=''))
+
+        regulators = {}
+        for key, val in available_regulators[clade][genome][assembly].items():
+            regulators[key] = val
+
+
+        redis_store.set(cache_key, json.dumps(regulators))
+        redis_store.expire(cache_key, 3600)
 
     return jsonify(regulators)
 
