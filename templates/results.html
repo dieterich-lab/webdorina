@@ -13,6 +13,7 @@
               </div>
             </div>
 
+            <div id="table-wrapper">
             <table class="table table-striped" id="result_table">
               <thead>
                 <tr>
@@ -37,6 +38,7 @@
                 </tr>
               </tbody>
             </table>
+            </div>
             <div class="row" data-bind="visible: pending">
               <div class="col-md-3 col-md-offset-3">
                 <img src="{{url_for('static', filename='loading.gif')}}" alt="loading..." />
