@@ -11,7 +11,9 @@ import json
 # basic doRiNA settings
 datadir = path.join(path.dirname(__file__), 'test', 'data')
 #datadir = "/data/projects/doRiNA2/"
-RESULT_TTL = 60
+# store results for 1 day
+RESULT_TTL = 86400
+REGULATORS_TTL = 3600
 MAX_RESULTS = 100
 
 app = Flask(__name__)
@@ -72,7 +74,7 @@ def list_regulators(clade, genome, assembly):
 
 
         redis_store.set(cache_key, json.dumps(regulators))
-        redis_store.expire(cache_key, 3600)
+        redis_store.expire(cache_key, REGULATORS_TTL)
 
     return jsonify(regulators)
 
