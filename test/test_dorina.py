@@ -170,42 +170,13 @@ class DorinaTestCase(TestCase):
         rv = self.client.get('/')
         assert "doRiNA" in rv.data
 
-    def test_list_clades(self):
-        '''Test list_clades()'''
-        rv = self.client.get('/clades')
-        self.assertEqual(rv.json, dict(clades=['mammals', 'nematodes']))
-
-    def test_list_genomes(self):
-        '''Test list_genomes()'''
-        rv = self.client.get('/genomes/nematodes')
-        self.assertEqual(rv.json, dict(clade='nematodes', genomes=['c_elegans']))
-        rv = self.client.get('/genomes/mammals')
-        self.assertEqual(rv.json, dict(clade='mammals', genomes=['h_sapiens', 'm_musculus']))
-        rv = self.client.get('/genomes/plants')
-        self.assertEqual(rv.json, dict(clade=''))
-
-    def test_list_assemblies(self):
-        '''Test list_assemblies()'''
-        rv = self.client.get('/assemblies/nematodes/c_elegans')
-        self.assertEqual(rv.json, dict(clade='nematodes', genome='c_elegans', assemblies=['ce6']))
-        rv = self.client.get('/assemblies/mammals/h_sapiens')
-        self.assertEqual(rv.json, dict(clade='mammals', genome='h_sapiens', assemblies=['hg19']))
-        rv = self.client.get('/assemblies/plants/a_thaliana')
-        self.assertEqual(rv.json, dict(clade=''))
-        rv = self.client.get('/assemblies/mammals/r_norvegicus')
-        self.assertEqual(rv.json, dict(clade='mammals', genome=''))
-
     def test_list_regulators(self):
         '''Test list_regulators()'''
-        expected = utils.get_regulators(datadir=webdorina.datadir)['mammals']['h_sapiens']['hg19']
-        rv = self.client.get('/regulators/mammals/h_sapiens/hg19')
+        expected = utils.get_regulators(datadir=webdorina.datadir)['h_sapiens']['hg19']
+        rv = self.client.get('/regulators/hg19')
         self.assertDictEqual(rv.json, expected)
-        rv = self.client.get('/regulators/plants/a_thaliana/at3')
-        self.assertEqual(rv.json, dict(clade=''))
-        rv = self.client.get('/regulators/mammals/r_norvegicus/rn3')
-        self.assertEqual(rv.json, dict(clade='mammals', genome=''))
-        rv = self.client.get('/regulators/mammals/h_sapiens/hg17')
-        self.assertEqual(rv.json, dict(clade='mammals', genome='h_sapiens', assembly=''))
+        rv = self.client.get('/regulators/at3')
+        self.assertEqual(rv.json, dict())
 
     def test_search_nothing_cached(self):
         '''Test search() with nothing in cache'''

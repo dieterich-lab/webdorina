@@ -21,60 +21,48 @@ redis_store = Redis(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', genomes=_list_genomes(), assemblies=_list_assemblies())
 
 
-@app.route('/clades')
-def list_clades():
+def _list_genomes():
     available_genomes = utils.get_genomes(datadir=datadir)
-    clades = available_genomes.keys()
-    return jsonify(dict(clades=clades))
+    genome_list = available_genomes.values()
+    for g in genome_list:
+        del g['assemblies']
+    genome_list.sort(lambda x,y: cmp(x['weight'], y['weight']), reverse=True)
+    genome_json = json.dumps(genome_list)
+    return genome_json
 
 
-@app.route('/genomes/<clade>')
-def list_genomes(clade):
+def _list_assemblies():
     available_genomes = utils.get_genomes(datadir=datadir)
-    if not clade in available_genomes:
-        return jsonify(dict(clade=''))
-    genomes = available_genomes[clade].keys()
-    genomes.sort()
-    return jsonify(dict(clade=clade, genomes=genomes))
+    assemblies = []
+    for g in available_genomes.values():
+        for key, val in g['assemblies'].items():
+            val['id'] = key
+            val['weight'] = int(key[2:])
+            val['genome'] = g['id']
+            assemblies.append(val)
+
+    return json.dumps(assemblies)
 
 
-@app.route('/assemblies/<clade>/<genome>')
-def list_assemblies(clade, genome):
-    available_genomes = utils.get_genomes(datadir=datadir)
-    if not clade in available_genomes:
-        return jsonify(dict(clade=''))
-    if not genome in available_genomes[clade]:
-        return jsonify(dict(clade=clade, genome=''))
-    assemblies = available_genomes[clade][genome].keys()
-    assemblies.sort()
-    return jsonify(dict(clade=clade, genome=genome, assemblies=assemblies))
+@app.route('/regulators/<assembly>')
+def list_regulators(assembly):
 
-
-@app.route('/regulators/<clade>/<genome>/<assembly>')
-def list_regulators(clade, genome, assembly):
-
-    cache_key = "regulators:{0}:{1}:{2}".format(clade,genome,assembly)
+    cache_key = "regulators:{0}".format(assembly)
     if redis_store.exists(cache_key):
         regulators = json.loads(redis_store.get(cache_key))
     else:
-        available_regulators = utils.get_regulators(datadir=datadir)
-        if not clade in available_regulators:
-            return jsonify(dict(clade=''))
-        if not genome in available_regulators[clade]:
-            return jsonify(dict(clade=clade, genome=''))
-        if not assembly in available_regulators[clade][genome]:
-            return jsonify(dict(clade=clade, genome=genome, assembly=''))
-
         regulators = {}
-        for key, val in available_regulators[clade][genome][assembly].items():
-            regulators[key] = val
+        available_regulators = utils.get_regulators(datadir=datadir)
+        for genome in available_regulators:
+            if assembly in available_regulators[genome]:
+                for key, val in available_regulators[genome][assembly].items():
+                    regulators[key] = val
 
-
-        redis_store.set(cache_key, json.dumps(regulators))
-        redis_store.expire(cache_key, REGULATORS_TTL)
+                redis_store.set(cache_key, json.dumps(regulators))
+                redis_store.expire(cache_key, REGULATORS_TTL)
 
     return jsonify(regulators)
 

@@ -1,23 +1,8 @@
-function Regulator(name, data) {
-    var self = this;
-
-    self.name = name;
-    self.summary = data.summary;
-    self.description = data.description;
-    self.methods = data.methods;
-    self.references = data.references;
-}
-
 function DoRiNAViewModel(net) {
     var self = this;
     self.retry_after = 1000;
     self.loading_regulators = ko.observable(false);
-    self.clades = ko.observableArray([]);
-    self.genomes = ko.observableArray([]);
-    self.assemblies = ko.observableArray([]);
 
-    self.chosenClade = ko.observable();
-    self.chosenGenome = ko.observable();
     self.chosenAssembly = ko.observable();
 
     self.rbps = ko.observableArray([]);
@@ -62,46 +47,16 @@ function DoRiNAViewModel(net) {
         }
     }, self);
 
-    self.get_clades = function() {
-        return net.getJSON("clades").then(function(data) {
-            self.clades.removeAll();
-            for (var i in data.clades) {
-                self.clades.push(data.clades[i]);
-            }
-        });
-    };
-
-    self.get_genomes = function(clade) {
-        return net.getJSON("genomes/" + clade).then(function(data) {
-            self.genomes.removeAll();
-            for (var i in data.genomes) {
-                self.genomes.push(data.genomes[i]);
-            }
-        });
-    };
-
-    self.get_assemblies = function(clade, genome) {
-        return net.getJSON("assemblies/" + clade + "/" + genome).then(function(data) {
-            self.assemblies.removeAll();
-            for (var i in data.assemblies) {
-                self.assemblies.push(data.assemblies[i]);
-            }
-        });
-    };
-
-    self.get_regulators = function(clade, genome, assembly) {
-        var search_path = "regulators/";
-        search_path += clade + "/";
-        search_path += genome + "/";
-        search_path += assembly;
+    self.get_regulators = function(assembly) {
+        var search_path = "regulators/" + assembly;
         return net.getJSON(search_path).then(function(data) {
             self.rbps.removeAll();
             self.mirnas.removeAll();
             for (var i in data['RBP']) {
-                self.rbps.push(new Regulator(i, data['RBP'][i]));
+                self.rbps.push(data['RBP'][i]);
             }
             for (var i in data['miRNA']) {
-                self.mirnas.push(new Regulator(i, data['miRNA'][i]));
+                self.mirnas.push(data['miRNA'][i]);
             }
         });
     };
@@ -109,10 +64,44 @@ function DoRiNAViewModel(net) {
     self.show_simple_search = function() {
         self.loading_regulators(true);
         setTimeout(function() {
-            self.get_regulators(self.chosenClade(), self.chosenGenome(),
-                                self.chosenAssembly()).then(function() {
+            self.get_regulators(self.chosenAssembly()).then(function() {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
+                $('#rbps').selectize({
+                    options: self.rbps(),
+                    create: false,
+                    valueField: 'id',
+                    labelField: 'summary',
+                    searchField: 'summary',
+                    render: {
+                        option: function(item, escape) {
+                            return '<div><span class="regulator">' + escape(item.summary) +
+                                   '</span><br><span class="description">' + escape(item.description) +
+                                   '</span></div>';
+                        }
+                    }
+                });
+                $('#mirnas').selectize({
+                    options: self.mirnas(),
+                    create: false,
+                    valueField: 'id',
+                    labelField: 'summary',
+                    searchField: 'summary'
+                });
+                $('#rbps_setb').selectize({
+                    options: self.rbps(),
+                    create: false,
+                    valueField: 'id',
+                    labelField: 'summary',
+                    searchField: 'summary'
+                });
+                $('#mirnas_setb').selectize({
+                    options: self.mirnas(),
+                    create: false,
+                    valueField: 'id',
+                    labelField: 'summary',
+                    searchField: 'summary'
+                });
                 self.loading_regulators(false);
             });
         }, 10);
@@ -124,10 +113,10 @@ function DoRiNAViewModel(net) {
         var mirnas = self.selected_mirnas();
 
         for (var i in rbps) {
-            regulators.push(rbps[i].name);
+            regulators.push(rbps[i]);
         }
         for (var i in mirnas) {
-            regulators.push(mirnas[i].name);
+            regulators.push(mirnas[i]);
         }
 
         var search_data = {
@@ -148,10 +137,10 @@ function DoRiNAViewModel(net) {
             var mirnas = self.selected_mirnas_setb();
 
             for (var i in rbps) {
-                regulators_setb.push(rbps[i].name);
+                regulators_setb.push(rbps[i]);
             }
             for (var i in mirnas) {
-                regulators_setb.push(mirnas[i].name);
+                regulators_setb.push(mirnas[i]);
             }
 
             search_data.set_b = regulators_setb;
@@ -194,10 +183,10 @@ function DoRiNAViewModel(net) {
     };
 
     self.clear_selections = function() {
-        self.selected_mirnas.removeAll();
-        self.selected_rbps.removeAll();
-        self.selected_mirnas_setb.removeAll();
-        self.selected_rbps_setb.removeAll();
+        $('#rbps')[0].selectize.clear();
+        $('#mirnas')[0].selectize.clear();
+        $('#rbps_setb')[0].selectize.clear();
+        $('#mirnas_setb')[0].selectize.clear();
     };
 
     self.candidate_genes = ko.computed(function() {

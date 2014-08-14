@@ -1,4 +1,4 @@
-      <div class="panel panel-default">
+      <div class="panel panel-default" style="overflow: visible">
         <div class="panel-heading">
           <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#accordion" href="#chooseDatabase">Choose a doRiNA database</a>
@@ -9,26 +9,12 @@
             <form class="form-inline" role="form" data-bind="submit: show_simple_search">
               <div class="row">
                 <div class="form-group col-xs-2">
-                  <label for="clade">clade</label>
-                </div>
-                <div class="form-group col-xs-2">
-                  <label for="genome">genome</label>
-                </div>
-                <div class="form-group col-xs-2">
-                  <label for="assembly">assembly</label>
+                  <label for="assembly">Assembly</label>
                 </div>
               </div>
               <div class="row">
-              <div class="form-group col-xs-2">
-                <select class="form-control" id="clade" data-bind="options: clades, value: chosenClade">
-                </select>
-              </div>
-              <div class="form-group col-xs-2">
-                <select class="form-control" id="genome" data-bind="options: genomes, value: chosenGenome">
-                </select>
-              </div>
-              <div class="form-group col-xs-2">
-                <select class="form-control" id="assembly" data-bind="options: assemblies, value: chosenAssembly">
+              <div class="form-group col-xs-6">
+                <select class="form-control" id="assembly" data-bind="value: chosenAssembly" placeholder="Select assembly...">
                 </select>
               </div>
               <div class="form-group col-xs-2">

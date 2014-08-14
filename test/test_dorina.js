@@ -26,68 +26,34 @@ var FakeNet = function() {
         deferred.resolve(return_data);
         return deferred.promise();
     };
+
+    self.ajax = function(options) {
+        var deferred = $.Deferred();
+        var return_data = self.return_data.shift();
+        var exp_url = self.expected_url.shift();
+        var exp_data = self.expected_data.shift();
+
+        options.url.should.eql(exp_url);
+        options.data.should.eql(exp_data);
+
+        deferred.reslove(return_data);
+        return deferred.promise();
+    };
 };
 
 
 describe('DoRiNAViewModel', function() {
-    var fn = new FakeNet();
+    var fn;
     var vm;
 
     beforeEach(function() {
-        vm  = new DoRiNAViewModel(fn);
+        fn = new FakeNet();
+        vm = new DoRiNAViewModel(fn);
     });
 
     afterEach(function() {
+        fn = undefined;
         vm = undefined;
-    });
-
-
-    describe('#clades', function() {
-        it('should be an empty array on instantiation', function() {
-            vm.clades().should.have.length(0);
-        });
-
-        it('should not be empty after getting the clades', function() {
-            fn.expected_url.push('clades');
-            fn.return_data.push({'clades': ['mammals']});
-
-            return vm.get_clades().then(function() {
-                vm.clades().should.have.length(1);
-            });
-        });
-    });
-
-
-    describe('#genomes', function() {
-        it('should be an empty array on instantiation', function() {
-            vm.genomes().should.have.length(0);
-        });
-
-        it('should not be empty after getting the genomes', function() {
-            fn.expected_url.push('genomes/mammals');
-            fn.return_data.push({'clade': 'mammals', 'genomes': ['h_sapiens']});
-
-            return vm.get_genomes('mammals').then(function() {
-                vm.genomes().should.have.length(1);
-            });
-        });
-    });
-
-
-    describe('#assemblies', function() {
-        it('should be an empty array on instantiation', function() {
-            vm.assemblies().should.have.length(0);
-        });
-
-        it('should not be empty after getting the genomes', function() {
-            fn.expected_url.push('assemblies/mammals/h_sapiens');
-            fn.return_data.push({'clade': 'mammals', 'genome': 'h_sapiens',
-                                 'assemblies': ['hg19']});
-
-            return vm.get_assemblies('mammals', 'h_sapiens').then(function() {
-                vm.assemblies().should.have.length(1);
-            });
-        });
     });
 
 
@@ -98,10 +64,10 @@ describe('DoRiNAViewModel', function() {
         });
 
         it('should have miRNAs and RBPs loaded after getting the regulators', function() {
-            fn.expected_url.push('regulators/mammals/h_sapiens/hg19');
+            fn.expected_url.push('regulators/hg19');
             fn.return_data.push({'RBP': {'fake_rbp': {} }, 'miRNA': {'fake_mirna': {} } });
 
-            return vm.get_regulators('mammals', 'h_sapiens', 'hg19').then(function() {
+            return vm.get_regulators('hg19').then(function() {
                 vm.mirnas().should.have.length(1);
                 vm.rbps().should.have.length(1);
             });
@@ -110,15 +76,6 @@ describe('DoRiNAViewModel', function() {
 
 
     describe('#search', function() {
-        var fake_rbp = new Regulator('fake_rbp',
-            {'summary': 'fake rpb', 'description': 'A fake RBP',
-             'methods': 'Fake methods for RBP',
-            'references': 'Fake references for RBP'});
-        var fake_mirna = new Regulator('fake_mirna',
-            {'summary': 'fake mirna', 'description': 'A fake miRNA',
-             'methods': 'Fake methods for miRNA',
-            'references': 'Fake references for miRNA'});
-
         it('should use the selected set_a values to build the post request', function() {
             fn.expected_url.push('search');
             fn.return_data.push({'state': 'done'});
@@ -130,8 +87,8 @@ describe('DoRiNAViewModel', function() {
                 'genes': 'all',
                 'offset': 0
             });
-            vm.selected_rbps().push(fake_rbp);
-            vm.selected_mirnas().push(fake_mirna);
+            vm.selected_rbps().push('fake_rbp');
+            vm.selected_mirnas().push('fake_mirna');
             vm.chosenAssembly('hg19');
             vm.region_a('CDS');
 
@@ -153,8 +110,8 @@ describe('DoRiNAViewModel', function() {
                 'region_b': 'CDS',
                 'combinatorial_op': 'or'
             });
-            vm.selected_rbps().push(fake_rbp);
-            vm.selected_mirnas_setb().push(fake_mirna);
+            vm.selected_rbps().push('fake_rbp');
+            vm.selected_mirnas_setb().push('fake_mirna');
             vm.chosenAssembly('hg19');
             vm.region_a('CDS');
             vm.region_b('CDS');
@@ -184,16 +141,14 @@ describe('DoRiNAViewModel', function() {
                 'genes': 'all',
                 'offset': 0
             });
-            vm.selected_rbps().push(fake_rbp);
-            vm.selected_mirnas().push(fake_mirna);
+            vm.selected_rbps().push('fake_rbp');
+            vm.selected_mirnas().push('fake_mirna');
             vm.chosenAssembly('hg19');
             vm.retry_after = 1;
 
-            vm.pending().should.be.true;
             vm.run_search(false);
             /* wait for the retry to fire */
             setTimeout(function() {
-                vm.pending().should.be.false;
                 fn.expected_url.should.have.length(0);
                 done();
             }, 2);
@@ -215,8 +170,8 @@ describe('DoRiNAViewModel', function() {
                 'genes': 'all',
                 'offset': 0
             });
-            vm.selected_rbps().push(fake_rbp);
-            vm.selected_mirnas().push(fake_mirna);
+            vm.selected_rbps().push('fake_rbp');
+            vm.selected_mirnas().push('fake_mirna');
             vm.chosenAssembly('hg19');
 
             vm.run_search(false);
@@ -238,8 +193,8 @@ describe('DoRiNAViewModel', function() {
                 'genes': 'all',
                 'offset': 0
             });
-            vm.selected_rbps().push(fake_rbp);
-            vm.selected_mirnas().push(fake_mirna);
+            vm.selected_rbps().push('fake_rbp');
+            vm.selected_mirnas().push('fake_mirna');
             vm.chosenAssembly('hg19');
 
             vm.run_search(false);
