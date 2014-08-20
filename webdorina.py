@@ -67,6 +67,17 @@ def list_regulators(assembly):
     return jsonify(regulators)
 
 
+@app.route('/status/<uuid>')
+def status(uuid):
+    key = "sessions:{0}".format(uuid)
+    if redis_store.exists(key):
+        status = json.loads(redis_store.get(key))
+    else:
+        status = dict(uuid=uuid, state='expired')
+
+    return jsonify(status)
+
+
 @app.route('/search', methods=['POST'])
 def search():
     query = {}

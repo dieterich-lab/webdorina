@@ -469,3 +469,14 @@ Called fake_store.lrange(
 Called fake_store.llen(
     '{0}')'''.format(key, key_pending, full_key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
         assert_same_trace(self.tt, expected_trace)
+
+
+    def test_status(self):
+        '''Test status()'''
+        got = self.client.get('/status/invalid')
+        self.assertEqual(got.json, dict(uuid='invalid', state='expired'))
+
+        valid = dict(uuid='valid', state='done')
+        self.r.set('sessions:valid', json.dumps(valid))
+        got = self.client.get('/status/valid')
+        self.assertEqual(got.json, valid)
