@@ -2,6 +2,7 @@
 import fakeredis
 import json
 import unittest
+import uuid
 from os import path
 from flask.ext.testing import TestCase
 from dorina import utils
@@ -74,7 +75,7 @@ class RunTestCase(unittest.TestCase):
               'location': 'chr1:2350-2360'}
         ]
 
-        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query)
+        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
         self.return_value.sort(key=lambda x: x['score'], reverse=True)
         serialised_result = [ json.dumps(i) for i in self.return_value ]
 
@@ -84,6 +85,12 @@ class RunTestCase(unittest.TestCase):
         self.assertEqual(3, self.r.llen('results:fake_key'))
         self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
 
+        self.assertTrue(self.r.exists('sessions:fake-uuid'))
+        self.assertEqual(json.loads(self.r.get('sessions:fake-uuid')), dict(uuid='fake-uuid', state='done'))
+
+        self.assertTrue(self.r.exists('results:sessions:fake-uuid'))
+        self.assertEqual(json.loads(self.r.get('results:sessions:fake-uuid')), dict(redirect="results:fake_key"))
+
     def test_run_analyse_no_results(self):
         '''Test run_analyze() when no results are returned'''
         query = dict(genome='hg19', set_a=['scifi'], match_a='any',
@@ -91,7 +98,7 @@ class RunTestCase(unittest.TestCase):
 
         self.return_value = []
 
-        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query)
+        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
         expected_result = [{
             'data_source': 'no results found',
             'score': -1,
@@ -137,7 +144,8 @@ class RunTestCase(unittest.TestCase):
         for d in data:
             self.r.rpush('results:fake_full_key', json.dumps(d))
 
-        run.filter([u'gene01.01', 'gene01.02'], 'results:fake_full_key', 'results:fake_key', 'results:fake_key_pending')
+        run.filter([u'gene01.01', 'gene01.02'], 'results:fake_full_key',
+                   'results:fake_key', 'results:fake_key_pending', 'fake-uuid')
 
         data.pop()
         serialised_result = [ json.dumps(i) for i in data ]
@@ -145,6 +153,8 @@ class RunTestCase(unittest.TestCase):
         self.assertTrue(self.r.exists('results:fake_key'))
         self.assertEqual(2, self.r.llen('results:fake_key'))
         self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+
+        self.assertTrue(self.r.exists('results:sessions:fake-uuid'))
 
 
 class DorinaTestCase(TestCase):
@@ -160,6 +170,8 @@ class DorinaTestCase(TestCase):
         self.r = webdorina.redis_store.connection
         fake_queue = Mock('webdorina.Queue', tracker=self.tt)
         mock('webdorina.Queue', tracker=self.tt, returns=fake_queue)
+        # use tracker=None to not track uuid4() calls
+        mock('uuid.uuid4', tracker=None, returns="fake-uuid")
 
     def tearDown(self):
         self.r.flushdb()
@@ -192,15 +204,22 @@ class DorinaTestCase(TestCase):
         # Now a query should be pending
         self.assertTrue(self.r.exists(key_pending))
 
+        # A session should have been created as well
+        self.assertTrue(self.r.exists('sessions:fake-uuid'))
+
         ttl = self.r.ttl(key_pending)
         self.assertGreater(ttl, 0)
         self.assertLessEqual(ttl, webdorina.RESULT_TTL)
 
-        self.assertEqual(rv.json, dict(state="pending"))
+        self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
     '{0}')
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "pending", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {4})
 Called fake_store.get(
     '{1}')
 Called fake_store.set(
@@ -216,9 +235,9 @@ Called webdorina.Queue.enqueue(
     '{2}',
     '{0}',
     '{1}',
-    {{{3}}})'''.format(key, key_pending, webdorina.datadir,
-        "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi'], 'set_b': None, 'region_b': u'any'"
-            )
+    {{{3}}},
+    'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
+        "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi'], 'set_b': None, 'region_b': u'any'", webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -235,13 +254,17 @@ Called webdorina.Queue.enqueue(
         rv = self.client.post('/search', data=data)
 
         # Should return "pending"
-        self.assertEqual(rv.json, dict(state="pending"))
+        self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
     '{0}')
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "pending", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {2})
 Called fake_store.get(
-    '{1}')'''.format(key, key_pending)
+    '{1}')'''.format(key, key_pending, webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -261,6 +284,9 @@ Called fake_store.get(
         data['set_a[]']=['scifi']
         rv = self.client.post('/search', data=data)
 
+        self.assertEqual(rv.json, dict(state='done', uuid="fake-uuid"))
+
+        rv = self.client.get('/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
@@ -270,13 +296,27 @@ Called fake_store.get(
 Called fake_store.expire(
     '{0}',
     {1})
+Called fake_store.set(
+    'sessions:{3}',
+    '{{"state": "done", "uuid": "{3}"}}')
+Called fake_store.expire('sessions:{3}', {4})
+Called fake_store.set(
+    'results:sessions:{3}',
+    {5!r})
+Called fake_store.expire('results:sessions:{3}', {4})
+Called fake_store.exists('results:sessions:{3}')
+Called fake_store.get('results:sessions:{3}')
+Called fake_store.expire(
+    '{0}',
+    {1})
 Called fake_store.lrange(
     '{0}',
     0,
     {2})
 Called fake_store.llen(
     '{0}')
-    '''.format(key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
+    '''.format(key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1,
+               'fake-uuid', webdorina.SESSION_TTL, json.dumps(dict(redirect=key)))
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -297,11 +337,15 @@ Called fake_store.llen(
         self.assertGreater(ttl, 0)
         self.assertLessEqual(ttl, webdorina.RESULT_TTL)
 
-        self.assertEqual(rv.json, dict(state="pending"))
+        self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
     '{0}')
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "pending", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {4})
 Called fake_store.get(
     '{1}')
 Called fake_store.set(
@@ -317,9 +361,10 @@ Called webdorina.Queue.enqueue(
     '{2}',
     '{0}',
     '{1}',
-    {{{3}}})'''.format(key, key_pending, webdorina.datadir,
-        "'genes': [u'all'], 'match_a': u'all', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'"
-            )
+    {{{3}}},
+    'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
+        "'genes': [u'all'], 'match_a': u'all', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'",
+        webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -341,11 +386,15 @@ Called webdorina.Queue.enqueue(
         self.assertGreater(ttl, 0)
         self.assertLessEqual(ttl, webdorina.RESULT_TTL)
 
-        self.assertEqual(rv.json, dict(state="pending"))
+        self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
         expected_trace = '''Called fake_store.exists(
     '{0}')
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "pending", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {4})
 Called fake_store.get(
     '{1}')
 Called fake_store.set(
@@ -361,9 +410,10 @@ Called webdorina.Queue.enqueue(
     '{2}',
     '{0}',
     '{1}',
-    {{{3}}})'''.format(key, key_pending, webdorina.datadir,
-        "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'CDS', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'"
-            )
+    {{{3}}},
+    'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
+        "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'CDS', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'",
+        webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -382,6 +432,9 @@ Called webdorina.Queue.enqueue(
         data['set_a[]']=['scifi']
         rv = self.client.post('/search', data=data)
 
+        self.assertEqual(rv.json, dict(state='done', uuid="fake-uuid"))
+
+        rv = self.client.get('/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
@@ -391,13 +444,27 @@ Called webdorina.Queue.enqueue(
 Called fake_store.expire(
     '{0}',
     {1})
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "done", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {3})
+Called fake_store.set(
+    'results:sessions:fake-uuid',
+    {4!r})
+Called fake_store.expire('results:sessions:fake-uuid', {3})
+Called fake_store.exists('results:sessions:fake-uuid')
+Called fake_store.get('results:sessions:fake-uuid')
+Called fake_store.expire(
+    '{0}',
+    {1})
 Called fake_store.lrange(
     '{0}',
     0,
     {2})
 Called fake_store.llen(
     '{0}')
-    '''.format(key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
+    '''.format(key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1,
+               webdorina.SESSION_TTL, json.dumps(dict(redirect=key)))
         assert_same_trace(self.tt, expected_trace)
 
 
@@ -424,14 +491,15 @@ Called fake_store.llen(
         # Now a query should be pending
         self.assertTrue(self.r.exists(key_pending))
 
-        self.assertEqual(rv.json, dict(state="pending"))
+        self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # now pretend the filtering finished
         results.pop()
+        self.r.set('results:sessions:fake-uuid', json.dumps(dict(redirect=key)))
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
-        rv = self.client.post('/search', data=data)
+        rv = self.client.get('/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
@@ -449,6 +517,10 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "pending", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {5})
 Called webdorina.Queue(
     connection=<fakeredis.FakeStrictRedis object at ...>)
 Called webdorina.Queue.enqueue(
@@ -456,9 +528,10 @@ Called webdorina.Queue.enqueue(
     [u'fake01'],
     '{2}',
     '{0}',
-    '{1}')
-Called fake_store.exists(
-    '{0}')
+    '{1}',
+    'fake-uuid')
+Called fake_store.exists('results:sessions:fake-uuid')
+Called fake_store.get('results:sessions:fake-uuid')
 Called fake_store.expire(
     '{0}',
     {3})
@@ -467,7 +540,8 @@ Called fake_store.lrange(
     0,
     {4})
 Called fake_store.llen(
-    '{0}')'''.format(key, key_pending, full_key, webdorina.RESULT_TTL, webdorina.MAX_RESULTS - 1)
+    '{0}')'''.format(key, key_pending, full_key, webdorina.RESULT_TTL,
+                     webdorina.MAX_RESULTS - 1, webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
 
 
