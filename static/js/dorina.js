@@ -2,6 +2,7 @@ function DoRiNAViewModel(net) {
     var self = this;
     self.retry_after = 1000;
     self.loading_regulators = ko.observable(false);
+    self.uuid = ko.observable();
 
     self.chosenAssembly = ko.observable();
 
@@ -154,13 +155,31 @@ function DoRiNAViewModel(net) {
             self.results.removeAll();
         }
         return net.post('search', search_data).then(function(data) {
+            self.poll_result(data.uuid);
+        });
+    };
+
+    self.poll_result = function(uuid) {
+        var url = 'status/' + uuid;
+        net.getJSON(url).then(function(data) {
             if (data.state == 'pending') {
                 setTimeout(function() {
-                    self.run_search(keep_data);
+                    self.poll_result(uuid);
                 }, self.retry_after);
                 return;
             }
+            return self.get_results(uuid);
+        });
+    };
 
+
+    self.get_results = function(uuid, more) {
+        var url = 'result/' + uuid;
+        if (more) {
+            url += '/' + self.offset();
+        }
+
+        net.getJSON(url).then(function(data) {
             self.pending(false);
             self.more_results(data.more_results);
             for (var i in data.results) {
@@ -168,6 +187,7 @@ function DoRiNAViewModel(net) {
             }
             if (data.more_results && data.next_offset) {
                 self.offset(data.next_offset);
+                self.uuid(uuid);
             }
         });
     };
@@ -180,6 +200,7 @@ function DoRiNAViewModel(net) {
         self.region_a('any');
         self.region_b('any');
         self.genes('');
+        self.uuid('');
     };
 
     self.clear_selections = function() {
@@ -207,7 +228,7 @@ function DoRiNAViewModel(net) {
     };
 
     self.load_more_results = function() {
-        self.run_search(true);
+        self.get_results(self.uuid(), true);
     };
 
     self.new_search = function() {

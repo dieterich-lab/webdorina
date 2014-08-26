@@ -78,7 +78,7 @@ describe('DoRiNAViewModel', function() {
     describe('#search', function() {
         it('should use the selected set_a values to build the post request', function() {
             fn.expected_url.push('search');
-            fn.return_data.push({'state': 'done'});
+            fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
                 'assembly': 'hg19',
@@ -87,6 +87,9 @@ describe('DoRiNAViewModel', function() {
                 'genes': 'all',
                 'offset': 0
             });
+            vm.poll_result = function(uuid) {
+                uuid.should.eql('fake-uuid');
+            };
             vm.selected_rbps().push('fake_rbp');
             vm.selected_mirnas().push('fake_mirna');
             vm.chosenAssembly('hg19');
@@ -97,7 +100,7 @@ describe('DoRiNAViewModel', function() {
 
         it('should use the selected set_a and set_b values to build the post request', function() {
             fn.expected_url.push('search');
-            fn.return_data.push({'state': 'done'});
+            fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
             fn.expected_data.push({
                 'set_a': ['fake_rbp'],
                 'assembly': 'hg19',
@@ -110,6 +113,9 @@ describe('DoRiNAViewModel', function() {
                 'region_b': 'CDS',
                 'combinatorial_op': 'or'
             });
+            vm.poll_result = function(uuid) {
+                uuid.should.eql('fake-uuid');
+            };
             vm.selected_rbps().push('fake_rbp');
             vm.selected_mirnas_setb().push('fake_mirna');
             vm.chosenAssembly('hg19');
@@ -119,34 +125,20 @@ describe('DoRiNAViewModel', function() {
 
             return vm.run_search(false);
         });
+    });
 
-        it('should retry the search if state=pending', function(done) {
-            fn.expected_url.push('search');
-            fn.expected_url.push('search');
+    describe('#poll_result', function() {
+        it('should keep polling while state=pending', function(done) {
+            fn.expected_url.push('status/fake-uuid');
+            fn.expected_url.push('status/fake-uuid');
             fn.return_data.push({'state': 'pending'});
             fn.return_data.push({'state': 'done'});
-            fn.expected_data.push({
-                'set_a': ['fake_rbp', 'fake_mirna'],
-                'assembly': 'hg19',
-                'match_a': 'any',
-                'region_a': 'any',
-                'genes': 'all',
-                'offset': 0
-            });
-            fn.expected_data.push({
-                'set_a': ['fake_rbp', 'fake_mirna'],
-                'assembly': 'hg19',
-                'match_a': 'any',
-                'region_a': 'any',
-                'genes': 'all',
-                'offset': 0
-            });
-            vm.selected_rbps().push('fake_rbp');
-            vm.selected_mirnas().push('fake_mirna');
-            vm.chosenAssembly('hg19');
             vm.retry_after = 1;
+            vm.get_results = function(uuid) {
+                uuid.should.eql('fake-uuid');
+            };
 
-            vm.run_search(false);
+            vm.poll_result('fake-uuid');
             /* wait for the retry to fire */
             setTimeout(function() {
                 fn.expected_url.should.have.length(0);
@@ -154,52 +146,45 @@ describe('DoRiNAViewModel', function() {
             }, 2);
 
         });
+    });
 
+    describe('#get_results', function() {
         it('should set the offset to the next_offset if there are more results', function() {
-            fn.expected_url.push('search');
+            fn.expected_url.push('result/fake-uuid');
             fn.return_data.push({
                 'state': 'done',
                 'next_offset': 23,
                 'more_results': true
             });
-            fn.expected_data.push({
-                'set_a': ['fake_rbp', 'fake_mirna'],
-                'assembly': 'hg19',
-                'match_a': 'any',
-                'region_a': 'any',
-                'genes': 'all',
-                'offset': 0
-            });
-            vm.selected_rbps().push('fake_rbp');
-            vm.selected_mirnas().push('fake_mirna');
-            vm.chosenAssembly('hg19');
 
-            vm.run_search(false);
+            vm.get_results('fake-uuid');
             vm.offset().should.eql(23);
         });
 
         it('should not set the offset if there are no more results', function() {
-            fn.expected_url.push('search');
+            fn.expected_url.push('result/fake-uuid');
             fn.return_data.push({
                 'state': 'done',
                 'next_offset': 23,
                 'more_results': false
             });
-            fn.expected_data.push({
-                'set_a': ['fake_rbp', 'fake_mirna'],
-                'assembly': 'hg19',
-                'match_a': 'any',
-                'region_a': 'any',
-                'genes': 'all',
-                'offset': 0
-            });
-            vm.selected_rbps().push('fake_rbp');
-            vm.selected_mirnas().push('fake_mirna');
-            vm.chosenAssembly('hg19');
 
-            vm.run_search(false);
+            vm.get_results('fake-uuid');
             vm.offset().should.eql(0);
         });
+
+        it('should get more resuts at the stored offset when instructed', function() {
+            fn.expected_url.push('result/fake-uuid/23');
+            fn.return_data.push({
+                'state': 'done',
+                'next_offset': 42,
+                'more_results': false
+            });
+            vm.offset(23);
+
+            vm.get_results('fake-uuid', true);
+        });
+
     });
 
 
