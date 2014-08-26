@@ -3,6 +3,7 @@ from redis import Redis
 from dorina.run import analyse
 
 def run_analyse(datadir, query_key, query_pending_key, query, uuid):
+    from webdorina import RESULT_TTL
     redis_store = Redis()
     # get rid of the now-unused genes parameter
     query.pop('genes', None)
@@ -26,7 +27,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid):
         redis_store.rpush(query_key, json.dumps(res))
 
 
-    redis_store.expire(query_key, 60)
+    redis_store.expire(query_key, RESULT_TTL)
     redis_store.set('sessions:{0}'.format(uuid), json.dumps(dict(state='done', uuid=uuid)))
     redis_store.set('results:sessions:{0}'.format(uuid), json.dumps(dict(redirect=query_key)))
 
