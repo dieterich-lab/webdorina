@@ -3,7 +3,7 @@ from redis import Redis
 from dorina.run import analyse
 
 def run_analyse(datadir, query_key, query_pending_key, query, uuid):
-    from webdorina import RESULT_TTL
+    from webdorina import RESULT_TTL, SESSION_TTL
     redis_store = Redis()
     # get rid of the now-unused genes parameter
     query.pop('genes', None)
@@ -28,15 +28,15 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid):
 
 
     redis_store.expire(query_key, RESULT_TTL)
-    redis_store.set('sessions:{0}'.format(uuid), json.dumps(dict(state='done', uuid=uuid)))
-    redis_store.set('results:sessions:{0}'.format(uuid), json.dumps(dict(redirect=query_key)))
+    redis_store.setex('sessions:{0}'.format(uuid), SESSION_TTL, json.dumps(dict(state='done', uuid=uuid)))
+    redis_store.setex('results:sessions:{0}'.format(uuid), SESSION_TTL, json.dumps(dict(redirect=query_key)))
 
     redis_store.delete(query_pending_key)
 
 
 def filter(genes, full_query_key, query_key, query_pending_key, uuid):
     """Filter for a given set of gene names"""
-    from webdorina import RESULT_TTL
+    from webdorina import RESULT_TTL, SESSION_TTL
     redis_store = Redis()
 
     full_results = redis_store.lrange(full_query_key, 0, -1)
@@ -48,5 +48,5 @@ def filter(genes, full_query_key, query_key, query_pending_key, uuid):
     redis_store.expire(query_key, RESULT_TTL)
     redis_store.delete(query_pending_key)
 
-    redis_store.set('sessions:{0}'.format(uuid), json.dumps(dict(state='done', uuid=uuid)))
-    redis_store.set('results:sessions:{0}'.format(uuid), json.dumps(dict(redirect=query_key)))
+    redis_store.setex('sessions:{0}'.format(uuid), SESSION_TTL, json.dumps(dict(state='done', uuid=uuid)))
+    redis_store.setex('results:sessions:{0}'.format(uuid), SESSION_TTL, json.dumps(dict(redirect=query_key)))
