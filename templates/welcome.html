@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <title>doRiNA</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-theme.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/selectize.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/selectize.bootstrap3.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body role="document">
+  <div class="container" role="main">
+    <div class="jumbotron" style="margin-top: 5em">
+      <h2 style="margin-bottom: 2em; text-size: 200%">doRiNA <small>a database of RNA interactions in post-transcriptional regulation</small></h2>
+      <form action="{{ url_for('index') }}" method="POST" enctype="multipart/form-data">
+      <div class="row">
+        <div class="col-md-5">
+          <a class="btn btn-primary btn-lg" id="no-upload-go" href="{{ url_for('index') }}">Search</a>
+        </div>
+        <div class="col-md-6 col-md-offset-1">
+            <input type="file" class="btn-lg" title="upload" id="bedfile">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-5">
+          using the curated regulator database
+        </div>
+        <div class="col-md-6 col-md-offset-1">
+          <span id="upload-desc">your own BED file containing regulators.</span>
+          <input class="btn btn-primary btn-lg btn-block" id="upload-go" type="submit" value="Go">
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.file-input.js') }}"></script>
+  <script type="text/javascript">
+    function file_uploaded() {
+        $('#upload-go').show();
+        $('#upload-desc').hide();
+        $('#no-upload-go').removeClass('btn-primary').addClass('btn-default');
+    }
+    $(document).ready(function() {
+        $('#bedfile').on('change', file_uploaded).bootstrapFileInput();
+        $('#upload-go').hide();
+    });
+  </script>
+
+</body>
+</html>

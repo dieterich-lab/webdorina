@@ -23,7 +23,14 @@ app = Flask(__name__)
 redis_store = Redis(app)
 
 @app.route('/')
+def welcome():
+    return render_template('welcome.html')
+
+
+@app.route('/go', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        print "file posted"
     return render_template('index.html', genomes=_list_genomes(), assemblies=_list_assemblies())
 
 
