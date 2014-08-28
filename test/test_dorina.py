@@ -14,7 +14,7 @@ class RedisStore(object):
     def __init__(self, name, tracker=None):
         self.name = name
         self.tt = tracker
-        self.connection = fakeredis.FakeStrictRedis()
+        self.connection = fakeredis.FakeRedis()
 
     def __getattr__(self, attr):
         def wrapped_call(*args, **kwargs):
@@ -27,7 +27,7 @@ class RedisStore(object):
 
 class RunTestCase(unittest.TestCase):
     def setUp(self):
-        run.Redis = fakeredis.FakeStrictRedis
+        run.Redis = fakeredis.FakeRedis
         self.r = fakeredis.FakeStrictRedis()
         self.tt = TraceTracker()
         self.return_value = []
@@ -228,8 +228,7 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
-Called webdorina.Queue(
-    connection=<fakeredis.FakeStrictRedis object at ...>)
+Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
     '{2}',
@@ -354,8 +353,7 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
-Called webdorina.Queue(
-    connection=<fakeredis.FakeStrictRedis object at ...>)
+Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
     '{2}',
@@ -403,8 +401,7 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
-Called webdorina.Queue(
-    connection=<fakeredis.FakeStrictRedis object at ...>)
+Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
     '{2}',
@@ -521,8 +518,7 @@ Called fake_store.set(
     'sessions:fake-uuid',
     '{{"state": "pending", "uuid": "fake-uuid"}}')
 Called fake_store.expire('sessions:fake-uuid', {5})
-Called webdorina.Queue(
-    connection=<fakeredis.FakeStrictRedis object at ...>)
+Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
 Called webdorina.Queue.enqueue(
     <function filter at ...>,
     [u'fake01'],
