@@ -10,9 +10,11 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid):
     result = analyse(datadir=datadir, **query)
     result.sort(key=lambda x: x['score'], reverse=True)
 
-    print "returning %s rows" % len(result)
 
-    if len(result) < 1:
+    num_results = len(result)
+    print "returning %s rows" % num_results
+
+    if num_results < 1:
         result.append({
             'data_source': 'no results found',
             'score': -1,
@@ -22,9 +24,13 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid):
             'strand': '',
             'location': ''
         })
+        num_results += 1
 
-    for res in result:
-        redis_store.rpush(query_key, json.dumps(res))
+    json_results = map(json.dumps, result)
+
+    for i in xrange(0, num_results, 1000):
+        res = json_results[i:i+1000]
+        redis_store.rpush(query_key, *res)
 
 
     redis_store.expire(query_key, RESULT_TTL)
