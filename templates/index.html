@@ -11,8 +11,9 @@
 </head>
 <body role="document">
   <div class="container" role="main">
-    <h1 data-bind="click: new_search">doRiNA <small>a database of RNA interactions in post-transcriptional regulation</small></h1>
-
+    <h1><a href="{{ url_for('welcome') }}" style="color: #000">doRiNA</a>
+      <small>a database of RNA interactions in post-transcriptional regulation</small></h1>
+      {{uuid}}
     <div class="panel-group" id="accordion">
 
       {% include "choose_db.html" %}
@@ -35,7 +36,7 @@
 
     $(document).ready(function() {
         var net = new DoRiNANet();
-        var viewmodel = new DoRiNAViewModel(net);
+        var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
         ko.applyBindings(viewmodel);
         SetViewModel(viewmodel);
         $("[data-toggle='tooltip']").tooltip();

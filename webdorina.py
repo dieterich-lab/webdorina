@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # :set fileencoding=utf-8 :
 
+import os
 import uuid
 from os import path
 from flask import Flask, render_template, jsonify, request
@@ -18,6 +19,7 @@ SESSION_TTL = 3600
 RESULT_TTL = 86400
 REGULATORS_TTL = 3600
 MAX_RESULTS = 100
+SESSION_STORE = "/tmp/dorina-{unique_id}"
 
 app = Flask(__name__)
 redis_store = Redis(app)
@@ -29,9 +31,30 @@ def welcome():
 
 @app.route('/go', methods=['GET', 'POST'])
 def index():
+    custom_regulator = 'false'
     if request.method == 'POST':
-        print "file posted"
-    return render_template('index.html', genomes=_list_genomes(), assemblies=_list_assemblies())
+        unique_id = _create_session(True)
+        bedfile = request.files['bedfile']
+        if bedfile and bedfile.filename.endswith('.bed'):
+            filename = "custom.bed"
+            dirname = SESSION_STORE.format(unique_id=unique_id)
+            bedfile.save(path.join(dirname, filename))
+            custom_regulator = 'true'
+    else:
+        unique_id = _create_session()
+    return render_template('index.html', genomes=_list_genomes(),
+                           assemblies=_list_assemblies(), uuid=unique_id,
+                           custom_regulator=custom_regulator)
+
+
+def _create_session(create_dir=False):
+    unique_id = str(uuid.uuid4())
+    session = "sessions:{0}".format(unique_id)
+    session_dict = dict(uuid=unique_id, state='initialised')
+    redis_store.setex(session, json.dumps(session_dict), SESSION_TTL)
+    if create_dir:
+        os.mkdir(SESSION_STORE.format(unique_id=unique_id))
+    return unique_id
 
 
 def _list_genomes():
@@ -90,11 +113,10 @@ def status(uuid):
 
 @app.route('/search', methods=['POST'])
 def search():
-    unique_id = str(uuid.uuid4())
-    session = "sessions:{0}".format(unique_id)
-
     query = {}
 
+    unique_id = request.form.get('uuid', u'invalid')
+    session = "sessions:{}".format(unique_id)
     query['genes'] = request.form.get('genes', u'all').split()
     query['match_a'] = request.form.get('match_a', u'any')
     query['region_a'] = request.form.get('region_a', u'any')

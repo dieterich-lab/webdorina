@@ -55,6 +55,10 @@
                 </div>
               </div>
 
+              <div class="row form-group" data-bind="visible: custom_regulator">
+                Using custom regulator.
+              </div>
+
               <div class="row form-group">
                 <div class="col-xs-6">
                   <label for="rbps">RNA binding proteins</label>
@@ -168,7 +172,7 @@
               <div class="row">
                 <div class="col-xs-4 col-xs-offset-1">
                   <button type="submit" class="btn btn-primary btn-lg btn-block"
-                    data-bind="enable: selected_mirnas().length + selected_rbps().length > 0">
+                    data-bind="enable: custom_regulator() || selected_mirnas().length + selected_rbps().length > 0">
                     <span class="glyphicon glyphicon-search"></span> Search doRiNA</button>
                 </div>
                 <div class="col-xs-4 col-xs-offset-2">

@@ -192,7 +192,7 @@ class DorinaTestCase(TestCase):
 
     def test_search_nothing_cached(self):
         '''Test search() with nothing in cache'''
-        data = dict(match_a='any', assembly='hg19')
+        data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
         key += '"match_a": "any", "match_b": "any", "region_a": "any", '
@@ -235,7 +235,7 @@ Called webdorina.Queue.enqueue(
     '{0}',
     '{1}',
     {{{3}}},
-    'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
+    u'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
         "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi'], 'set_b': None, 'region_b': u'any'", webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
 
@@ -248,7 +248,7 @@ Called webdorina.Queue.enqueue(
         key_pending = '{0}_pending'.format(key)
         self.r.set(key_pending, True)
 
-        data = dict(match_a='any', assembly='hg19')
+        data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         rv = self.client.post('/search', data=data)
 
@@ -279,7 +279,7 @@ Called fake_store.get(
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
-        data = dict(match_a='any', assembly='hg19')
+        data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         rv = self.client.post('/search', data=data)
 
@@ -321,7 +321,7 @@ Called fake_store.llen(
 
     def test_search_nothing_cached_all_regulators(self):
         '''Test search() for all regulators with nothing in cache'''
-        data = dict(match_a='all', assembly='hg19')
+        data = dict(match_a='all', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi', 'fake01']
         rv = self.client.post('/search', data=data)
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
@@ -360,7 +360,7 @@ Called webdorina.Queue.enqueue(
     '{0}',
     '{1}',
     {{{3}}},
-    'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
+    u'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
         "'genes': [u'all'], 'match_a': u'all', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'",
         webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
@@ -368,7 +368,7 @@ Called webdorina.Queue.enqueue(
 
     def test_search_nothing_cached_CDS_region(self):
         '''Test search() in CDS regions with nothing in cache'''
-        data = dict(match_a='any', region_a='CDS', assembly='hg19')
+        data = dict(match_a='any', region_a='CDS', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi', 'fake01']
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
         key += '"match_a": "any", "match_b": "any", "region_a": "CDS", '
@@ -408,7 +408,7 @@ Called webdorina.Queue.enqueue(
     '{0}',
     '{1}',
     {{{3}}},
-    'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
+    u'fake-uuid')'''.format(key, key_pending, webdorina.datadir,
         "'genes': [u'all'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'CDS', 'set_a': [u'scifi', u'fake01'], 'set_b': None, 'region_b': u'any'",
         webdorina.SESSION_TTL)
         assert_same_trace(self.tt, expected_trace)
@@ -425,7 +425,7 @@ Called webdorina.Queue.enqueue(
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
-        data = dict(match_a='any', assembly='hg19', genes='fake01')
+        data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         rv = self.client.post('/search', data=data)
 
@@ -481,7 +481,7 @@ Called fake_store.llen(
             self.r.rpush(full_key, json.dumps(res))
 
 
-        data = dict(match_a='any', assembly='hg19', genes='fake01')
+        data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         rv = self.client.post('/search', data=data)
 
@@ -525,7 +525,7 @@ Called webdorina.Queue.enqueue(
     '{2}',
     '{0}',
     '{1}',
-    'fake-uuid')
+    u'fake-uuid')
 Called fake_store.exists('results:sessions:fake-uuid')
 Called fake_store.get('results:sessions:fake-uuid')
 Called fake_store.expire(

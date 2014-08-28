@@ -1,8 +1,9 @@
-function DoRiNAViewModel(net) {
+function DoRiNAViewModel(net, uuid, custom_regulator) {
     var self = this;
     self.retry_after = 1000;
     self.loading_regulators = ko.observable(false);
-    self.uuid = ko.observable();
+    self.uuid = ko.observable(uuid);
+    self.custom_regulator = ko.observable(custom_regulator);
 
     self.chosenAssembly = ko.observable();
 
