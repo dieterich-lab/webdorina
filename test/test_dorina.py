@@ -228,7 +228,9 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
-Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
+Called webdorina.Queue(
+    connection=<fakeredis.FakeRedis object at ...>,
+    default_timeout=600)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
     '{2}',
@@ -353,7 +355,9 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
-Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
+Called webdorina.Queue(
+    connection=<fakeredis.FakeRedis object at ...>,
+    default_timeout=600)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
     '{2}',
@@ -401,7 +405,9 @@ Called fake_store.set(
 Called fake_store.expire(
     '{1}',
     30)
-Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
+Called webdorina.Queue(
+    connection=<fakeredis.FakeRedis object at ...>,
+    default_timeout=600)
 Called webdorina.Queue.enqueue(
     <function run_analyse at ...>,
     '{2}',
@@ -518,7 +524,9 @@ Called fake_store.set(
     'sessions:fake-uuid',
     '{{"state": "pending", "uuid": "fake-uuid"}}')
 Called fake_store.expire('sessions:fake-uuid', {5})
-Called webdorina.Queue(connection=<fakeredis.FakeRedis object at ...>)
+Called webdorina.Queue(
+    connection=<fakeredis.FakeRedis object at ...>,
+    default_timeout=600)
 Called webdorina.Queue.enqueue(
     <function filter at ...>,
     [u'fake01'],
