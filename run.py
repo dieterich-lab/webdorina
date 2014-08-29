@@ -6,8 +6,6 @@ import time
 def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False):
     from webdorina import RESULT_TTL, SESSION_TTL
     redis_store = Redis()
-    # get rid of the now-unused genes parameter
-    query.pop('genes', None)
 
     if timeit:
         started = time.time()
