@@ -49,6 +49,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         var search_path = "regulators/" + assembly;
         return net.getJSON(search_path).then(function(data) {
             self.regulators.removeAll();
+            if (self.custom_regulator()) {
+                self.regulators.push({
+                    id: 'custom',
+                    summary: 'uploaded custom regulator',
+                    description: 'Custom regulator uploaded by user'
+                });
+            }
             for (var i in data) {
                 self.regulators.push(data[i]);
             }

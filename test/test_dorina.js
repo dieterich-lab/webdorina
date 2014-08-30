@@ -70,6 +70,17 @@ describe('DoRiNAViewModel', function() {
                 vm.regulators().should.have.length(2);
             });
         });
+
+        it('should have the custom regulator entry if there is a custom regulator', function() {
+            vm.custom_regulator(true);
+            fn.expected_url.push('regulators/hg19');
+            fn.return_data.push({'fake_rbp': {}, 'fake_mirna': {} });
+
+            return vm.get_regulators('hg19').then(function() {
+                vm.regulators().should.have.length(3);
+            });
+        });
+
     });
 
 
