@@ -7,13 +7,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.chosenAssembly = ko.observable();
 
-    self.rbps = ko.observableArray([]);
-    self.selected_rbps = ko.observableArray([]);
-    self.selected_rbps_setb = ko.observableArray([]);
-
-    self.mirnas = ko.observableArray([]);
-    self.selected_mirnas = ko.observableArray([]);
-    self.selected_mirnas_setb = ko.observableArray([]);
+    self.regulators = ko.observableArray([]);
+    self.selected_regulators = ko.observableArray([]);
+    self.selected_regulators_setb = ko.observableArray([]);
 
     self.results = ko.observableArray([]);
 
@@ -52,13 +48,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.get_regulators = function(assembly) {
         var search_path = "regulators/" + assembly;
         return net.getJSON(search_path).then(function(data) {
-            self.rbps.removeAll();
-            self.mirnas.removeAll();
-            for (var i in data['RBP']) {
-                self.rbps.push(data['RBP'][i]);
-            }
-            for (var i in data['miRNA']) {
-                self.mirnas.push(data['miRNA'][i]);
+            self.regulators.removeAll();
+            for (var i in data) {
+                self.regulators.push(data[i]);
             }
         });
     };
@@ -69,8 +61,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.get_regulators(self.chosenAssembly()).then(function() {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
-                $('#rbps').selectize({
-                    options: self.rbps(),
+                $('#regulators').selectize({
+                    options: self.regulators(),
                     create: false,
                     valueField: 'id',
                     labelField: 'summary',
@@ -83,26 +75,19 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         }
                     }
                 });
-                $('#mirnas').selectize({
-                    options: self.mirnas(),
+                $('#regulators_setb').selectize({
+                    options: self.regulators(),
                     create: false,
                     valueField: 'id',
                     labelField: 'summary',
-                    searchField: 'summary'
-                });
-                $('#rbps_setb').selectize({
-                    options: self.rbps(),
-                    create: false,
-                    valueField: 'id',
-                    labelField: 'summary',
-                    searchField: 'summary'
-                });
-                $('#mirnas_setb').selectize({
-                    options: self.mirnas(),
-                    create: false,
-                    valueField: 'id',
-                    labelField: 'summary',
-                    searchField: 'summary'
+                    searchField: 'summary',
+                    render: {
+                        option: function(item, escape) {
+                            return '<div><span class="regulator">' + escape(item.summary) +
+                                   '</span><br><span class="description">' + escape(item.description) +
+                                   '</span></div>';
+                        }
+                    }
                 });
                 self.loading_regulators(false);
             });
@@ -110,19 +95,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     };
 
     self.run_search = function(keep_data) {
-        var regulators = [];
-        var rbps = self.selected_rbps();
-        var mirnas = self.selected_mirnas();
-
-        for (var i in rbps) {
-            regulators.push(rbps[i]);
-        }
-        for (var i in mirnas) {
-            regulators.push(mirnas[i]);
-        }
-
         var search_data = {
-            set_a: regulators,
+            set_a: self.selected_regulators(),
             assembly: self.chosenAssembly(),
             match_a: self.match_a(),
             region_a: self.region_a(),
@@ -132,20 +106,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
         // if there's any selection made for set B regulators,
         // send set B data
-        if (self.selected_mirnas_setb().length +
-            self.selected_rbps_setb().length > 0) {
-            var regulators_setb = [];
-            var rbps = self.selected_rbps_setb();
-            var mirnas = self.selected_mirnas_setb();
-
-            for (var i in rbps) {
-                regulators_setb.push(rbps[i]);
-            }
-            for (var i in mirnas) {
-                regulators_setb.push(mirnas[i]);
-            }
-
-            search_data.set_b = regulators_setb;
+        if (self.selected_regulators_setb().length > 0) {
+            search_data.set_b = self.selected_regulators_setb()
             search_data.match_b= self.match_b();
             search_data.region_b = self.region_b();
             search_data.combinatorial_op = self.combinatorialOperation();

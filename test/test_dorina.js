@@ -58,18 +58,16 @@ describe('DoRiNAViewModel', function() {
 
 
     describe('#regulators', function() {
-        it('should not have miRNAs or RBPs selected', function() {
-            vm.mirnas().should.have.length(0);
-            vm.rbps().should.have.length(0);
+        it('should not have miRNAs or RBPs loaded', function() {
+            vm.regulators().should.have.length(0);
         });
 
         it('should have miRNAs and RBPs loaded after getting the regulators', function() {
             fn.expected_url.push('regulators/hg19');
-            fn.return_data.push({'RBP': {'fake_rbp': {} }, 'miRNA': {'fake_mirna': {} } });
+            fn.return_data.push({'fake_rbp': {}, 'fake_mirna': {} });
 
             return vm.get_regulators('hg19').then(function() {
-                vm.mirnas().should.have.length(1);
-                vm.rbps().should.have.length(1);
+                vm.regulators().should.have.length(2);
             });
         });
     });
@@ -90,8 +88,8 @@ describe('DoRiNAViewModel', function() {
             vm.poll_result = function(uuid) {
                 uuid.should.eql('fake-uuid');
             };
-            vm.selected_rbps().push('fake_rbp');
-            vm.selected_mirnas().push('fake_mirna');
+            vm.selected_regulators().push('fake_rbp');
+            vm.selected_regulators().push('fake_mirna');
             vm.chosenAssembly('hg19');
             vm.region_a('CDS');
 
@@ -116,8 +114,8 @@ describe('DoRiNAViewModel', function() {
             vm.poll_result = function(uuid) {
                 uuid.should.eql('fake-uuid');
             };
-            vm.selected_rbps().push('fake_rbp');
-            vm.selected_mirnas_setb().push('fake_mirna');
+            vm.selected_regulators().push('fake_rbp');
+            vm.selected_regulators_setb().push('fake_mirna');
             vm.chosenAssembly('hg19');
             vm.region_a('CDS');
             vm.region_b('CDS');

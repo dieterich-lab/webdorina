@@ -42,7 +42,7 @@
                     </label>
                   </div>
                 </div>
-                <div class="col-md-3 col-md-offset-1" data-bind="visible: selected_mirnas().length + selected_rbps().length > 1">
+                <div class="col-md-3 col-md-offset-1" data-bind="visible: selected_regulators().length > 1">
                   <label>Regulators that must match:</label>
                   <div class="btn-group" id="match_a" data-toggle="buttons" data-bind="radio: match_a">
                     <label class="btn btn-default">
@@ -61,16 +61,10 @@
 
               <div class="row form-group">
                 <div class="col-xs-6">
-                  <label for="rbps">RNA binding proteins</label>
-                  <select class="form-control" id="rbps" data-bind="selectedOptions: selected_rbps"
-                    placeholder="Select one or more RBP..." multiple>
+                  <label for="regulators">RNA binding proteins</label>
+                  <select class="form-control" id="regulators" data-bind="selectedOptions: selected_regulators"
+                    placeholder="Select one or more regulators..." multiple>
                    </select>
-                </div>
-                <div class="col-xs-6">
-                  <label for="mirnas">miRNAs</label>
-                  <select class="form-control" id="mirnas" data-bind="selectedOptions: selected_mirnas"
-                    placeholder="Select one or more miRNA..." multiple>
-                  </select>
                 </div>
               </div>
 
@@ -108,7 +102,7 @@
                     </label>
                   </div>
                 </div>
-                <div class="col-md-3 col-md-offset-1" data-bind="visible: selected_mirnas_setb().length + selected_rbps_setb().length > 1">
+                <div class="col-md-3 col-md-offset-1" data-bind="visible: selected_regulators_setb().length > 1">
                   <label>Regulators that must match:</label>
                   <div class="btn-group" data-toggle="buttons" data-bind="radio: match_b">
                     <label class="btn btn-default">
@@ -124,15 +118,9 @@
               <div class="row form-group combinatorial collapse">
                 <div class="col-xs-6">
                   <label for="rbps">RNA binding proteins</label>
-                  <select class="form-control" id="rbps_setb" data-bind="selectedOptions: selected_rbps_setb"
-                    placeholder="Select one or more RBP..." multiple>
+                  <select class="form-control" id="regulators_setb" data-bind="selectedOptions: selected_regulators_setb"
+                    placeholder="Select one or more regulators..." multiple>
                    </select>
-                </div>
-                <div class="col-xs-6">
-                  <label for="mirnas">miRNAs</label>
-                  <select class="form-control" id="mirnas_setb" data-bind="selectedOptions: selected_mirnas_setb"
-                    placeholder="Select one or more miRNA..." multiple>
-                  </select>
                 </div>
               </div>
 
@@ -172,7 +160,7 @@
               <div class="row">
                 <div class="col-xs-4 col-xs-offset-1">
                   <button type="submit" class="btn btn-primary btn-lg btn-block"
-                    data-bind="enable: custom_regulator() || selected_mirnas().length + selected_rbps().length > 0">
+                    data-bind="enable: custom_regulator() || selected_regulators().length > 0">
                     <span class="glyphicon glyphicon-search"></span> Search doRiNA</button>
                 </div>
                 <div class="col-xs-4 col-xs-offset-2">
