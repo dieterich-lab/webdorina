@@ -4,11 +4,29 @@ from dorina.run import analyse
 import time
 
 def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False):
-    from webdorina import RESULT_TTL, SESSION_TTL
+    from webdorina import RESULT_TTL, SESSION_TTL, SESSION_STORE
     redis_store = Redis()
 
     if timeit:
         started = time.time()
+
+    session_store = SESSION_STORE.format(unique_id=uuid)
+    set_a = []
+    for regulator in query['set_a']:
+        if regulator == 'custom':
+            set_a.append('{session_store}/custom.bed'.format(session_store=session_store))
+        else:
+            set_a.append(regulator)
+        query['set_a'] = set_a
+
+    if query['set_b'] is not None:
+        set_b = []
+        for regulator in query['set_b']:
+            if regulator == 'custom':
+                set_b.append('{session_store}/custom.bed'.format(session_store=session_store))
+            else:
+                set_b.append(regulator)
+        query['set_b'] = set_b
 
     result = analyse(datadir=datadir, **query)
 

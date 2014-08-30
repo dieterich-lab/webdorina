@@ -47,10 +47,11 @@ class RunTestCase(unittest.TestCase):
     genome='hg19',
     match_a='any',
     region_a='any',
-    set_a=['scifi'])'''
+    set_a=['scifi'],
+    set_b=None)'''
 
         query = dict(genome='hg19', set_a=['scifi'], match_a='any',
-                     region_a='any')
+                     region_a='any', set_b=None)
 
         self.return_value = [
             {'data_source': 'scifi',
@@ -94,7 +95,7 @@ class RunTestCase(unittest.TestCase):
     def test_run_analyse_no_results(self):
         '''Test run_analyze() when no results are returned'''
         query = dict(genome='hg19', set_a=['scifi'], match_a='any',
-                     region_a='any')
+                     region_a='any', set_b=None)
 
         self.return_value = []
 
@@ -114,6 +115,59 @@ class RunTestCase(unittest.TestCase):
         self.assertTrue(self.r.exists('results:fake_key'))
         self.assertEqual(1, self.r.llen('results:fake_key'))
         self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+
+    def test_run_analyse_custom_regulator(self):
+        '''Test run_analyze() with a custom regulator'''
+        session_store = webdorina.SESSION_STORE.format(unique_id='fake-uuid')
+        expected_trace = '''Called run.analyse(
+    datadir='/fake/data/dir',
+    genome='hg19',
+    match_a='any',
+    region_a='any',
+    set_a=['scifi', '{session_store}/custom.bed'],
+    set_b=None)'''.format(session_store=session_store)
+
+        query = dict(genome='hg19', set_a=['scifi', 'custom'], match_a='any',
+                     region_a='any', set_b=None)
+
+        self.return_value = [
+            {'data_source': 'scifi',
+             'score': 5, 'track': 'chr1',
+             'gene': 'gene01.01',
+             'site': 'scifi_cds',
+             'strand': '+',
+             'location': 'chr1:250-260'
+            },
+            {'data_source': 'scifi',
+             'score': 2, 'track': 'chr1',
+             'gene': 'gene01.01',
+             'site': 'scifi_cds',
+             'strand': '+',
+             'location': 'chr1:250-260'
+             },
+             {'data_source': 'scifi',
+              'score': 7, 'track': 'chr1',
+              'gene': 'gene01.02',
+              'site': 'scifi_intron',
+              'strand': '+',
+              'location': 'chr1:2350-2360'}
+        ]
+
+        run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
+        self.return_value.sort(key=lambda x: x['score'], reverse=True)
+        serialised_result = [ json.dumps(i) for i in self.return_value ]
+
+        assert_same_trace(self.tt, expected_trace)
+
+        self.assertTrue(self.r.exists('results:fake_key'))
+        self.assertEqual(3, self.r.llen('results:fake_key'))
+        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+
+        self.assertTrue(self.r.exists('sessions:fake-uuid'))
+        self.assertEqual(json.loads(self.r.get('sessions:fake-uuid')), dict(uuid='fake-uuid', state='done'))
+
+        self.assertTrue(self.r.exists('results:sessions:fake-uuid'))
+        self.assertEqual(json.loads(self.r.get('results:sessions:fake-uuid')), dict(redirect="results:fake_key"))
 
     def test_filter(self):
         '''Test filter()'''
