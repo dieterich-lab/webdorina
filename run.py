@@ -11,10 +11,12 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
         started = time.time()
 
     session_store = SESSION_STORE.format(unique_id=uuid)
+    custom_regulator_file = '{session_store}/{uuid}.bed'.format(
+            session_store=session_store, uuid=uuid)
     set_a = []
     for regulator in query['set_a']:
-        if regulator == 'custom':
-            set_a.append('{session_store}/custom.bed'.format(session_store=session_store))
+        if regulator == uuid:
+            set_a.append(custom_regulator_file)
         else:
             set_a.append(regulator)
         query['set_a'] = set_a
@@ -22,8 +24,8 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
     if query['set_b'] is not None:
         set_b = []
         for regulator in query['set_b']:
-            if regulator == 'custom':
-                set_b.append('{session_store}/custom.bed'.format(session_store=session_store))
+            if regulator == uuid:
+                set_b.append(custom_regulator_file)
             else:
                 set_b.append(regulator)
         query['set_b'] = set_b

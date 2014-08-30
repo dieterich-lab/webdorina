@@ -36,7 +36,7 @@ def index():
         unique_id = _create_session(True)
         bedfile = request.files['bedfile']
         if bedfile and bedfile.filename.endswith('.bed'):
-            filename = "custom.bed"
+            filename = "{}.bed".format(unique_id)
             dirname = SESSION_STORE.format(unique_id=unique_id)
             bedfile.save(path.join(dirname, filename))
             custom_regulator = 'true'

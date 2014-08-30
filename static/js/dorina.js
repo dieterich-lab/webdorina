@@ -51,7 +51,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.regulators.removeAll();
             if (self.custom_regulator()) {
                 self.regulators.push({
-                    id: 'custom',
+                    id: self.uuid(),
                     summary: 'uploaded custom regulator',
                     description: 'Custom regulator uploaded by user'
                 });

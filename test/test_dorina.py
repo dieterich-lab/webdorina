@@ -124,10 +124,10 @@ class RunTestCase(unittest.TestCase):
     genome='hg19',
     match_a='any',
     region_a='any',
-    set_a=['scifi', '{session_store}/custom.bed'],
+    set_a=['scifi', '{session_store}/fake-uuid.bed'],
     set_b=None)'''.format(session_store=session_store)
 
-        query = dict(genome='hg19', set_a=['scifi', 'custom'], match_a='any',
+        query = dict(genome='hg19', set_a=['scifi', 'fake-uuid'], match_a='any',
                      region_a='any', set_b=None)
 
         self.return_value = [

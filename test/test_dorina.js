@@ -78,6 +78,7 @@ describe('DoRiNAViewModel', function() {
 
             return vm.get_regulators('hg19').then(function() {
                 vm.regulators().should.have.length(3);
+                vm.regulators()[0].id.should.eql(vm.uuid());
             });
         });
 
