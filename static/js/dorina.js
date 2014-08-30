@@ -101,7 +101,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             match_a: self.match_a(),
             region_a: self.region_a(),
             genes: self.candidate_genes(),
-            offset: self.offset()
+            offset: self.offset(),
+            uuid: self.uuid()
         };
 
         // if there's any selection made for set B regulators,
@@ -163,7 +164,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.region_a('any');
         self.region_b('any');
         self.genes('');
-        self.uuid('');
     };
 
     self.clear_selections = function() {

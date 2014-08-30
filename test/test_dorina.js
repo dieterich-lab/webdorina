@@ -48,7 +48,7 @@ describe('DoRiNAViewModel', function() {
 
     beforeEach(function() {
         fn = new FakeNet();
-        vm = new DoRiNAViewModel(fn);
+        vm = new DoRiNAViewModel(fn, 'fake-uuid');
     });
 
     afterEach(function() {
@@ -83,7 +83,8 @@ describe('DoRiNAViewModel', function() {
                 'match_a': 'any',
                 'region_a': 'CDS',
                 'genes': 'all',
-                'offset': 0
+                'offset': 0,
+                'uuid': 'fake-uuid'
             });
             vm.poll_result = function(uuid) {
                 uuid.should.eql('fake-uuid');
@@ -109,7 +110,8 @@ describe('DoRiNAViewModel', function() {
                 'set_b': ['fake_mirna'],
                 'match_b': 'any',
                 'region_b': 'CDS',
-                'combinatorial_op': 'or'
+                'combinatorial_op': 'or',
+                'uuid': 'fake-uuid'
             });
             vm.poll_result = function(uuid) {
                 uuid.should.eql('fake-uuid');
