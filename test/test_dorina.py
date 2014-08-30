@@ -612,3 +612,16 @@ Called fake_store.llen(
         self.r.set('sessions:valid', json.dumps(valid))
         got = self.client.get('/status/valid')
         self.assertEqual(got.json, valid)
+
+
+    def test_download_regulator(self):
+        '''Test download_regulator()'''
+        got = self.client.get('/download/regulator/hg19/invalid')
+        self.assertEqual(got.status_code, 404)
+
+        got = self.client.get('/download/regulator/hg19/PARCLIP_scifi')
+        self.assertEqual(got.status_code, 200)
+        regulator_file = utils.get_regulator_by_name('PARCLIP_scifi', webdorina.datadir) + ".bed"
+        with open(regulator_file, 'r') as fh:
+            expected = fh.read()
+        self.assertEqual(got.data, expected)

@@ -4,7 +4,7 @@
 import os
 import uuid
 from os import path
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, abort, send_file
 from flask_redis import Redis
 from rq import Queue
 from dorina import utils, config
@@ -199,6 +199,16 @@ def get_result(uuid, offset):
     more_results = True if redis_store.llen(query_key) > offset + MAX_RESULTS else False
     return jsonify(dict(state='done', results=result, more_results=more_results,
                    next_offset=next_offset))
+
+
+@app.route('/download/regulator/<assembly>/<name>')
+def download_regulator(assembly, name):
+    regulator = utils.get_regulator_by_name(name, datadir)
+    if regulator is None:
+        return abort(404)
+
+    filename = "{}.bed".format(regulator)
+    return send_file(filename, as_attachment=True)
 
 
 if __name__ == "__main__":
