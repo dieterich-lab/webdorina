@@ -625,3 +625,36 @@ Called fake_store.llen(
         with open(regulator_file, 'r') as fh:
             expected = fh.read()
         self.assertEqual(got.data, expected)
+
+
+    def test_download_results(self):
+        '''Test download_results()'''
+        got = self.client.get('/download/results/invalid')
+        self.assertEqual(got.status_code, 404)
+
+        key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
+        res = {'data_source': 'PARCLIP', 'score': 1000, 'track': 'scifi_hg19',
+               'gene': 'gene01.02', 'site': 'fake', 'strand': '-',
+               'location': 'chr1:23-42'}
+
+        self.r.rpush(key, json.dumps(res))
+
+        self.r.set('results:sessions:fake-uuid', json.dumps(dict(redirect=key)))
+
+        got = self.client.get('/download/results/fake-uuid')
+
+        expected = "{}\n".format(webdorina._dict_to_bed(res))
+        self.assertEqual(got.data, expected)
+
+
+    def test_dict_to_bed(self):
+        '''Test _dict_to_bed()'''
+        data = {'data_source': 'PARCLIP', 'score': 1000, 'track': 'scifi_hg19',
+                'gene': 'gene01.02', 'site': 'fake', 'strand': '-',
+                'location': 'chr1:23-42'}
+        expected = "chr1	23	42	PARCLIP#scifi_hg19*fake	1000	-"
+
+        got = webdorina._dict_to_bed(data)
+        self.assertEqual(got, expected)

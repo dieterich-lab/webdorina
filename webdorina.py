@@ -4,12 +4,13 @@
 import os
 import uuid
 from os import path
-from flask import Flask, render_template, jsonify, request, abort, send_file
+from flask import Flask, render_template, jsonify, request, abort, send_file, make_response
 from flask_redis import Redis
 from rq import Queue
 from dorina import utils, config
 import run
 import json
+from cStringIO import StringIO
 
 # basic doRiNA settings
 datadir = path.join(path.dirname(__file__), 'test', 'data')
@@ -209,6 +210,37 @@ def download_regulator(assembly, name):
 
     filename = "{}.bed".format(regulator)
     return send_file(filename, as_attachment=True)
+
+
+@app.route('/download/results/<uuid>')
+def download_results(uuid):
+    key = "results:sessions:{0}".format(uuid)
+    if not redis_store.exists(key):
+        abort(404)
+
+    result_key = json.loads(redis_store.get(key))['redirect']
+    results = map(json.loads, redis_store.lrange(result_key, 0, -1))
+
+    out = StringIO()
+    for res in results:
+        out.write("{}\n".format(_dict_to_bed(res)))
+
+    response = make_response(out.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=dorina.bed"
+    return response
+
+
+
+def _dict_to_bed(data):
+    '''Convert dorina dict to BED format'''
+    chrom, coords = data['location'].split(':')
+    start, end = coords.split('-')
+
+    data['chrom'] = chrom
+    data['start'] = start
+    data['end'] = end
+
+    return "{chrom}\t{start}\t{end}\t{data_source}#{track}*{site}\t{score}\t{strand}".format(**data)
 
 
 if __name__ == "__main__":
