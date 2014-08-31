@@ -68,7 +68,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.get_regulators(self.chosenAssembly()).then(function() {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
-                $('#regulators').selectize({
+                var $regulators = $('#regulators').selectize({
                     options: self.regulators(),
                     create: false,
                     valueField: 'id',
@@ -82,6 +82,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         }
                     }
                 });
+                var regulator = $regulators[0].selectize;
+                if (self.custom_regulator()) {
+                    regulator.addItem(self.uuid());
+                }
                 $('#regulators_setb').selectize({
                     options: self.regulators(),
                     create: false,
