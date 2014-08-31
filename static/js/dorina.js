@@ -178,10 +178,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     };
 
     self.clear_selections = function() {
-        $('#rbps')[0].selectize.clear();
-        $('#mirnas')[0].selectize.clear();
-        $('#rbps_setb')[0].selectize.clear();
-        $('#mirnas_setb')[0].selectize.clear();
+        $('#regulators')[0].selectize.clear();
+        $('#regulators_setb')[0].selectize.clear();
     };
 
     self.candidate_genes = ko.computed(function() {
