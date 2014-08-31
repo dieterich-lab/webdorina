@@ -7,9 +7,13 @@
         <div id="results" class="panel-collapse collapse">
           <div class="panel-body">
             <div class="row">
-              <div class="col-md-3 col-md-offset-9 text-right">
-                <button type="button" class="btn btn-sm" data-bind="click: new_search">
-                  <span class="glyphicon glyphicon-repeat"></span> New search</button>
+              <div class="col-md-1 text-right">
+                <a href="{{ url_for('welcome')}}" class="btn btn-default btn-sm text-right">
+                  <span class="glyphicon glyphicon-star"></span> New search</a>
+              </div>
+              <div class="col-md-3 col-md-offset-8 text-right">
+                <button type="button" class="btn btn-default btn-sm" data-bind="click: new_search">
+                  <span class="glyphicon glyphicon-repeat"></span> Redo search</button>
               </div>
             </div>
 
@@ -49,16 +53,20 @@
             </div>
 
             <div class="row">
-              <div class="col-md-6">
-                <button type="button" class="btn btn-sm" data-bind="visible: more_results, click: load_more_results">
+              <div class="col-md-1 text-right">
+                <a href="{{ url_for('welcome')}}" class="btn btn-default btn-sm text-right">
+                  <span class="glyphicon glyphicon-star"></span> New search</a>
+              </div>
+              <div class="col-md-2">
+                <button type="button" class="btn btn-default btn-sm" data-bind="visible: more_results, click: load_more_results">
                   Load more results
                   <span class="glyphicon glyphicon-chevron-down"></span>
                 </button>
               </div>
 
-              <div class="col-md-3 col-md-offset-3 text-right">
-                <button type="button" class="btn btn-sm" data-bind="click: new_search">
-                  <span class="glyphicon glyphicon-repeat"></span> New search</button>
+              <div class="col-md-3 col-md-offset-6 text-right">
+                <button type="button" class="btn btn-default btn-sm" data-bind="click: new_search">
+                  <span class="glyphicon glyphicon-repeat"></span> Redo search</button>
               </div>
             </div>
           </div>
