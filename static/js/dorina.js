@@ -50,6 +50,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }
     }, self);
 
+    self.combinatorialOpImagePath = ko.computed(function() {
+        return "/static/images/" + self.combinatorialOperation() + ".svg";
+    }, self);
+
     self.get_regulators = function(assembly) {
         var search_path = "regulators/" + assembly;
         return net.getJSON(search_path).then(function(data) {
