@@ -80,7 +80,59 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.get_regulators(self.chosenAssembly()).then(function() {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
-                var $regulators = $('#regulators').selectize({
+
+                var $regulators, regulators;
+                var $regulators_setb, regulators_setb;
+                var $shown_types, shown_types;
+                var $shown_types_setb, shown_types_setb;
+
+                $shown_types = $('#shown-types').selectize({
+                    options: self.regulator_types(),
+                    valueField: 'id',
+                    labelField: 'id',
+                    onChange: function(values) {
+                        regulators.disable();
+                        regulators.clearOptions();
+                        if (values && values.length > 0) {
+                            var filtered_regs = self.regulators().filter(function(reg) {
+                                return values.indexOf(reg.experiment) > -1
+                            });
+
+                            for (var i in filtered_regs) {
+                                regulators.addOption(filtered_regs[i]);
+                            }
+                        }
+
+                        regulators.refreshOptions();
+                        regulators.enable();
+                    }
+                });
+                shown_types = $shown_types[0].selectize;
+
+                $shown_types_setb = $('#shown-types-setb').selectize({
+                    options: self.regulator_types(),
+                    valueField: 'id',
+                    labelField: 'id',
+                    onChange: function(values) {
+                        regulators_setb.disable();
+                        regulators_setb.clearOptions();
+                        if (values && values.length > 0) {
+                            var filtered_regs = self.regulators().filter(function(reg) {
+                                return values.indexOf(reg.experiment) > -1
+                            });
+
+                            for (var i in filtered_regs) {
+                                regulators_setb.addOption(filtered_regs[i]);
+                            }
+                        }
+
+                        regulators_setb.refreshOptions();
+                        regulators_setb.enable();
+                    }
+                });
+                shown_types_setb = $shown_types_setb[0].selectize;
+
+                $regulators = $('#regulators').selectize({
                     options: self.regulators(),
                     create: false,
                     valueField: 'id',
@@ -98,28 +150,38 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         }
                     }
                 });
-                var regulator = $regulators[0].selectize;
-                if (self.custom_regulator()) {
-                    regulator.addItem(self.uuid());
+                regulators = $regulators[0].selectize;
+
+                $regulators_setb = $('#regulators_setb').selectize({
+                    options: self.regulators(),
+                    create: false,
+                    valueField: 'id',
+                    labelField: 'summary',
+                    searchField: 'summary',
+                    optgroups: self.regulator_types(),
+                    optgroupField: 'experiment',
+                    optgroupValueField: 'id',
+                    optgroupLabelField: 'id',
+                    render: {
+                        option: function(item, escape) {
+                            return '<div><span class="regulator">' + escape(item.summary) +
+                                   '</span><br><span class="description">' + escape(item.description) +
+                                   '</span></div>';
+                        }
+                    }
+                });
+                regulators_setb = $regulators_setb[0].selectize;
+
+                for (var i in self.regulator_types()) {
+                    var reg = self.regulator_types()[i].id
+                    shown_types.addItem(reg);
+                    shown_types_setb.addItems(reg);
                 }
-                $('#regulators_setb').selectize({
-                    options: self.regulators(),
-                    create: false,
-                    valueField: 'id',
-                    labelField: 'summary',
-                    searchField: 'summary',
-                    optgroups: self.regulator_types(),
-                    optgroupField: 'experiment',
-                    optgroupValueField: 'id',
-                    optgroupLabelField: 'id',
-                    render: {
-                        option: function(item, escape) {
-                            return '<div><span class="regulator">' + escape(item.summary) +
-                                   '</span><br><span class="description">' + escape(item.description) +
-                                   '</span></div>';
-                        }
-                    }
-                });
+
+                if (self.custom_regulator()) {
+                    regulators.addItem(self.uuid());
+                }
+
                 self.loading_regulators(false);
             });
         }, 10);

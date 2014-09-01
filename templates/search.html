@@ -61,6 +61,12 @@
 
               <div class="row form-group">
                 <div class="col-xs-6">
+                  <label for="shown-types">Regulator types to show</label>
+                  <select class="form-control" id="shown-types"
+                    placeholder="Select regulator types to show..." multiple>
+                   </select>
+                </div>
+                <div class="col-xs-6">
                   <label for="regulators">Regulators</label>
                   <select class="form-control" id="regulators" data-bind="selectedOptions: selected_regulators"
                     placeholder="Select one or more regulators..." multiple>
@@ -117,7 +123,13 @@
 
               <div class="row form-group combinatorial collapse">
                 <div class="col-xs-6">
-                  <label for="rbps">RNA binding proteins</label>
+                  <label for="shown-types-setb">Regulator types to show</label>
+                  <select class="form-control" id="shown-types-setb"
+                    placeholder="Select regulator types to show..." multiple>
+                   </select>
+                </div>
+                <div class="col-xs-6">
+                  <label for="regulators_setb">Regulators</label>
                   <select class="form-control" id="regulators_setb" data-bind="selectedOptions: selected_regulators_setb"
                     placeholder="Select one or more regulators..." multiple>
                    </select>
