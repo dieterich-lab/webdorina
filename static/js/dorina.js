@@ -8,6 +8,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.chosenAssembly = ko.observable();
 
     self.regulators = ko.observableArray([]);
+    self.regulator_types = ko.observableArray([]);
     self.selected_regulators = ko.observableArray([]);
     self.selected_regulators_setb = ko.observableArray([]);
 
@@ -49,16 +50,27 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         var search_path = "regulators/" + assembly;
         return net.getJSON(search_path).then(function(data) {
             self.regulators.removeAll();
+            self.regulator_types.removeAll();
+            var regulator_types = {};
+
             if (self.custom_regulator()) {
                 self.regulators.push({
                     id: self.uuid(),
+                    experiment: 'CUSTOM',
                     summary: 'uploaded custom regulator',
                     description: 'Custom regulator uploaded by user'
                 });
+                regulator_types['CUSTOM'] = true;
             }
+
             for (var i in data) {
+                regulator_types[data[i].experiment] = true;
                 self.regulators.push(data[i]);
             }
+            for (var e in regulator_types) {
+                self.regulator_types.push({id: e});
+            }
+
         });
     };
 
@@ -74,6 +86,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     valueField: 'id',
                     labelField: 'summary',
                     searchField: 'summary',
+                    optgroups: self.regulator_types(),
+                    optgroupField: 'experiment',
+                    optgroupValueField: 'id',
+                    optgroupLabelField: 'id',
                     render: {
                         option: function(item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
@@ -92,6 +108,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     valueField: 'id',
                     labelField: 'summary',
                     searchField: 'summary',
+                    optgroups: self.regulator_types(),
+                    optgroupField: 'experiment',
+                    optgroupValueField: 'id',
+                    optgroupLabelField: 'id',
                     render: {
                         option: function(item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
