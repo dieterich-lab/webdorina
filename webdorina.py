@@ -234,7 +234,6 @@ def download_results(uuid):
     return response
 
 
-
 def _dict_to_bed(data):
     '''Convert dorina dict to BED format'''
     chrom, coords = data['location'].split(':')
@@ -245,6 +244,11 @@ def _dict_to_bed(data):
     data['end'] = end
 
     return "{chrom}\t{start}\t{end}\t{data_source}#{track}*{site}\t{score}\t{strand}".format(**data)
+
+
+@app.route('/news')
+def news():
+    return render_template('news.html')
 
 
 if __name__ == "__main__":
