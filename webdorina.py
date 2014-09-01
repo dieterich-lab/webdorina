@@ -94,6 +94,7 @@ def list_regulators(assembly):
             if assembly in available_regulators[genome]:
                 for key, val in available_regulators[genome][assembly].items():
                     regulators[key] = val
+                    del val['file']
 
                 redis_store.set(cache_key, json.dumps(regulators))
                 redis_store.expire(cache_key, REGULATORS_TTL)

@@ -239,6 +239,9 @@ class DorinaTestCase(TestCase):
     def test_list_regulators(self):
         '''Test list_regulators()'''
         expected = utils.get_regulators(datadir=webdorina.datadir)['h_sapiens']['hg19']
+        # file path isn't shown
+        for val in expected.values():
+            del val['file']
         rv = self.client.get('/api/v1.0/regulators/hg19')
         self.assertDictEqual(rv.json, expected)
         rv = self.client.get('/api/v1.0/regulators/at3')
