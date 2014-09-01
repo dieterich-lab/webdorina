@@ -81,7 +81,7 @@ def _list_assemblies():
     return json.dumps(assemblies)
 
 
-@app.route('/regulators/<assembly>')
+@app.route('/api/v1.0/regulators/<assembly>')
 def list_regulators(assembly):
 
     cache_key = "regulators:{0}".format(assembly)
@@ -101,7 +101,7 @@ def list_regulators(assembly):
     return jsonify(regulators)
 
 
-@app.route('/status/<uuid>')
+@app.route('/api/v1.0/status/<uuid>')
 def status(uuid):
     key = "sessions:{0}".format(uuid)
     if redis_store.exists(key):
@@ -112,7 +112,7 @@ def status(uuid):
     return jsonify(status)
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/api/v1.0/search', methods=['POST'])
 def search():
     query = {}
 
@@ -189,8 +189,8 @@ def search():
     return jsonify(session_dict)
 
 
-@app.route('/result/<uuid>', defaults={'offset': 0})
-@app.route('/result/<uuid>/<int:offset>')
+@app.route('/api/v1.0/result/<uuid>', defaults={'offset': 0})
+@app.route('/api/v1.0/result/<uuid>/<int:offset>')
 def get_result(uuid, offset):
     key = "results:sessions:{0}".format(uuid)
     if not redis_store.exists(key):
@@ -206,7 +206,7 @@ def get_result(uuid, offset):
                    next_offset=next_offset))
 
 
-@app.route('/download/regulator/<assembly>/<name>')
+@app.route('/api/v1.0/download/regulator/<assembly>/<name>')
 def download_regulator(assembly, name):
     regulator = utils.get_regulator_by_name(name, datadir)
     if regulator is None:
@@ -216,7 +216,7 @@ def download_regulator(assembly, name):
     return send_file(filename, as_attachment=True)
 
 
-@app.route('/download/results/<uuid>')
+@app.route('/api/v1.0/download/results/<uuid>')
 def download_results(uuid):
     key = "results:sessions:{0}".format(uuid)
     if not redis_store.exists(key):

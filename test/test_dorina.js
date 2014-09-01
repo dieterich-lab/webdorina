@@ -63,7 +63,7 @@ describe('DoRiNAViewModel', function() {
         });
 
         it('should have miRNAs and RBPs loaded after getting the regulators', function() {
-            fn.expected_url.push('regulators/hg19');
+            fn.expected_url.push('api/v1.0/regulators/hg19');
             fn.return_data.push({'fake_rbp': {}, 'fake_mirna': {} });
 
             return vm.get_regulators('hg19').then(function() {
@@ -73,7 +73,7 @@ describe('DoRiNAViewModel', function() {
 
         it('should have the custom regulator entry if there is a custom regulator', function() {
             vm.custom_regulator(true);
-            fn.expected_url.push('regulators/hg19');
+            fn.expected_url.push('api/v1.0/regulators/hg19');
             fn.return_data.push({'fake_rbp': {}, 'fake_mirna': {} });
 
             return vm.get_regulators('hg19').then(function() {
@@ -87,7 +87,7 @@ describe('DoRiNAViewModel', function() {
 
     describe('#search', function() {
         it('should use the selected set_a values to build the post request', function() {
-            fn.expected_url.push('search');
+            fn.expected_url.push('api/v1.0/search');
             fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
@@ -110,7 +110,7 @@ describe('DoRiNAViewModel', function() {
         });
 
         it('should use the selected set_a and set_b values to build the post request', function() {
-            fn.expected_url.push('search');
+            fn.expected_url.push('api/v1.0/search');
             fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
             fn.expected_data.push({
                 'set_a': ['fake_rbp'],
@@ -139,7 +139,7 @@ describe('DoRiNAViewModel', function() {
         });
 
         it('should send all slop-related settings if use_slop is true', function() {
-            fn.expected_url.push('search');
+            fn.expected_url.push('api/v1.0/search');
             fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
             fn.expected_data.push({
                 'set_a': ['fake_rbp', 'fake_mirna'],
@@ -167,8 +167,8 @@ describe('DoRiNAViewModel', function() {
 
     describe('#poll_result', function() {
         it('should keep polling while state=pending', function(done) {
-            fn.expected_url.push('status/fake-uuid');
-            fn.expected_url.push('status/fake-uuid');
+            fn.expected_url.push('api/v1.0/status/fake-uuid');
+            fn.expected_url.push('api/v1.0/status/fake-uuid');
             fn.return_data.push({'state': 'pending'});
             fn.return_data.push({'state': 'done'});
             vm.retry_after = 1;
@@ -188,7 +188,7 @@ describe('DoRiNAViewModel', function() {
 
     describe('#get_results', function() {
         it('should set the offset to the next_offset if there are more results', function() {
-            fn.expected_url.push('result/fake-uuid');
+            fn.expected_url.push('api/v1.0/result/fake-uuid');
             fn.return_data.push({
                 'state': 'done',
                 'next_offset': 23,
@@ -200,7 +200,7 @@ describe('DoRiNAViewModel', function() {
         });
 
         it('should not set the offset if there are no more results', function() {
-            fn.expected_url.push('result/fake-uuid');
+            fn.expected_url.push('api/v1.0/result/fake-uuid');
             fn.return_data.push({
                 'state': 'done',
                 'next_offset': 23,
@@ -212,7 +212,7 @@ describe('DoRiNAViewModel', function() {
         });
 
         it('should get more resuts at the stored offset when instructed', function() {
-            fn.expected_url.push('result/fake-uuid/23');
+            fn.expected_url.push('api/v1.0/result/fake-uuid/23');
             fn.return_data.push({
                 'state': 'done',
                 'next_offset': 42,

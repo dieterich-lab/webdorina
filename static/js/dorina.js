@@ -55,7 +55,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     }, self);
 
     self.get_regulators = function(assembly) {
-        var search_path = "regulators/" + assembly;
+        var search_path = "api/v1.0/regulators/" + assembly;
         return net.getJSON(search_path).then(function(data) {
             self.regulators.removeAll();
             self.regulator_types.removeAll();
@@ -223,13 +223,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         if (!keep_data) {
             self.results.removeAll();
         }
-        return net.post('search', search_data).then(function(data) {
+        return net.post('api/v1.0/search', search_data).then(function(data) {
             self.poll_result(data.uuid);
         });
     };
 
     self.poll_result = function(uuid) {
-        var url = 'status/' + uuid;
+        var url = 'api/v1.0/status/' + uuid;
         net.getJSON(url).then(function(data) {
             if (data.state == 'pending') {
                 setTimeout(function() {
@@ -243,7 +243,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
 
     self.get_results = function(uuid, more) {
-        var url = 'result/' + uuid;
+        var url = 'api/v1.0/result/' + uuid;
         if (more) {
             url += '/' + self.offset();
         }

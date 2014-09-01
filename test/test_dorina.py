@@ -239,9 +239,9 @@ class DorinaTestCase(TestCase):
     def test_list_regulators(self):
         '''Test list_regulators()'''
         expected = utils.get_regulators(datadir=webdorina.datadir)['h_sapiens']['hg19']
-        rv = self.client.get('/regulators/hg19')
+        rv = self.client.get('/api/v1.0/regulators/hg19')
         self.assertDictEqual(rv.json, expected)
-        rv = self.client.get('/regulators/at3')
+        rv = self.client.get('/api/v1.0/regulators/at3')
         self.assertEqual(rv.json, dict())
 
     def test_search_nothing_cached(self):
@@ -253,7 +253,7 @@ class DorinaTestCase(TestCase):
         key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
         key_pending = '{0}_pending'.format(key)
 
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
 
         # Now a query should be pending
         self.assertTrue(self.r.exists(key_pending))
@@ -306,7 +306,7 @@ Called webdorina.Queue.enqueue(
 
         data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
 
         # Should return "pending"
         self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
@@ -337,11 +337,11 @@ Called fake_store.get(
 
         data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
 
         self.assertEqual(rv.json, dict(state='done', uuid="fake-uuid"))
 
-        rv = self.client.get('/result/fake-uuid')
+        rv = self.client.get('/api/v1.0/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
@@ -379,7 +379,7 @@ Called fake_store.llen(
         '''Test search() for all regulators with nothing in cache'''
         data = dict(match_a='all', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi', 'fake01']
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
         key += '"match_a": "all", "match_b": "any", "region_a": "any", '
         key += '"region_b": "any", "set_a": ["scifi", "fake01"], "set_b": null}'
@@ -433,7 +433,7 @@ Called webdorina.Queue.enqueue(
         key += '"region_b": "any", "set_a": ["scifi", "fake01"], "set_b": null}'
         key_pending = '{0}_pending'.format(key)
 
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
 
         # Now a query should be pending
         self.assertTrue(self.r.exists(key_pending))
@@ -487,11 +487,11 @@ Called webdorina.Queue.enqueue(
 
         data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
         data['set_a[]']=['scifi']
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
 
         self.assertEqual(rv.json, dict(state='done', uuid="fake-uuid"))
 
-        rv = self.client.get('/result/fake-uuid')
+        rv = self.client.get('/api/v1.0/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
@@ -543,7 +543,7 @@ Called fake_store.llen(
 
         data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
         data['set_a[]']=['scifi']
-        rv = self.client.post('/search', data=data)
+        rv = self.client.post('/api/v1.0/search', data=data)
 
         # Now a query should be pending
         self.assertTrue(self.r.exists(key_pending))
@@ -556,7 +556,7 @@ Called fake_store.llen(
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
-        rv = self.client.get('/result/fake-uuid')
+        rv = self.client.get('/api/v1.0/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)
         self.assertEqual(rv.json, expected)
 
@@ -605,21 +605,21 @@ Called fake_store.llen(
 
     def test_status(self):
         '''Test status()'''
-        got = self.client.get('/status/invalid')
+        got = self.client.get('/api/v1.0/status/invalid')
         self.assertEqual(got.json, dict(uuid='invalid', state='expired'))
 
         valid = dict(uuid='valid', state='done')
         self.r.set('sessions:valid', json.dumps(valid))
-        got = self.client.get('/status/valid')
+        got = self.client.get('/api/v1.0/status/valid')
         self.assertEqual(got.json, valid)
 
 
     def test_download_regulator(self):
         '''Test download_regulator()'''
-        got = self.client.get('/download/regulator/hg19/invalid')
+        got = self.client.get('/api/v1.0/download/regulator/hg19/invalid')
         self.assertEqual(got.status_code, 404)
 
-        got = self.client.get('/download/regulator/hg19/PARCLIP_scifi')
+        got = self.client.get('/api/v1.0/download/regulator/hg19/PARCLIP_scifi')
         self.assertEqual(got.status_code, 200)
         regulator_file = utils.get_regulator_by_name('PARCLIP_scifi', webdorina.datadir) + ".bed"
         with open(regulator_file, 'r') as fh:
@@ -629,7 +629,7 @@ Called fake_store.llen(
 
     def test_download_results(self):
         '''Test download_results()'''
-        got = self.client.get('/download/results/invalid')
+        got = self.client.get('/api/v1.0/download/results/invalid')
         self.assertEqual(got.status_code, 404)
 
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
@@ -643,7 +643,7 @@ Called fake_store.llen(
 
         self.r.set('results:sessions:fake-uuid', json.dumps(dict(redirect=key)))
 
-        got = self.client.get('/download/results/fake-uuid')
+        got = self.client.get('/api/v1.0/download/results/fake-uuid')
 
         expected = "{}\n".format(webdorina._dict_to_bed(res))
         self.assertEqual(got.data, expected)
