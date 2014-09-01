@@ -11,7 +11,11 @@
                 <a href="{{ url_for('welcome')}}" class="btn btn-default btn-sm text-right">
                   <span class="glyphicon glyphicon-star"></span> New search</a>
               </div>
-              <div class="col-md-3 col-md-offset-8 text-right">
+              <div class="col-md-1 col-md-offset-4 text-right">
+                <a href="{{ url_for('download_results', uuid=uuid)}}" class="btn btn-default btn-sm text-right">
+                  <span class="glyphicon glyphicon-download"></span> Download results</a>
+              </div>
+              <div class="col-md-3 col-md-offset-3 text-right">
                 <button type="button" class="btn btn-default btn-sm" data-bind="click: new_search">
                   <span class="glyphicon glyphicon-repeat"></span> Redo search</button>
               </div>
