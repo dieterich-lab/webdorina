@@ -614,6 +614,7 @@ Called fake_store.llen(
         valid = dict(uuid='valid', state='done')
         self.r.set('sessions:valid', json.dumps(valid))
         got = self.client.get('/api/v1.0/status/valid')
+        valid['ttl'] = self.r.ttl('sessions:valid')
         self.assertEqual(got.json, valid)
 
 
