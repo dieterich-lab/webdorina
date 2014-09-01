@@ -137,6 +137,32 @@ describe('DoRiNAViewModel', function() {
 
             return vm.run_search(false);
         });
+
+        it('should send all slop-related settings if use_slop is true', function() {
+            fn.expected_url.push('search');
+            fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
+            fn.expected_data.push({
+                'set_a': ['fake_rbp', 'fake_mirna'],
+                'assembly': 'hg19',
+                'match_a': 'any',
+                'region_a': 'CDS',
+                'genes': 'all',
+                'offset': 0,
+                'slop': 23,
+                'uuid': 'fake-uuid'
+            });
+            vm.poll_result = function(uuid) {
+                uuid.should.eql('fake-uuid');
+            };
+            vm.selected_regulators().push('fake_rbp');
+            vm.selected_regulators().push('fake_mirna');
+            vm.chosenAssembly('hg19');
+            vm.region_a('CDS');
+            vm.slop(23);
+            vm.use_slop(true);
+
+            return vm.run_search(false);
+        });
     });
 
     describe('#poll_result', function() {

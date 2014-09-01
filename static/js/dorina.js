@@ -24,6 +24,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.match_b = ko.observable('any');
     self.region_b = ko.observable('any');
+
+    self.use_slop = ko.observable(false);
+    self.slop = ko.observable(0);
+
     self.ucsc_url = ko.computed(function() {
         var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
         url += "&hubUrl=https://bimsbproxy.mdc-berlin.de/dorina2/dorinaHub/hub.txt"
@@ -205,6 +209,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             search_data.match_b= self.match_b();
             search_data.region_b = self.region_b();
             search_data.combinatorial_op = self.combinatorialOperation();
+        }
+
+        if (self.use_slop()) {
+            search_data.slop = self.slop();
         }
 
         self.pending(true);

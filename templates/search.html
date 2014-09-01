@@ -169,6 +169,27 @@
                 <!-- placeholder -->
               </div>
 
+              <div class="row form-group" data-toggle="collapse" data-target=".extra-opts">
+                <label>
+                  <span class="glyphicon glyphicon-plus" id="extra-opts control"></span> Additional search options
+                  <a href="#" data-toggle="tooltip" data-placement="right" title="click to expand">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </a>
+                </label>
+              </div>
+
+              <div class="row form-group extra-opts collapse">
+                <label class="col-md-3 control-label" for="slop">Allow for inexact matches:</label>
+                <div class="input-group col-md-3">
+                  <span class="input-group-addon">
+                    <input type="checkbox" data-bind="checked: use_slop">
+                  </span>
+                  <input type="text" class="form-control text-right" id="slop"
+                   name="slop" placeholder="0" data-bind="value: slop">
+                  <span class="input-group-addon">bp</span>
+                </div>
+              </div>
+
               <div class="row">
                 <div class="col-xs-4 col-xs-offset-1">
                   <button type="submit" class="btn btn-primary btn-lg btn-block"

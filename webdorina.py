@@ -134,6 +134,10 @@ def search():
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
 
+    slop = request.form.get('slop', 0, int)
+    if slop > 0:
+        query['slop'] = slop
+
     query_key = "results:%s" % json.dumps(query, sort_keys=True)
     query_pending_key = "%s_pending" % query_key
 
