@@ -43,8 +43,11 @@ def index():
             custom_regulator = 'true'
     else:
         unique_id = _create_session()
-    return render_template('index.html', genomes=_list_genomes(),
-                           assemblies=_list_assemblies(), uuid=unique_id,
+
+    genomes = json.dumps(_list_genomes())
+    assemblies = json.dumps(_list_assemblies())
+    return render_template('index.html', genomes=genomes,
+                           assemblies=assemblies, uuid=unique_id,
                            custom_regulator=custom_regulator)
 
 
@@ -64,8 +67,7 @@ def _list_genomes():
     for g in genome_list:
         del g['assemblies']
     genome_list.sort(lambda x,y: cmp(x['weight'], y['weight']), reverse=True)
-    genome_json = json.dumps(genome_list)
-    return genome_json
+    return genome_list
 
 
 def _list_assemblies():
@@ -78,7 +80,19 @@ def _list_assemblies():
             val['genome'] = g['id']
             assemblies.append(val)
 
-    return json.dumps(assemblies)
+    return assemblies
+
+
+@app.route('/api/v1.0/genomes')
+def api_list_genomes():
+    return jsonify(dict(genomes=_list_genomes()))
+
+
+@app.route('/api/v1.0/assemblies/<genome>')
+def api_list_assemblies(genome):
+    assemblies = filter(lambda x: x['genome'] == genome, _list_assemblies())
+    assemblies.sort(lambda x,y: cmp(x['weight'], y['weight']), reverse=True)
+    return jsonify(dict(assemblies=assemblies))
 
 
 @app.route('/api/v1.0/regulators/<assembly>')
