@@ -271,5 +271,10 @@ def help():
     return render_template('help.html')
 
 
+@app.route('/regulators')
+def regulators():
+    return render_template('regulators.html')
+
+
 if __name__ == "__main__":
     app.run(debug=True)

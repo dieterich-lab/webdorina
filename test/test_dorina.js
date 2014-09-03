@@ -277,3 +277,124 @@ describe('DoRiNAViewModel', function() {
         });
     });
 });
+
+
+describe('RegulatorViewModel', function() {
+    var fn;
+    var vm;
+
+    beforeEach(function() {
+        fn = new FakeNet();
+        vm = new RegulatorViewModel(fn);
+    });
+
+    afterEach(function() {
+        fn = undefined;
+        vm = undefined;
+    });
+
+    describe('#get_genomes', function() {
+
+        it('should get a list of available genomes', function(done) {
+            var genomes = [
+                {
+                    "id": "h_sapiens",
+                    "label": "Human",
+                    "scientific": "Homo sapiens",
+                    "weight": 10
+                },
+                {
+                    "id": "m_musculus",
+                    "label": "Mouse",
+                    "scientific": "Mus musculus",
+                    "weight": 3
+                }
+            ]
+            fn.expected_url.push('api/v1.0/genomes');
+            fn.return_data.push({"genomes": genomes});
+
+            vm.get_genomes().then(function() {
+                vm.genomes().should.eql(genomes);
+                done();
+            });
+        });
+    });
+
+    describe('#get_assemblies', function() {
+        it('should get a list of available assemblies for the genome', function(done) {
+            var assemblies = [
+                {
+                    '3_utr': true,
+                    '5_utr': true,
+                    'all': true,
+                    'cds': true,
+                    'genome': 'h_sapiens',
+                    'hg19': true,
+                    'id': 'hg19',
+                    'intergenic': true,
+                    'intron': true,
+                    'weight': 19
+                },
+                {
+                    '3_utr': true,
+                    '5_utr': true,
+                '    all': true,
+                    'cds': true,
+                    'genome': 'h_sapiens',
+                    'hg18': true,
+                    'id': 'hg18',
+                    'intergenic': true,
+                    'intron': true,
+                    'weight': 18
+                }
+            ];
+
+            fn.expected_url.push('api/v1.0/assemblies/h_sapiens');
+            fn.return_data.push({"assemblies": assemblies});
+
+            vm.get_assemblies('h_sapiens').then(function() {
+                vm.assemblies().should.eql(assemblies);
+                done();
+            });
+        });
+    });
+
+    describe('#get_regulators', function() {
+        it('should get a list of available regulators', function(done) {
+            var regulators = {
+                "CLIPSEQ_AGO2_hg19": {
+                    "description": "This track contains 53,342 AGO-2 CLIP sites in HEK 293 cells.",
+                    "experiment": "CLIPSEQ",
+                    "id": "CLIPSEQ_AGO2_hg19",
+                    "methods": "CLIP library preparation was carried out according to the original protocol. Additional details on data processing can be obtained from the original publication - section 'From reads to binding sites.' We have merged clusters from replicate experiments.",
+                    "references": [
+                    {
+                        "authors": [
+                            "Kishore S",
+                            "Jaskiewicz L",
+                            "Burger L",
+                            "Hausser J",
+                            "Khorshid M",
+                            "Zavolan M"
+                        ],
+                        "journal": "Nature Methods",
+                        "pages": "559-64",
+                        "pubmed": "21572407",
+                        "title": "A quantitative analysis of CLIP methods for identifying binding sites of RNA-binding proteins",
+                        "year": "2011"
+                    }
+                    ],
+                    "summary": "AGO2 CLIP-SEQ (Kishore 2011)"
+                }
+            }
+            fn.expected_url.push('api/v1.0/regulators/hg19');
+            fn.return_data.push(regulators);
+
+            vm.get_regulators('hg19').then(function() {
+                var expected = [regulators.CLIPSEQ_AGO2_hg19];
+                vm.regulators().should.eql(expected);
+                done();
+            });
+        });
+    });
+});

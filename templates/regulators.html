@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <title>doRiNA</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-theme.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/selectize.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/selectize.bootstrap3.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body role="document">
+  <div class="container" role="main">
+    <h1><a href="{{ url_for('welcome') }}" style="color: #000">doRiNA</a>
+      <small>a database of RNA interactions in post-transcriptional regulation</small></h1>
+    <div class="spacer-3">&nbsp;<div>
+    <div class="row well well-lg">
+      <div class="form-group">
+        <label class="col-md-2 control-label" for="assembly">Species &amp; assembly</label>
+        <div class="col-md-10">
+          <select class="form-control" id="assembly" data-bind="value: selected_assembly"
+            placeholder="Select species and assembly...">
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="spacer-3">&nbsp;<div>
+    <div class="regulator-group" data-bind="foreach: regulators">
+      <div class="regulator-entry">
+        <span class="glyphicon glyphicon-chevron-right"></span> <span data-bind="text: summary"></span>
+        <ul>
+          <li data-bind="text: description"></li>
+          <li><a data-bind="attr: {href: 'api/v1.0/download/regulator/' + $parent.selected_assembly() + '/' + id}">Download</a></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/knockstrap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/selectize.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dorina.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dorina.net.js') }}"></script>
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+        var net = new DoRiNANet();
+        var viewmodel = new RegulatorViewModel(net);
+        ko.applyBindings(viewmodel);
+        SetViewModel(viewmodel);
+        $("[data-toggle='tooltip']").tooltip();
+        viewmodel.init();
+
+        $('#genes').on('show.bs.collapse', function() {
+            $('#genes-icon').removeClass('glyphicon-plus')
+              .addClass('glyphicon-minus');
+        }).on('hide.bs.collapse', function() {
+            $('#genes-icon').removeClass('glyphicon-minus')
+              .addClass('glyphicon-plus');
+        });
+    });
+
+  </script>
+</body>

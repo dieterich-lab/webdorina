@@ -306,6 +306,77 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
 }
 
+function RegulatorViewModel(net) {
+    var self = this;
+    self.genomes = ko.observableArray([]);
+    self.assemblies = ko.observableArray([]);
+    self.regulators = ko.observableArray([]);
+
+    self.selected_assembly = ko.observable();
+
+    self.init = function() {
+        self.get_genomes().then(function() {
+            var promises = [];
+            for (var i in self.genomes()) {
+                var genome = self.genomes()[i].id;
+                promises.push(self.get_assemblies(genome))
+            }
+
+            $.when.apply(null, promises).then(function() {
+                $('#assembly').selectize({
+                    valueField: 'id',
+                    labelField: 'id',
+                    searchField: 'id',
+                    options: self.assemblies(),
+                    sortField: [{ field: 'weight', direction: 'desc'}],
+                    optgroupField: 'genome',
+                    optgroupValueField: 'id',
+                    optgroups: self.genomes(),
+                    plugins: ['optgroup_columns'],
+                    render: {
+                        optgroup_header: function(data, escape) {
+                            return '<div class="optgroup-header">' + escape(data.label) +
+                                   ' (<span class="scientific">' + escape(data.scientific) +
+                                   '</span>)</div>';
+                         }
+                    },
+                    onChange: function(value) {
+                        if (!value) {
+                            return;
+                        }
+                        self.get_regulators(value);
+                    }
+                });
+            });
+        });
+    };
+
+    self.get_genomes = function() {
+        return net.getJSON('api/v1.0/genomes').then(function(data) {
+            self.genomes = ko.observableArray(data.genomes);
+        });
+    };
+
+    self.get_assemblies = function(genome) {
+        return net.getJSON('api/v1.0/assemblies/' + genome).then(function(data) {
+            for (var i in data.assemblies) {
+                self.assemblies.push(data.assemblies[i])
+            }
+        });
+    };
+
+    self.get_regulators = function(assembly) {
+        return net.getJSON('api/v1.0/regulators/' + assembly).then(function(data) {
+            self.regulators.removeAll();
+            self.regulators.extend({ rateLimit: 100 });
+            for (var reg in data) {
+                self.regulators.push(data[reg]);
+            }
+        });
+    };
+
+}
+
 function SetViewModel(view_model) {
         $(document).data('view_model', view_model);
 }
