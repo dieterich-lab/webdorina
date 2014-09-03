@@ -12,8 +12,16 @@
 </head>
 <body role="document">
   <div class="container" role="main">
-    <h1><a href="{{ url_for('welcome') }}" style="color: #000">doRiNA</a>
-      <small>a database of RNA interactions in post-transcriptional regulation</small></h1>
+
+    <nav class="navbar navbar-default" role="navigation">
+      <a href="{{ url_for('welcome') }}" class="navbar-brand">doRiNA</a>
+      <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('welcome') }}">New Search</a></li>
+        <li><a href="{{ url_for('regulators') }}">Show available regulators</a></li>
+        <li><a href="{{ url_for('news') }}">What's new</a></li>
+        <li><a href="{{ url_for('help') }}">Documentation</a></li>
+      </ul>
+    </nav>
 
     {% block body %}{% endblock %}
 
