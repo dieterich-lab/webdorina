@@ -266,9 +266,15 @@ def _dict_to_bed(data):
 def news():
     return render_template('news.html')
 
+
 @app.route('/help')
 def help():
     return render_template('help.html')
+
+
+@app.route('/acknowledgements')
+def acknowledgements():
+    return render_template('acknowledgements.html')
 
 
 @app.route('/regulators')
