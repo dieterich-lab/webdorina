@@ -1,0 +1,17 @@
+          <h4>Python API</h4>
+
+          The dorina python API can be used to run local dorina queries. The
+          central entry point for all analyses is the <code>analyse</code> function.
+
+          <pre><code class="language-python">def analyse(genome, set_a, match_a='any', region_a='any',
+            set_b=None, match_b='any', region_b='any',
+            combine='or', genes=None, slop=0,
+            datadir=None)</code></pre>
+
+          It takes the name of the genome assembly to use, and at least a list of set A regulator names.
+          A simple analysis run with a custom regulator would be:
+
+          <pre><code class="language-python">from dorina.run import analyse
+
+results = analyse('hg19', ['/path/to/custom/regulator.bed', 'PARCLIP_PUM2_hg19'])</code></pre>
+

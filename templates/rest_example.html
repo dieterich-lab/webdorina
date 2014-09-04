@@ -1,0 +1,71 @@
+          <h4>REST API</h4>
+
+          <h5>List available genomes</h5>
+          <code class="language-bash">curl http://dorina.age.mpg.de/api/v1.0/genomes</code>
+          <pre><code class="language-javascript">{
+  "genomes": [
+    {
+      "id": "h_sapiens",
+      "label": "Human",
+      "scientific": "Homo sapiens",
+      "weight": 10
+    },
+    /* ... */
+    {
+      "id": "c_elegans",
+      "label": "Roundworm",
+      "scientific": "Caenorhabditis elegans",
+      "weight": 2
+    }
+  ]
+}</code></pre>
+
+          <h5>List available assemblies for <emph>H. sapiens</emph></h5>
+          <code class="language-bash">curl http://dorina.age.mpg.de/api/v1.0/assemblies/h_sapiens</code>
+          <pre><code class="language-javascript">{
+  assemblies": [
+       {
+         "3_utr": true,
+         "5_utr": true,
+         "all": true,
+         "cds": true,
+         "genome": "h_sapiens",
+         "hg19": true,
+         "id": "hg19",
+         "intergenic": true,
+         "intron": true,
+         "weight": 19
+       }
+   ]
+}</code></pre>
+
+          <h5>List available regulators for hg19</h5>
+          <code class="language-bash">curl http://dorina.age.mpg.de/api/v1.0/regulators/hg19</code>
+          <pre><code class="language-javascript">{
+  "CLIPSEQ_AGO2_hg19": {
+    "description": "This track contains 53,342 AGO-2 CLIP sites in HEK 293 cells.",
+    "experiment": "CLIPSEQ",
+    "id": "CLIPSEQ_AGO2_hg19",
+    "methods": "CLIP library preparation was carried out according to the original protocol. Additional details on data processing can be obtained from the original publication - section 'From reads to binding sites.' We have merged clusters from replicate experiments.",
+    "references": [
+      {
+        "authors": [
+          "Kishore S",
+          "Jaskiewicz L",
+          "Burger L",
+          "Hausser J",
+          "Khorshid M",
+          "Zavolan M"
+        ],
+        "journal": "Nature Methods",
+        "pages": "559-64",
+        "pubmed": "21572407",
+        "title": "A quantitative analysis of CLIP methods for identifying binding sites of RNA-binding proteins",
+        "year": "2011"
+      }
+    ],
+    "summary": "AGO2 CLIP-SEQ (Kishore 2011)"
+  },
+  /* ... */
+}</code></pre>
+

@@ -2,6 +2,52 @@
 {% block body %}
     <div class="panel-group">
       <h2>Help</h2>
-      Some help for doRiNA goes here.
+      <h3>Examples</h3>
+      <ul id="help-tabs" class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#regulator-centric" role="tab" data-toggle="tab">Regulator-centric</a></li>
+        <li><a href="#python-api" role="tab" data-toggle="tab">Python API</a></li>
+        <li><a href="#rest-api" role="tab" data-toggle="tab">REST API</a></li>
+        <li><a href="#target-centric" role="tab" data-toggle="tab">Target-centric</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="regulator-centric">
+          <h4>Regulator-centric search</h4>
+          For a scenario where researchers are interested in all genes
+          co-targeted by a set of regulators, doRiNA can be used as follows:
+          In this example, a <a href="{{ url_for('download_regulator', assembly='hg19', name='hsa-miR-221-3p') }}">custom regulator</a>
+          file will be provided to demonstrate the workflow using a custom regulator file.
+          Let's assume that after reading a publication by Kedde <emph>et al</emph>,
+          we are interestd in all co-targets of PUM2 and our custom set of regulators.
+          On the 'new search' page, we chose to upload our own bed file, and click "Go".<br>
+          On the analysis page, we pick the hg19 assembly and click "Search Database".
+          We don't want to limit the set of candidate genes, so we skip over that option.
+          After uploading our custom regulators, "uploaded custom regulator" is already
+          preselected. Click on the "Regulators (set A)" field, then start typing "PUM"
+          narrow down the search to the "PUM2 PAR-CLIP" dataset. Hit return to select PUM2.
+          You will see a "Regulators that must match" selection option show up above the
+          regulator list. As we want co-targets, switch the match option from "any" to "all".
+          Then click "Search doRiNA" to start the search.
+        </div>
+
+        <div class="tab-pane" id="python-api">
+          {% include 'python_example.html' %}
+        </div>
+
+        <div class="tab-pane" id="rest-api">
+          {% include 'rest_example.html' %}
+        </div>
+
+        <div class="tab-pane" id="target-centric">
+          <h4>Target centric</h4>
+        </div>
+      </div>
     </div>
+{% endblock %}
+{% block extra_scripts %}
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('#help-tabs a[href=' + $(location).attr('hash') + ']').tab('show')
+      });
+    </script>
 {% endblock %}
