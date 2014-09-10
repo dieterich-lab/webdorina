@@ -29,8 +29,19 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
             else:
                 set_b.append(regulator)
         query['set_b'] = set_b
+    try:
+        result = analyse(datadir=datadir, **query)
+    except Exception as e:
+        result = [{
+            'data_source': 'Job failed: %s' % e,
+            'score': -1,
+            'track': '',
+            'gene': '',
+            'site': '',
+            'strand': '',
+            'location': ''
+        }]
 
-    result = analyse(datadir=datadir, **query)
 
     if timeit:
         analysed = time.time()
