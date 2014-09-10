@@ -69,3 +69,10 @@
   /* ... */
 }</code></pre>
 
+          <h5>Run a search against PUM2 and hsa-miR-221-3p</h5>
+          <code class="language-bash">curl -d set_a[]=PARCLIP_PUM2_hg19 -d set_a[]=hsa-miR-221-3p -d assembly=hg19 -d match_a=all -d uuid=custom-uuid -X POST http://dorina.age.mpg.de/api/v1.0/search</code>
+          <pre><code class="language-javascript">{
+  "state": "pending",
+  "uuid": "custom-uuid"
+}</code></pre>
+
