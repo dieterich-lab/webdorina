@@ -30,7 +30,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.ucsc_url = ko.computed(function() {
         var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
-        url += "&hubUrl=https://bimsbproxy.mdc-berlin.de/dorina2/dorinaHub/hub.txt"
+        url += "&hubUrl=http://dorina2.mdc-berlin.de/dorinaHub/hub.txt"
         url += "&position="
         return url;
     }, self);
