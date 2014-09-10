@@ -249,6 +249,7 @@ class DorinaTestCase(TestCase):
 
     def test_search_nothing_cached(self):
         '''Test search() with nothing in cache'''
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
         data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
@@ -271,7 +272,8 @@ class DorinaTestCase(TestCase):
         self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.set(
     'sessions:fake-uuid',
@@ -301,6 +303,7 @@ Called webdorina.Queue.enqueue(
 
     def test_search_query_pending(self):
         '''Test search() with a query for this key pending'''
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
         key += '"match_a": "any", "match_b": "any", "region_a": "any", '
         key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
@@ -315,7 +318,8 @@ Called webdorina.Queue.enqueue(
         self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.set(
     'sessions:fake-uuid',
@@ -338,6 +342,8 @@ Called fake_store.get(
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
+
         data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         rv = self.client.post('/api/v1.0/search', data=data)
@@ -349,7 +355,8 @@ Called fake_store.get(
         self.assertEqual(rv.json, expected)
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.expire(
     '{0}',
@@ -380,6 +387,7 @@ Called fake_store.llen(
 
     def test_search_nothing_cached_all_regulators(self):
         '''Test search() for all regulators with nothing in cache'''
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
         data = dict(match_a='all', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi', 'fake01']
         rv = self.client.post('/api/v1.0/search', data=data)
@@ -398,7 +406,8 @@ Called fake_store.llen(
         self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.set(
     'sessions:fake-uuid',
@@ -429,6 +438,7 @@ Called webdorina.Queue.enqueue(
 
     def test_search_nothing_cached_CDS_region(self):
         '''Test search() in CDS regions with nothing in cache'''
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
         data = dict(match_a='any', region_a='CDS', assembly='hg19', uuid='fake-uuid')
         data['set_a[]']=['scifi', 'fake01']
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
@@ -448,7 +458,8 @@ Called webdorina.Queue.enqueue(
         self.assertEqual(rv.json, dict(uuid='fake-uuid', state="pending"))
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.set(
     'sessions:fake-uuid',
@@ -488,6 +499,8 @@ Called webdorina.Queue.enqueue(
         for res in results:
             self.r.rpush(key, json.dumps(res))
 
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
+
         data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
         data['set_a[]']=['scifi']
         rv = self.client.post('/api/v1.0/search', data=data)
@@ -499,7 +512,8 @@ Called webdorina.Queue.enqueue(
         self.assertEqual(rv.json, expected)
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.expire(
     '{0}',
@@ -543,6 +557,7 @@ Called fake_store.llen(
         for res in results:
             self.r.rpush(full_key, json.dumps(res))
 
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
 
         data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
         data['set_a[]']=['scifi']
@@ -564,7 +579,8 @@ Called fake_store.llen(
         self.assertEqual(rv.json, expected)
 
         # This query should trigger a defined set of calls
-        expected_trace = '''Called fake_store.exists(
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
     '{0}')
 Called fake_store.exists(
     '{2}')
