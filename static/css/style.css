@@ -28,3 +28,11 @@
 .regulator-group div::nth-of-type(2n) {
     background-color: #ddd;
 }
+
+.flashes {
+    padding-left: 0; }
+    .flashes .error {
+        border-radius: 4px;
+        background-color: #faa;
+        padding: 1em;
+        list-style: none; }
