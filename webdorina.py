@@ -23,6 +23,9 @@ MAX_RESULTS = 100
 SESSION_STORE = "/tmp/dorina-{unique_id}"
 
 app = Flask(__name__)
+
+# generate session key
+app.secret_key = os.urandom(24)
 redis_store = Redis(app)
 
 @app.route('/')
