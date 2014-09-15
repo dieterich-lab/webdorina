@@ -4,7 +4,7 @@
 import os
 import uuid
 from os import path
-from flask import Flask, render_template, jsonify, request, abort, send_file, make_response
+from flask import Flask, flash, render_template, jsonify, request, abort, send_file, make_response
 from flask_redis import Redis
 from rq import Queue
 from dorina import utils, config
@@ -23,6 +23,9 @@ MAX_RESULTS = 100
 SESSION_STORE = "/tmp/dorina-{unique_id}"
 
 app = Flask(__name__)
+
+# generate session key
+app.secret_key = os.urandom(24)
 redis_store = Redis(app)
 
 @app.route('/')
@@ -41,6 +44,8 @@ def index():
             dirname = SESSION_STORE.format(unique_id=unique_id)
             bedfile.save(path.join(dirname, filename))
             custom_regulator = 'true'
+        else:
+            flash(u'Bedfile must end on ".bed"', 'error')
     else:
         unique_id = _create_session()
 
