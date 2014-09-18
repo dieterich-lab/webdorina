@@ -30,7 +30,7 @@ class RunTestCase(unittest.TestCase):
         run.Redis = fakeredis.FakeRedis
         self.r = fakeredis.FakeStrictRedis()
         self.tt = TraceTracker()
-        self.return_value = []
+        self.return_value = ''
         mock('run.analyse', tracker=self.tt, returns_func=self.get_return_value)
 
     def tearDown(self):
@@ -53,38 +53,18 @@ class RunTestCase(unittest.TestCase):
         query = dict(genome='hg19', set_a=['scifi'], match_a='any',
                      region_a='any', set_b=None)
 
-        self.return_value = [
-            {'data_source': 'scifi',
-             'score': 5, 'track': 'chr1',
-             'gene': 'gene01.01',
-             'site': 'scifi_cds',
-             'strand': '+',
-             'location': 'chr1:250-260'
-            },
-            {'data_source': 'scifi',
-             'score': 2, 'track': 'chr1',
-             'gene': 'gene01.01',
-             'site': 'scifi_cds',
-             'strand': '+',
-             'location': 'chr1:250-260'
-             },
-             {'data_source': 'scifi',
-              'score': 7, 'track': 'chr1',
-              'gene': 'gene01.02',
-              'site': 'scifi_intron',
-              'strand': '+',
-              'location': 'chr1:2350-2360'}
-        ]
+        self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+	250	260
+	chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+	2350	2360"""
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
-        self.return_value.sort(key=lambda x: x['score'], reverse=True)
-        serialised_result = [ json.dumps(i) for i in self.return_value ]
+        expected = self.return_value.split('\n')
+        expected.sort(key=lambda x: x.split('\t')[14], reverse=True)
 
         assert_same_trace(self.tt, expected_trace)
 
         self.assertTrue(self.r.exists('results:fake_key'))
-        self.assertEqual(3, self.r.llen('results:fake_key'))
-        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+        self.assertEqual(2, self.r.llen('results:fake_key'))
+        self.assertEqual(expected, self.r.lrange('results:fake_key', 0, -1))
 
         self.assertTrue(self.r.exists('sessions:fake-uuid'))
         self.assertEqual(json.loads(self.r.get('sessions:fake-uuid')), dict(uuid='fake-uuid', state='done'))
@@ -97,24 +77,14 @@ class RunTestCase(unittest.TestCase):
         query = dict(genome='hg19', set_a=['scifi'], match_a='any',
                      region_a='any', set_b=None)
 
-        self.return_value = []
+        self.return_value = ''
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
-        expected_result = [{
-            'data_source': 'no results found',
-            'score': -1,
-            'track': '',
-            'gene': '',
-            'site': '',
-            'strand': '',
-            'location': ''
-        }]
-
-        serialised_result = [ json.dumps(i) for i in expected_result ]
+        expected = [ '\tNo results found\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t' ]
 
         self.assertTrue(self.r.exists('results:fake_key'))
         self.assertEqual(1, self.r.llen('results:fake_key'))
-        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+        self.assertEqual(expected, self.r.lrange('results:fake_key', 0, -1))
 
     def test_run_analyse_custom_regulator(self):
         '''Test run_analyze() with a custom regulator'''
@@ -130,38 +100,18 @@ class RunTestCase(unittest.TestCase):
         query = dict(genome='hg19', set_a=['scifi', 'fake-uuid'], match_a='any',
                      region_a='any', set_b=None)
 
-        self.return_value = [
-            {'data_source': 'scifi',
-             'score': 5, 'track': 'chr1',
-             'gene': 'gene01.01',
-             'site': 'scifi_cds',
-             'strand': '+',
-             'location': 'chr1:250-260'
-            },
-            {'data_source': 'scifi',
-             'score': 2, 'track': 'chr1',
-             'gene': 'gene01.01',
-             'site': 'scifi_cds',
-             'strand': '+',
-             'location': 'chr1:250-260'
-             },
-             {'data_source': 'scifi',
-              'score': 7, 'track': 'chr1',
-              'gene': 'gene01.02',
-              'site': 'scifi_intron',
-              'strand': '+',
-              'location': 'chr1:2350-2360'}
-        ]
+        self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+	250	260
+chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+	2350	2360"""
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
-        self.return_value.sort(key=lambda x: x['score'], reverse=True)
-        serialised_result = [ json.dumps(i) for i in self.return_value ]
+        expected = self.return_value.split('\n')
+        expected.sort(key=lambda x: x.split('\t')[14], reverse=True)
 
         assert_same_trace(self.tt, expected_trace)
 
         self.assertTrue(self.r.exists('results:fake_key'))
-        self.assertEqual(3, self.r.llen('results:fake_key'))
-        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+        self.assertEqual(2, self.r.llen('results:fake_key'))
+        self.assertEqual(expected, self.r.lrange('results:fake_key', 0, -1))
 
         self.assertTrue(self.r.exists('sessions:fake-uuid'))
         self.assertEqual(json.loads(self.r.get('sessions:fake-uuid')), dict(uuid='fake-uuid', state='done'))
@@ -173,40 +123,22 @@ class RunTestCase(unittest.TestCase):
         '''Test filter()'''
 
         data = [
-            {'data_source': 'scifi',
-             'score': 5, 'track': 'chr1',
-             'gene': 'gene01.01',
-             'site': 'scifi_cds',
-             'strand': '+',
-             'location': 'chr1:250-260'
-            },
-            {'data_source': 'scifi',
-             'score': 2, 'track': 'chr1',
-             'gene': 'gene01.02',
-             'site': 'scifi_cds',
-             'strand': '+',
-             'location': 'chr1:250-260'
-             },
-             {'data_source': 'scifi',
-              'score': 7, 'track': 'chr1',
-              'gene': 'gene01.03',
-              'site': 'scifi_intron',
-              'strand': '+',
-              'location': 'chr1:2350-2360'}
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260',
+        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+	2350	2360',
+        'chr1	doRiNA2	gene	3001	4000	.	+	.	ID=gene01.03	chr1	3350	3360	PARCLIP#scifi*scifi_intron	7	+	3350	3360'
         ]
 
         for d in data:
-            self.r.rpush('results:fake_full_key', json.dumps(d))
+            self.r.rpush('results:fake_full_key', d)
 
         run.filter([u'gene01.01', 'gene01.02'], 'results:fake_full_key',
                    'results:fake_key', 'results:fake_key_pending', 'fake-uuid')
 
         data.pop()
-        serialised_result = [ json.dumps(i) for i in data ]
 
         self.assertTrue(self.r.exists('results:fake_key'))
         self.assertEqual(2, self.r.llen('results:fake_key'))
-        self.assertEqual(serialised_result, self.r.lrange('results:fake_key', 0, -1))
+        self.assertEqual(data, self.r.lrange('results:fake_key', 0, -1))
 
         self.assertTrue(self.r.exists('results:sessions:fake-uuid'))
 
@@ -336,11 +268,12 @@ Called fake_store.get(
         key += '"match_a": "any", "match_b": "any", "region_a": "any", '
         key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
         results = [
-            dict(track='fake', gene='fake01', data_source='fake source', score=42),
-            dict(track='fake', gene='fake02', data_source='fake source', score=23)
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260',
+        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+	2350	2360',
+        'chr1	doRiNA2	gene	3001	4000	.	+	.	ID=gene01.03	chr1	3350	3360	PARCLIP#scifi*scifi_intron	7	+	3350	3360'
         ]
         for res in results:
-            self.r.rpush(key, json.dumps(res))
+            self.r.rpush(key, res)
 
         self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
 
@@ -494,10 +427,10 @@ Called webdorina.Queue.enqueue(
         key += '"match_a": "any", "match_b": "any", "region_a": "any", '
         key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
         results = [
-            dict(track='fake', gene='fake01', data_source='fake source', score=42),
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260'
         ]
         for res in results:
-            self.r.rpush(key, json.dumps(res))
+            self.r.rpush(key, res)
 
         self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
 
@@ -551,11 +484,11 @@ Called fake_store.llen(
         key = templ.format('fake01')
         key_pending = '{0}_pending'.format(key)
         results = [
-            dict(track='fake', gene='fake01', data_source='fake source', score=42),
-            dict(track='fake', gene='fake02', data_source='fake source', score=23)
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260',
+        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+	2350	2360'
         ]
         for res in results:
-            self.r.rpush(full_key, json.dumps(res))
+            self.r.rpush(full_key, res)
 
         self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
 
@@ -572,7 +505,7 @@ Called fake_store.llen(
         results.pop()
         self.r.set('results:sessions:fake-uuid', json.dumps(dict(redirect=key)))
         for res in results:
-            self.r.rpush(key, json.dumps(res))
+            self.r.rpush(key, res)
 
         rv = self.client.get('/api/v1.0/result/fake-uuid')
         expected = dict(state='done', results=results, more_results=False, next_offset=100)

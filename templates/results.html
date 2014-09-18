@@ -41,7 +41,7 @@
                   <td data-bind="text: gene"></td>
                   <td data-bind="text: data_source"></td>
                   <td data-bind="text: score"></td>
-                  <td style="word-break: break-all"> <a target="_blank" data-bind="text: site, attr: {href: ($parent.ucsc_url() + location)}"></a></td>
+                  <td style="word-break: break-all"> <a target="_blank" data-bind="text: site, attr: {href: ($parent.ucsc_url() + location())}"></a></td>
                   <td data-bind="text: location"></td>
                   <td data-bind="text: strand"></td>
                 </tr>

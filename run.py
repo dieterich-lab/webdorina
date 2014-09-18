@@ -30,52 +30,39 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
                 set_b.append(regulator)
         query['set_b'] = set_b
     try:
-        result = analyse(datadir=datadir, **query)
+        result = str(analyse(datadir=datadir, **query))
     except Exception as e:
-        result = [{
-            'data_source': 'Job failed: %s' % e,
-            'score': -1,
-            'track': '',
-            'gene': '',
-            'site': '',
-            'strand': '',
-            'location': ''
-        }]
-
+        result = '\tJob failed: %s\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t' % e
 
     if timeit:
         analysed = time.time()
         print "analyse() ran {} seconds".format(analysed - started)
 
-    result.sort(key=lambda x: x['score'], reverse=True)
+    lines = result.split('\n')
+    def get_score(x):
+	cols = x.split('\t')
+	if len(cols) < 14:
+	    return -1
+        try:
+            return float(cols[13])
+        except ValueError:
+            return -1
+
+    lines.sort(key=get_score, reverse=True)
 
     if timeit:
         sorted_time = time.time()
         print "sort() ran {} seconds".format(sorted_time - analysed)
 
-    num_results = len(result)
+    num_results = len(lines)
     print "returning %s rows" % num_results
 
-    if num_results < 1:
-        result.append({
-            'data_source': 'no results found',
-            'score': -1,
-            'track': '',
-            'gene': '',
-            'site': '',
-            'strand': '',
-            'location': ''
-        })
+    if lines == ['']:
+        lines = ['\tNo results found\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t']
         num_results += 1
 
-    json_results = map(json.dumps, result)
-
-    if timeit:
-        json_time = time.time()
-        print "json.dumps ran {} seconds".format(json_time - sorted_time)
-
     for i in xrange(0, num_results, 1000):
-        res = json_results[i:i+1000]
+        res = lines[i:i+1000]
         redis_store.rpush(query_key, *res)
 
 
@@ -97,9 +84,12 @@ def filter(genes, full_query_key, query_key, query_pending_key, uuid):
 
     full_results = redis_store.lrange(full_query_key, 0, -1)
     for res_string in full_results:
-        res = json.loads(res_string)
-        if res['gene'] in genes:
-            redis_store.rpush(query_key, json.dumps(res))
+        cols = res_string.split('\t')
+        annotations = cols[8]
+        for field in annotations.split(';'):
+            key, val = field.split('=')
+            if key == 'ID' and val in genes:
+                redis_store.rpush(query_key, res_string)
 
     redis_store.expire(query_key, RESULT_TTL)
     redis_store.delete(query_pending_key)

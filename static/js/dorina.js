@@ -1,3 +1,53 @@
+function DoRiNAResult(line) {
+    var self = this;
+    self.cols = line.split('\t');
+
+    self.annotations = ko.computed(function() {
+        return (self.cols.length > 12) ? self.cols[12] : 'unknown#unknown*unknown';
+    }, self);
+
+    self.ann_regex = /(.*)#(.*)\*(.*)/;
+
+    self.track = ko.computed(function() {
+        var match = self.annotations().match(self.ann_regex);
+        return (match && match.length > 2) ? match[2] : 'unknown';
+    }, self);
+
+    self.data_source = ko.computed(function() {
+        var match = self.annotations().match(self.ann_regex);
+        return (match && match.length > 1) ? match[1] : 'unknown';
+    }, self);
+
+    self.site = ko.computed(function() {
+        var match = self.annotations().match(self.ann_regex);
+        return (match && match.length > 3) ? match[3] : 'unknown';
+    }, self);
+
+    self.gene = ko.computed(function() {
+        if (self.cols.length < 9) {
+            return 'unknown';
+        }
+        var keyvals = self.cols[8];
+        var match = keyvals.match(/ID=(.*?)($|;\w+.*?=.*)/);
+        return match ? match[1] : 'unknown';
+    }, self);
+
+    self.score = ko.computed(function() {
+        return (self.cols.length > 13) ? self.cols[13] : '-1';
+    }, self);
+
+    self.location = ko.computed(function() {
+        if (self.cols.length < 12) {
+            return 'unknown:0-0';
+        }
+        return self.cols[9] + ':' + self.cols[10] + '-' + self.cols[11];
+    }, self);
+
+    self.strand = ko.computed(function() {
+        return (self.cols.length > 14) ? self.cols[14] : '.';
+    }, self);
+};
+
 function DoRiNAViewModel(net, uuid, custom_regulator) {
     var self = this;
     self.retry_after = 1000;
@@ -252,7 +302,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.pending(false);
             self.more_results(data.more_results);
             for (var i in data.results) {
-                self.results.push(data.results[i]);
+                self.results.push(new DoRiNAResult(data.results[i]));
             }
             if (data.more_results && data.next_offset) {
                 self.offset(data.next_offset);

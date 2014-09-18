@@ -223,7 +223,7 @@ def get_result(uuid, offset):
     rec = json.loads(redis_store.get(key))
     query_key = str(rec['redirect'])
     redis_store.expire(query_key, RESULT_TTL)
-    result = map(json.loads, redis_store.lrange(query_key, offset + 0, offset + MAX_RESULTS - 1))
+    result = redis_store.lrange(query_key, offset + 0, offset + MAX_RESULTS - 1)
     next_offset = offset + MAX_RESULTS
     more_results = True if redis_store.llen(query_key) > offset + MAX_RESULTS else False
     return jsonify(dict(state='done', results=result, more_results=more_results,
