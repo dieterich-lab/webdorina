@@ -27,6 +27,7 @@ class RedisStore(object):
 
 class RunTestCase(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         run.Redis = fakeredis.FakeRedis
         self.r = fakeredis.FakeStrictRedis()
         self.tt = TraceTracker()
@@ -54,11 +55,11 @@ class RunTestCase(unittest.TestCase):
                      region_a='any', set_b=None)
 
         self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+	250	260
-	chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+	2350	2360"""
+chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+	2350	2360"""
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
         expected = self.return_value.split('\n')
-        expected.sort(key=lambda x: x.split('\t')[14], reverse=True)
+        expected.sort(key=lambda x: float(x.split('\t')[13]), reverse=True)
 
         assert_same_trace(self.tt, expected_trace)
 
@@ -105,7 +106,7 @@ chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scif
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
         expected = self.return_value.split('\n')
-        expected.sort(key=lambda x: x.split('\t')[14], reverse=True)
+        expected.sort(key=lambda x: float(x.split('\t')[13]), reverse=True)
 
         assert_same_trace(self.tt, expected_trace)
 
