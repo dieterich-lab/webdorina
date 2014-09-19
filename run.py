@@ -83,13 +83,25 @@ def filter(genes, full_query_key, query_key, query_pending_key, uuid):
     redis_store = Redis()
 
     full_results = redis_store.lrange(full_query_key, 0, -1)
+    results = []
     for res_string in full_results:
+        if res_string == '':
+            continue
         cols = res_string.split('\t')
         annotations = cols[8]
         for field in annotations.split(';'):
             key, val = field.split('=')
             if key == 'ID' and val in genes:
-                redis_store.rpush(query_key, res_string)
+                results.append(res_string)
+
+    num_results = len(results)
+    if num_results == 0:
+        results.append('\tNo results found\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t')
+        num_results += 1
+
+    for i in xrange(0, num_results, 1000):
+        res = results[i:i+1000]
+        redis_store.rpush(query_key, *res)
 
     redis_store.expire(query_key, RESULT_TTL)
     redis_store.delete(query_pending_key)
