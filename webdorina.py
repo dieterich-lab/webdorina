@@ -121,6 +121,28 @@ def list_regulators(assembly):
     return jsonify(regulators)
 
 
+@app.route('/api/v1.0/genes/<assembly>', defaults={'query': ''})
+@app.route('/api/v1.0/genes/<assembly>/<query>')
+def list_genes(assembly, query):
+
+    if query != '':
+        start = "[{0}".format(query)
+        end = "(" + start[1:-1] + chr(ord(start[-1]) + 1)
+    else:
+        start = "-"
+        end = "+"
+
+    cache_key = "genes:{0}".format(assembly)
+
+    if not redis_store.exists(cache_key):
+        new_genes = utils.get_genes(assembly, datadir)
+        for gene in new_genes:
+            redis_store.zadd(cache_key, gene, 0)
+
+    genes = redis_store.zrangebylex(cache_key, start, end)
+    return jsonify(dict(genes=genes))
+
+
 @app.route('/api/v1.0/status/<uuid>')
 def status(uuid):
     key = "sessions:{0}".format(uuid)

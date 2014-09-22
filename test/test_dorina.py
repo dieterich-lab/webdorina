@@ -568,6 +568,15 @@ Called fake_store.llen(
         self.assertEqual(got.json, valid)
 
 
+    def test_genes(self):
+        '''Test list_genes()'''
+        expected = dict(genes=['gene01.01', 'gene01.02'])
+        fakeredis.FakeRedis.zrangebylex = Mock('zrangebylex', returns=['gene01.01', 'gene01.02'], tracker=self.tt)
+        got = self.client.get('/api/v1.0/genes/hg19')
+
+        self.assertEqual(got.json, expected)
+
+
     def test_download_regulator(self):
         '''Test download_regulator()'''
         got = self.client.get('/api/v1.0/download/regulator/hg19/invalid')
