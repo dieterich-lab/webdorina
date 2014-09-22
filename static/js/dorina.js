@@ -358,6 +358,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.results.removeAll();
         }
         return net.post('api/v1.0/search', search_data).then(function(data) {
+            self.uuid(data.uuid);
             self.poll_result(data.uuid);
         });
     };

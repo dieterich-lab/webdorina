@@ -242,12 +242,13 @@ def search():
     q = Queue(connection=redis_store.connection, default_timeout=600)
     job = q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query, unique_id)
     if chained_call:
+        chained_unique_id = _create_session()
         redis_store.set(chained_query_pending_key, True)
         redis_store.expire(chained_query_pending_key, 30)
-        session_dict = dict(state='pending', uuid=unique_id)
-        redis_store.set('sessions:{0}'.format(unique_id), json.dumps(session_dict))
-        redis_store.expire('sessions:{0}'.format(unique_id), SESSION_TTL)
-        q.enqueue(run.filter, chained_query['genes'], full_query_key, chained_query_key, chained_query_pending_key, unique_id, depends_on=job)
+        session_dict = dict(state='pending', uuid=chained_unique_id)
+        redis_store.set('sessions:{0}'.format(chained_unique_id), json.dumps(session_dict))
+        redis_store.expire('sessions:{0}'.format(chained_unique_id), SESSION_TTL)
+        q.enqueue(run.filter, chained_query['genes'], full_query_key, chained_query_key, chained_query_pending_key, chained_unique_id, depends_on=job)
 
 
     return jsonify(session_dict)
