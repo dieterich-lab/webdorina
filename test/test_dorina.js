@@ -94,7 +94,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'CDS',
-                'genes': 'all',
+                'genes': [],
                 'offset': 0,
                 'uuid': 'fake-uuid'
             });
@@ -117,7 +117,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'CDS',
-                'genes': 'all',
+                'genes': [],
                 'offset': 0,
                 'set_b': ['fake_mirna'],
                 'match_b': 'any',
@@ -146,7 +146,7 @@ describe('DoRiNAViewModel', function() {
                 'assembly': 'hg19',
                 'match_a': 'any',
                 'region_a': 'CDS',
-                'genes': 'all',
+                'genes': [],
                 'offset': 0,
                 'slop': 23,
                 'uuid': 'fake-uuid'

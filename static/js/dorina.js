@@ -134,7 +134,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.offset = ko.observable(0);
     self.pending = ko.observable(false);
 
-    self.genes = ko.observable('');
+    self.genes = ko.observableArray([]);
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
 
@@ -205,10 +205,28 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
 
+                var $genes, genes;
                 var $regulators, regulators;
                 var $regulators_setb, regulators_setb;
                 var $shown_types, shown_types;
                 var $shown_types_setb, shown_types_setb;
+
+                $genes = $('#genes').selectize({
+                    options: [],
+                    valueField: 'id',
+                    labelField: 'id',
+                    searchField: 'id',
+                    create: false,
+                    load: function(query, callback) {
+                        if (query.length == 0) {
+                            return callback();
+                        }
+                        net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function(res) {
+
+                            callback(res.genes.map(function(r) {return {id: r}}));
+                        });
+                    }
+                });
 
                 $shown_types = $('#shown-types').selectize({
                     options: self.regulator_types(),
@@ -317,7 +335,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             assembly: self.chosenAssembly(),
             match_a: self.match_a(),
             region_a: self.region_a(),
-            genes: self.candidate_genes(),
+            genes: self.genes(),
             offset: self.offset(),
             uuid: self.uuid()
         };
@@ -391,14 +409,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         $('#regulators')[0].selectize.clear();
         $('#regulators_setb')[0].selectize.clear();
     };
-
-    self.candidate_genes = ko.computed(function() {
-        if (self.genes() == '') {
-            return 'all';
-        }
-        return self.genes();
-    });
-
 
     /* These functions break the ViewModel abstraction a bit, as they trigger
      * view changes, but I can't think of a better way to implement this at the
