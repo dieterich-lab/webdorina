@@ -1,6 +1,7 @@
 function DoRiNAResult(line) {
     var self = this;
     self.cols = line.split('\t');
+    self.error_state = ko.observable(false);
 
     self.annotations = ko.computed(function() {
         return (self.cols.length > 12) ? self.cols[12] : 'unknown#unknown*unknown';
@@ -10,6 +11,10 @@ function DoRiNAResult(line) {
 
     self.track = ko.computed(function() {
         var match = self.annotations().match(self.ann_regex);
+
+        if (self.error_state()) {
+            return '';
+        }
 
         if (match) {
             return match[2];
@@ -25,6 +30,9 @@ function DoRiNAResult(line) {
 
     self.data_source = ko.computed(function() {
         var match = self.annotations().match(self.ann_regex);
+        if (self.error_state()) {
+            return '';
+        }
 
         if (match) {
             return match[1];
@@ -40,6 +48,9 @@ function DoRiNAResult(line) {
 
     self.site = ko.computed(function() {
         var match = self.annotations().match(self.ann_regex);
+        if (self.error_state()) {
+            return '';
+        }
 
         if (match) {
             return match[3];
@@ -59,14 +70,29 @@ function DoRiNAResult(line) {
         }
         var keyvals = self.cols[8];
         var match = keyvals.match(/ID=(.*?)($|;\w+.*?=.*)/);
-        return match ? match[1] : 'unknown';
+        if (match) {
+            return match[1];
+        }
+
+        if (keyvals == '') {
+            return 'unknown';
+        }
+
+        self.error_state(true);
+        return keyvals;
     }, self);
 
     self.score = ko.computed(function() {
+        if (self.error_state()) {
+            return '';
+        }
         return (self.cols.length > 13) ? self.cols[13] : '-1';
     }, self);
 
     self.location = ko.computed(function() {
+        if (self.error_state()) {
+            return '';
+        }
         if (self.cols.length < 12) {
             return 'unknown:0-0';
         }
@@ -74,10 +100,16 @@ function DoRiNAResult(line) {
     }, self);
 
     self.strand = ko.computed(function() {
+        if (self.error_state()) {
+            return '';
+        }
         return (self.cols.length > 6) ? self.cols[6] : '.';
     }, self);
 
     self.feature_strand = ko.computed(function() {
+        if (self.error_state()) {
+            return '';
+        }
         return (self.cols.length > 14) ? self.cols[14] : '.';
     }, self);
 };

@@ -1,14 +1,17 @@
 describe('DoRiNAResult', function() {
 
     var line = 'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260';
+    var no_result = '\t\t\t\t\t\t\t\tNo results found';
     var res;
 
     beforeEach(function() {
         res = new DoRiNAResult(line);
+        no_res = new DoRiNAResult(no_result);
     });
 
     afterEach(function() {
         res = null;
+        no_res = null;
     });
 
 
@@ -33,6 +36,10 @@ describe('DoRiNAResult', function() {
             res = new DoRiNAResult('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t');
             res.track().should.eql('unknown');
         });
+
+        it('should not display anything in error state', function() {
+            no_res.track().should.eql('');
+        });
     });
 
 
@@ -44,6 +51,10 @@ describe('DoRiNAResult', function() {
         it('should deal with invalid fields', function() {
             res = new DoRiNAResult('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t');
             res.data_source().should.eql('unknown');
+        });
+
+        it('should not display anything in error state', function() {
+            no_res.data_source().should.eql('');
         });
     });
 
@@ -57,6 +68,10 @@ describe('DoRiNAResult', function() {
             res = new DoRiNAResult('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t');
             res.site().should.eql('unknown');
         });
+
+        it('should not display anything in error state', function() {
+            no_res.site().should.eql('');
+        });
     });
 
 
@@ -68,6 +83,10 @@ describe('DoRiNAResult', function() {
         it('should deal with invalid fields', function() {
             res = new DoRiNAResult('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t');
             res.gene().should.eql('unknown');
+        });
+
+        it('should display error output if needed', function() {
+            no_res.gene().should.eql('No results found');
         });
     });
 
@@ -81,6 +100,10 @@ describe('DoRiNAResult', function() {
             res = new DoRiNAResult('');
             res.score().should.eql('-1');
         });
+
+        it('should not display anything in error state', function() {
+            no_res.score().should.eql('');
+        });
     });
 
 
@@ -92,6 +115,10 @@ describe('DoRiNAResult', function() {
         it('should deal with invalid fields', function() {
             res = new DoRiNAResult('');
             res.location().should.eql('unknown:0-0');
+        });
+
+        it('should not display anything in error state', function() {
+            no_res.location().should.eql('');
         });
     });
 
@@ -105,6 +132,10 @@ describe('DoRiNAResult', function() {
             res = new DoRiNAResult('');
             res.strand().should.eql('.');
         });
+
+        it('should not display anything in error state', function() {
+            no_res.strand().should.eql('');
+        });
     });
 
     describe('#feature_strand', function() {
@@ -115,6 +146,10 @@ describe('DoRiNAResult', function() {
         it('should deal with invalid fields', function() {
             res = new DoRiNAResult('');
             res.feature_strand().should.eql('.');
+        });
+
+        it('should not display anything in error state', function() {
+            no_res.feature_strand().should.eql('');
         });
     });
 });
