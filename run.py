@@ -32,7 +32,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
     try:
         result = str(analyse(datadir=datadir, **query))
     except Exception as e:
-        result = '\tJob failed: %s\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t' % e
+        result = '\t\t\t\t\t\t\t\tJob failed: %s' % e
 
     if timeit:
         analysed = time.time()
@@ -58,7 +58,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
     print "returning %s rows" % num_results
 
     if lines == ['']:
-        lines = ['\tNo results found\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t']
+        lines = ['\t\t\t\t\t\t\t\tNo results found']
         num_results += 1
 
     for i in xrange(0, num_results, 1000):
@@ -96,7 +96,7 @@ def filter(genes, full_query_key, query_key, query_pending_key, uuid):
 
     num_results = len(results)
     if num_results == 0:
-        results.append('\tNo results found\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t')
+        results.append('\t\t\t\t\t\t\t\tNo results found')
         num_results += 1
 
     for i in xrange(0, num_results, 1000):

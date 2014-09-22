@@ -81,7 +81,7 @@ chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scif
         self.return_value = ''
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
-        expected = [ '\tNo results found\t\t\t\t\t\t\t\t\t\t\t\t\t-1\t\t\t' ]
+        expected = ['\t\t\t\t\t\t\t\tNo results found']
 
         self.assertTrue(self.r.exists('results:fake_key'))
         self.assertEqual(1, self.r.llen('results:fake_key'))
