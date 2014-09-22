@@ -288,11 +288,11 @@ def download_results(uuid):
         abort(404)
 
     result_key = json.loads(redis_store.get(key))['redirect']
-    results = map(json.loads, redis_store.lrange(result_key, 0, -1))
+    results = redis_store.lrange(result_key, 0, -1)
 
     out = StringIO()
     for res in results:
-        out.write("{}\n".format(_dict_to_bed(res)))
+        out.write("{}\n".format(res))
 
     response = make_response(out.getvalue())
     response.headers["Content-Disposition"] = "attachment; filename=dorina.bed"
