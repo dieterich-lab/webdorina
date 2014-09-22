@@ -50,7 +50,7 @@ describe('DoRiNAResult', function() {
 
         it('should deal with invalid fields', function() {
             res = new DoRiNAResult('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t');
-            res.data_source().should.eql('unknown');
+            res.data_source().should.eql('CUSTOM');
         });
 
         it('should not display anything in error state', function() {

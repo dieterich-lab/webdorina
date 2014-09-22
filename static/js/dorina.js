@@ -25,7 +25,11 @@ function DoRiNAResult(line) {
             return match[0];
         }
 
-        return 'unknown';
+        var track = self.annotations();
+        if (track == '') {
+            track = 'unknown';
+        }
+        return track;
     }, self);
 
     self.data_source = ko.computed(function() {
@@ -43,7 +47,7 @@ function DoRiNAResult(line) {
             return match[1];
         }
 
-        return 'unknown';
+        return 'CUSTOM';
     }, self);
 
     self.site = ko.computed(function() {
@@ -61,7 +65,11 @@ function DoRiNAResult(line) {
             return match[0];
         }
 
-        return 'unknown';
+        var site = self.annotations();
+        if (site == '') {
+            site = 'unknown';
+        }
+        return site;
     }, self);
 
     self.gene = ko.computed(function() {
