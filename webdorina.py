@@ -193,6 +193,11 @@ def search():
 
     print query_key
 
+    chained_call = False
+    chained_query = dict(query)
+    chained_query_key = query_key
+    chained_query_pending_key = query_pending_key
+
     if redis_store.exists(query_key):
         session_dict = dict(uuid=unique_id, state='done')
         redis_store.expire(query_key, RESULT_TTL)
@@ -219,6 +224,7 @@ def search():
             q.enqueue(run.filter, query['genes'], full_query_key, query_key, query_pending_key, unique_id)
             return jsonify(session_dict)
 
+        chained_call = True
         query = full_query
         query_key = full_query_key
         query_pending_key = full_query_pending_key
@@ -234,7 +240,15 @@ def search():
     redis_store.expire(query_pending_key, 30)
 
     q = Queue(connection=redis_store.connection, default_timeout=600)
-    q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query, unique_id)
+    job = q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query, unique_id)
+    if chained_call:
+        redis_store.set(chained_query_pending_key, True)
+        redis_store.expire(chained_query_pending_key, 30)
+        session_dict = dict(state='pending', uuid=unique_id)
+        redis_store.set('sessions:{0}'.format(unique_id), json.dumps(session_dict))
+        redis_store.expire('sessions:{0}'.format(unique_id), SESSION_TTL)
+        q.enqueue(run.filter, chained_query['genes'], full_query_key, chained_query_key, chained_query_pending_key, unique_id, depends_on=job)
+
 
     return jsonify(session_dict)
 
