@@ -140,7 +140,8 @@ def list_genes(assembly, query):
             redis_store.zadd(cache_key, gene, 0)
 
     genes = redis_store.zrangebylex(cache_key, start, end)
-    return jsonify(dict(genes=genes))
+    return jsonify(dict(genes=genes[:500]))
+
 
 
 @app.route('/api/v1.0/status/<uuid>')
