@@ -10,17 +10,47 @@ function DoRiNAResult(line) {
 
     self.track = ko.computed(function() {
         var match = self.annotations().match(self.ann_regex);
-        return (match && match.length > 2) ? match[2] : 'unknown';
+
+        if (match) {
+            return match[2];
+        }
+
+        if (self.annotations().indexOf('|') > -1) {
+            match = self.annotations().split('|');
+            return match[0];
+        }
+
+        return 'unknown';
     }, self);
 
     self.data_source = ko.computed(function() {
         var match = self.annotations().match(self.ann_regex);
-        return (match && match.length > 1) ? match[1] : 'unknown';
+
+        if (match) {
+            return match[1];
+        }
+
+        if (self.annotations().indexOf('|') > -1) {
+            match = self.annotations().split('|');
+            return match[1];
+        }
+
+        return 'unknown';
     }, self);
 
     self.site = ko.computed(function() {
         var match = self.annotations().match(self.ann_regex);
-        return (match && match.length > 3) ? match[3] : 'unknown';
+
+        if (match) {
+            return match[3];
+        }
+
+        if (self.annotations().indexOf('|') > -1) {
+            match = self.annotations().split('|');
+            return match[0];
+        }
+
+        return 'unknown';
     }, self);
 
     self.gene = ko.computed(function() {
@@ -44,6 +74,10 @@ function DoRiNAResult(line) {
     }, self);
 
     self.strand = ko.computed(function() {
+        return (self.cols.length > 6) ? self.cols[6] : '.';
+    }, self);
+
+    self.feature_strand = ko.computed(function() {
         return (self.cols.length > 14) ? self.cols[14] : '.';
     }, self);
 };

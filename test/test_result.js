@@ -106,4 +106,15 @@ describe('DoRiNAResult', function() {
             res.strand().should.eql('.');
         });
     });
+
+    describe('#feature_strand', function() {
+        it('should be parsed correctly', function() {
+            res.feature_strand().should.eql('+');
+        });
+
+        it('should deal with invalid fields', function() {
+            res = new DoRiNAResult('');
+            res.feature_strand().should.eql('.');
+        });
+    });
 });
