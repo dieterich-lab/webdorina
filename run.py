@@ -39,6 +39,9 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
         print "analyse() ran {} seconds".format(analysed - started)
 
     lines = result.split('\n')
+    if lines[-1] == '':
+        lines = lines[:-1]
+
     def get_score(x):
 	cols = x.split('\t')
 	if len(cols) < 14:
@@ -57,7 +60,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
     num_results = len(lines)
     print "returning %s rows" % num_results
 
-    if lines == ['']:
+    if num_results == 0:
         lines = ['\t\t\t\t\t\t\t\tNo results found']
         num_results += 1
 
