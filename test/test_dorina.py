@@ -435,7 +435,8 @@ Called webdorina.Queue.enqueue(
 
         self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
 
-        data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
+        data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
+        data['genes[]']=['fake01']
         data['set_a[]']=['scifi']
         rv = self.client.post('/api/v1.0/search', data=data)
 
@@ -493,7 +494,8 @@ Called fake_store.llen(
 
         self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
 
-        data = dict(match_a='any', assembly='hg19', genes='fake01', uuid='fake-uuid')
+        data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
+        data['genes[]']=['fake01']
         data['set_a[]']=['scifi']
         rv = self.client.post('/api/v1.0/search', data=data)
 

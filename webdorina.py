@@ -164,7 +164,11 @@ def search():
     if unique_id == 'invalid' or not redis_store.exists(session):
         unique_id = _create_session()
         session = "sessions:{}".format(unique_id)
-    query['genes'] = request.form.get('genes', u'all').split()
+
+    query['genes'] = request.form.getlist('genes[]')
+    if query['genes'] == []:
+        query['genes'] = [u'all']
+
     query['match_a'] = request.form.get('match_a', u'any')
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
