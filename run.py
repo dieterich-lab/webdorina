@@ -32,7 +32,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
     try:
         result = str(analyse(datadir=datadir, **query))
     except Exception as e:
-        result = '\t\t\t\t\t\t\t\tJob failed: %s' % e
+        result = '\t\t\t\t\t\t\t\tJob failed: %s' % str(e).replace('\n', ' ').replace('\t', ' ')
 
     if timeit:
         analysed = time.time()
