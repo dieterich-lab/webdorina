@@ -27,14 +27,14 @@
               <thead>
                 <tr>
                   <th>track name</th>
-                  <th>gene symbol</th>
+                  <th>target gene</th>
                   <th>data source</th>
                   <th>score</th>
-                  <th>target site in browser</th>
+                  <th>target site id</th>
+                  <th>target gene location</th>
                   <th>target site location</th>
-                  <th>feature location</th>
-                  <th>genomic strand</th>
-                  <th>feature strand</th>
+                  <th>genomic target strand</th>
+                  <th>target site strand</th>
                 </tr>
               </thead>
               <tbody data-bind="foreach: results">
@@ -43,9 +43,9 @@
                   <td data-bind="text: gene"></td>
                   <td data-bind="text: data_source"></td>
                   <td data-bind="text: score"></td>
-                  <td style="word-break: break-all"> <a target="_blank" data-bind="text: site, attr: {href: ($parent.ucsc_url() + location())}"></a></td>
-                  <td data-bind="text: location"></td>
-                  <td data-bind="text: feature_location"></td>
+                  <td style="word-break: break-all" data-bind="text: site"></td>
+                  <td><a target="_blank" data-bind="text: location, attr: {href: ($parent.ucsc_url() + location())}"></a></td>
+                  <td><a target="_blank" data-bind="text: feature_location, attr: {href: ($parent.ucsc_url() + feature_location())}"></a></td>
                   <td data-bind="text: strand"></td>
                   <td data-bind="text: feature_strand"></td>
                 </tr>
