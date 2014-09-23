@@ -185,9 +185,12 @@ def search():
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
 
-    slop = request.form.get('slop', 0, int)
-    if slop > 0:
-        query['slop'] = slop
+    window_a = request.form.get('window_a', -1, int)
+    if window_a > -1:
+        query['window_a'] = window_a
+    window_b = request.form.get('window_b', -1, int)
+    if window_b > -1:
+        query['window_b'] = window_b
 
     query_key = "results:%s" % json.dumps(query, sort_keys=True)
     query_pending_key = "%s_pending" % query_key

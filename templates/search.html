@@ -72,6 +72,17 @@
                 </div>
               </div>
 
+              <div class="row form-group">
+                <label class="col-md-6 control-label" for="window_a">Restrict to overlapping features with a maximal distance of:</label>
+                <div class="input-group col-md-3">
+                  <span class="input-group-addon">
+                    <input type="checkbox" data-bind="checked: use_window_a">
+                  </span>
+                  <input type="text" class="form-control text-right" id="window_a"
+                   name="window_a" placeholder="0" data-bind="value: window_a">
+                  <span class="input-group-addon">bp</span>
+                </div>
+              </div>
 
               <div class="row form-group" data-toggle="collapse" data-target=".combinatorial">
                 <label>
@@ -169,29 +180,20 @@
                 </div>
               </div>
 
-              <div class="form-group combinatorial collapse">
-                <!-- placeholder -->
-              </div>
-
-              <div class="row form-group" data-toggle="collapse" data-target=".extra-opts">
-                <label>
-                  <span class="glyphicon glyphicon-plus" id="extra-opts control"></span> Additional search options
-                  <a href="#" data-toggle="tooltip" data-placement="right" title="click to expand">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </a>
-                </label>
-              </div>
-
-              <div class="row form-group extra-opts collapse">
-                <label class="col-md-3 control-label" for="slop">Allow for inexact matches:</label>
+              <div class="row form-group combinatorial collapse">
+                <label class="col-md-6 control-label" for="window_b">Restrict to overlapping features with a maximal distance of:</label>
                 <div class="input-group col-md-3">
                   <span class="input-group-addon">
-                    <input type="checkbox" data-bind="checked: use_slop">
+                    <input type="checkbox" data-bind="checked: use_window_b">
                   </span>
-                  <input type="text" class="form-control text-right" id="slop"
-                   name="slop" placeholder="0" data-bind="value: slop">
+                  <input type="text" class="form-control text-right" id="window_b"
+                   name="window_b" placeholder="0" data-bind="value: window_b">
                   <span class="input-group-addon">bp</span>
                 </div>
+              </div>
+
+              <div class="form-group combinatorial collapse">
+                <!-- placeholder -->
               </div>
 
               <div class="row">
