@@ -138,7 +138,7 @@ describe('DoRiNAViewModel', function() {
             return vm.run_search(false);
         });
 
-        it('should send all slop-related settings if use_slop is true', function() {
+        it('should send window_a-related settings if use_window_a is true', function() {
             fn.expected_url.push('api/v1.0/search');
             fn.return_data.push({'uuid': 'fake-uuid', 'state': 'done'});
             fn.expected_data.push({
@@ -148,7 +148,7 @@ describe('DoRiNAViewModel', function() {
                 'region_a': 'CDS',
                 'genes': [],
                 'offset': 0,
-                'slop': 23,
+                'window_a': 23,
                 'uuid': 'fake-uuid'
             });
             vm.poll_result = function(uuid) {
@@ -158,8 +158,8 @@ describe('DoRiNAViewModel', function() {
             vm.selected_regulators().push('fake_mirna');
             vm.chosenAssembly('hg19');
             vm.region_a('CDS');
-            vm.slop(23);
-            vm.use_slop(true);
+            vm.window_a(23);
+            vm.use_window_a(true);
 
             return vm.run_search(false);
         });
