@@ -32,6 +32,7 @@
                   <th>score</th>
                   <th>target site in browser</th>
                   <th>target site location</th>
+                  <th>feature location</th>
                   <th>genomic strand</th>
                   <th>feature strand</th>
                 </tr>
@@ -44,6 +45,7 @@
                   <td data-bind="text: score"></td>
                   <td style="word-break: break-all"> <a target="_blank" data-bind="text: site, attr: {href: ($parent.ucsc_url() + location())}"></a></td>
                   <td data-bind="text: location"></td>
+                  <td data-bind="text: feature_location"></td>
                   <td data-bind="text: strand"></td>
                   <td data-bind="text: feature_strand"></td>
                 </tr>

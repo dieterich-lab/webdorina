@@ -109,7 +109,7 @@ describe('DoRiNAResult', function() {
 
     describe('#location', function() {
         it('should be parsed correctly', function() {
-            res.location().should.eql('chr1:250-260');
+            res.location().should.eql('chr1:1-1000');
         });
 
         it('should deal with invalid fields', function() {
@@ -119,6 +119,21 @@ describe('DoRiNAResult', function() {
 
         it('should not display anything in error state', function() {
             no_res.location().should.eql('');
+        });
+    });
+
+    describe('#feature_location', function() {
+        it('should be parsed correctly', function() {
+            res.feature_location().should.eql('chr1:250-260');
+        });
+
+        it('should deal with invalid fields', function() {
+            res = new DoRiNAResult('');
+            res.feature_location().should.eql('unknown:0-0');
+        });
+
+        it('should not display anything in error state', function() {
+            no_res.feature_location().should.eql('');
         });
     });
 

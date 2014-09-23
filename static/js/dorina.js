@@ -101,6 +101,16 @@ function DoRiNAResult(line) {
         if (self.error_state()) {
             return '';
         }
+        if (self.cols.length < 5) {
+            return 'unknown:0-0';
+        }
+        return self.cols[0] + ':' + self.cols[3] + '-' + self.cols[4];
+    }, self);
+
+    self.feature_location = ko.computed(function() {
+        if (self.error_state()) {
+            return '';
+        }
         if (self.cols.length < 12) {
             return 'unknown:0-0';
         }
