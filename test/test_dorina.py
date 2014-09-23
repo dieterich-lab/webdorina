@@ -600,17 +600,17 @@ Called fake_store.llen(
         key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
         key += '"match_a": "any", "match_b": "any", "region_a": "any", '
         key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
-        res = {'data_source': 'PARCLIP', 'score': 1000, 'track': 'scifi_hg19',
-               'gene': 'gene01.02', 'site': 'fake', 'strand': '-',
-               'location': 'chr1:23-42'}
+        res = [
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260',
+        ]
 
-        self.r.rpush(key, json.dumps(res))
+        self.r.rpush(key, res)
 
         self.r.set('results:sessions:fake-uuid', json.dumps(dict(redirect=key)))
 
         got = self.client.get('/api/v1.0/download/results/fake-uuid')
 
-        expected = "{}\n".format(webdorina._dict_to_bed(res))
+        expected = "{}\n".format(res)
         self.assertEqual(got.data, expected)
 
 
