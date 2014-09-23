@@ -270,9 +270,10 @@ def get_result(uuid, offset):
     redis_store.expire(query_key, RESULT_TTL)
     result = redis_store.lrange(query_key, offset + 0, offset + MAX_RESULTS - 1)
     next_offset = offset + MAX_RESULTS
-    more_results = True if redis_store.llen(query_key) > offset + MAX_RESULTS else False
+    total_results = redis_store.llen(query_key)
+    more_results = True if total_results > offset + MAX_RESULTS else False
     return jsonify(dict(state='done', results=result, more_results=more_results,
-                   next_offset=next_offset))
+                   next_offset=next_offset, total_results=total_results))
 
 
 @app.route('/api/v1.0/download/regulator/<assembly>/<name>')

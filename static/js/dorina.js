@@ -137,6 +137,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.selected_regulators_setb = ko.observableArray([]);
 
     self.results = ko.observableArray([]);
+    self.total_results = ko.observable(0);
 
     self.more_results = ko.observable(false);
     self.offset = ko.observable(0);
@@ -399,6 +400,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         net.getJSON(url).then(function(data) {
             self.pending(false);
             self.more_results(data.more_results);
+            self.total_results(data.total_results);
             for (var i in data.results) {
                 self.results.push(new DoRiNAResult(data.results[i]));
             }

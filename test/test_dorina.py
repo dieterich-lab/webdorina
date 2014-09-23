@@ -285,7 +285,7 @@ Called fake_store.get(
         self.assertEqual(rv.json, dict(state='done', uuid="fake-uuid"))
 
         rv = self.client.get('/api/v1.0/result/fake-uuid')
-        expected = dict(state='done', results=results, more_results=False, next_offset=100)
+        expected = dict(state='done', results=results, more_results=False, next_offset=100, total_results=3)
         self.assertEqual(rv.json, expected)
 
         # This query should trigger a defined set of calls
@@ -443,7 +443,7 @@ Called webdorina.Queue.enqueue(
         self.assertEqual(rv.json, dict(state='done', uuid="fake-uuid"))
 
         rv = self.client.get('/api/v1.0/result/fake-uuid')
-        expected = dict(state='done', results=results, more_results=False, next_offset=100)
+        expected = dict(state='done', results=results, more_results=False, next_offset=100, total_results=1)
         self.assertEqual(rv.json, expected)
 
         # This query should trigger a defined set of calls
@@ -511,7 +511,7 @@ Called fake_store.llen(
             self.r.rpush(key, res)
 
         rv = self.client.get('/api/v1.0/result/fake-uuid')
-        expected = dict(state='done', results=results, more_results=False, next_offset=100)
+        expected = dict(state='done', results=results, more_results=False, next_offset=100, total_results=1)
         self.assertEqual(rv.json, expected)
 
         # This query should trigger a defined set of calls

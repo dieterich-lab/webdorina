@@ -72,7 +72,11 @@
                 </button>
               </div>
 
-              <div class="col-md-3 col-md-offset-6 text-right">
+              <div class="col-md-3">
+                Showing <span data-bind="text: results().length"></span> of <span data-bind="text: total_results"></span> results.
+              </div>
+
+              <div class="col-md-3 col-md-offset-3 text-right">
                 <button type="button" class="btn btn-default btn-sm" data-bind="click: new_search">
                   <span class="glyphicon glyphicon-repeat"></span> Redo search</button>
               </div>
