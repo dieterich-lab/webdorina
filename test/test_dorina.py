@@ -558,6 +558,86 @@ Called fake_store.llen(
         assert_same_trace(self.tt, expected_trace)
 
 
+    def test_search_filtered_results_nothing_cached(self):
+        '''Test search() with filtered results without anything in cache'''
+        full_key = 'results:{"combine": "or", "genes": ["all"], "genome": "hg19", '
+        full_key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        full_key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
+
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='pending')))
+
+        data = dict(match_a='any', assembly='hg19', uuid='fake-uuid')
+        data['genes[]']=['fake01']
+        data['set_a[]']=['scifi']
+        rv = self.client.post('/api/v1.0/search', data=data)
+
+        self.assertEqual(rv.json, dict(state='pending', uuid="fake-uuid"))
+
+
+        # now pretend the search finished
+        key = 'results:{"combine": "or", "genes": ["fake01"], "genome": "hg19", '
+        key += '"match_a": "any", "match_b": "any", "region_a": "any", '
+        key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
+        results = [
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+'
+        ]
+        for res in results:
+            self.r.rpush(key, res)
+
+        self.r.set('results:sessions:fake-uuid', json.dumps(dict(redirect=key)))
+        self.r.set('sessions:fake-uuid', json.dumps(dict(uuid='fake-uuid', state='done')))
+
+        rv = self.client.get('/api/v1.0/result/fake-uuid')
+        expected = dict(state='done', results=results, more_results=False, next_offset=100, total_results=1)
+        self.assertEqual(rv.json, expected)
+
+
+        query = "{'genes': [u'fake01'], 'match_a': u'any', 'match_b': u'any', 'combine': u'or', 'genome': u'hg19', 'region_a': u'any', 'set_a': [u'scifi'], 'set_b': None, 'region_b': u'any'}"
+
+        # This query should trigger a defined set of calls
+        expected_trace = '''Called fake_store.exists('sessions:fake-uuid')
+Called fake_store.exists(
+    '{query_key}')
+Called fake_store.exists(
+    '{full_query_key}')
+Called fake_store.set(
+    'sessions:fake-uuid',
+    '{{"state": "pending", "uuid": "fake-uuid"}}')
+Called fake_store.expire('sessions:fake-uuid', {session_ttl})
+Called fake_store.get(
+    '{key_pending}')
+Called fake_store.set(
+    '{key_pending}',
+    True)
+Called fake_store.expire(
+    '{key_pending}',
+    30)
+Called webdorina.Queue(
+    connection=<fakeredis.FakeRedis object at ...>,
+    default_timeout=600)
+Called webdorina.Queue.enqueue(
+    <function run_analyse at ...>,
+    '{datadir}',
+    '{query_key}',
+    '{key_pending}',
+    {query},
+    u'fake-uuid')
+Called fake_store.exists('results:sessions:fake-uuid')
+Called fake_store.get('results:sessions:fake-uuid')
+Called fake_store.expire(
+    '{query_key}',
+    {result_ttl})
+Called fake_store.lrange(
+    '{query_key}',
+    0,
+    {max_results})
+Called fake_store.llen(
+    '{query_key}')'''.format(query_key=key, result_ttl=webdorina.RESULT_TTL, max_results=(webdorina.MAX_RESULTS - 1),
+               session_ttl=webdorina.SESSION_TTL, redirect_key=json.dumps(dict(redirect=key)),
+               full_query_key=full_key, key_pending=(key + "_pending"), datadir=webdorina.datadir, query=query)
+        assert_same_trace(self.tt, expected_trace)
+
+
     def test_status(self):
         '''Test status()'''
         got = self.client.get('/api/v1.0/status/invalid')

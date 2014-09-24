@@ -197,11 +197,6 @@ def search():
 
     print query_key
 
-    chained_call = False
-    chained_query = dict(query)
-    chained_query_key = query_key
-    chained_query_pending_key = query_pending_key
-
     if redis_store.exists(query_key):
         session_dict = dict(uuid=unique_id, state='done')
         redis_store.expire(query_key, RESULT_TTL)
@@ -215,7 +210,6 @@ def search():
         full_query = dict(query)
         full_query['genes'] = [u'all']
         full_query_key = "results:%s" % json.dumps(full_query, sort_keys=True)
-        full_query_pending_key = "%s_pending" % full_query_key
 
         if redis_store.exists(full_query_key):
             redis_store.expire(full_query_key, RESULT_TTL)
@@ -228,11 +222,6 @@ def search():
             q.enqueue(run.filter, query['genes'], full_query_key, query_key, query_pending_key, unique_id)
             return jsonify(session_dict)
 
-        chained_call = True
-        query = full_query
-        query_key = full_query_key
-        query_pending_key = full_query_pending_key
-
     session_dict = dict(state='pending', uuid=unique_id)
     redis_store.set('sessions:{0}'.format(unique_id), json.dumps(session_dict))
     redis_store.expire('sessions:{0}'.format(unique_id), SESSION_TTL)
@@ -244,16 +233,7 @@ def search():
     redis_store.expire(query_pending_key, 30)
 
     q = Queue(connection=redis_store.connection, default_timeout=600)
-    job = q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query, unique_id)
-    if chained_call:
-        chained_unique_id = _create_session()
-        redis_store.set(chained_query_pending_key, True)
-        redis_store.expire(chained_query_pending_key, 30)
-        session_dict = dict(state='pending', uuid=chained_unique_id)
-        redis_store.set('sessions:{0}'.format(chained_unique_id), json.dumps(session_dict))
-        redis_store.expire('sessions:{0}'.format(chained_unique_id), SESSION_TTL)
-        q.enqueue(run.filter, chained_query['genes'], full_query_key, chained_query_key, chained_query_pending_key, chained_unique_id, depends_on=job)
-
+    q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query, unique_id)
 
     return jsonify(session_dict)
 
