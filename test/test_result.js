@@ -1,6 +1,6 @@
 describe('DoRiNAResult', function() {
 
-    var line = 'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260';
+    var line = 'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+';
     var no_result = '\t\t\t\t\t\t\t\tNo results found';
     var res;
 

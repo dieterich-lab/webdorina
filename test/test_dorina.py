@@ -54,8 +54,8 @@ class RunTestCase(unittest.TestCase):
         query = dict(genome='hg19', set_a=['scifi'], match_a='any',
                      region_a='any', set_b=None)
 
-        self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+	250	260
-chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+	2350	2360"""
+        self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+
+chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+"""
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
         expected = self.return_value.split('\n')
@@ -101,8 +101,8 @@ chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scif
         query = dict(genome='hg19', set_a=['scifi', 'fake-uuid'], match_a='any',
                      region_a='any', set_b=None)
 
-        self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+	250	260
-chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+	2350	2360"""
+        self.return_value = """chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	5	+
+chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	6	+"""
 
         run.run_analyse('/fake/data/dir', 'results:fake_key', 'results:fake_key_pending', query, 'fake-uuid')
         expected = self.return_value.split('\n')
@@ -124,9 +124,9 @@ chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scif
         '''Test filter()'''
 
         data = [
-        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260',
-        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+	2350	2360',
-        'chr1	doRiNA2	gene	3001	4000	.	+	.	ID=gene01.03	chr1	3350	3360	PARCLIP#scifi*scifi_intron	7	+	3350	3360'
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+',
+        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+',
+        'chr1	doRiNA2	gene	3001	4000	.	+	.	ID=gene01.03	chr1	3350	3360	PARCLIP#scifi*scifi_intron	7	+'
         ]
 
         for d in data:
@@ -428,7 +428,7 @@ Called webdorina.Queue.enqueue(
         key += '"match_a": "any", "match_b": "any", "region_a": "any", '
         key += '"region_b": "any", "set_a": ["scifi"], "set_b": null}'
         results = [
-        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260'
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+'
         ]
         for res in results:
             self.r.rpush(key, res)
@@ -486,8 +486,8 @@ Called fake_store.llen(
         key = templ.format('fake01')
         key_pending = '{0}_pending'.format(key)
         results = [
-        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+	250	260',
-        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+	2350	2360'
+        'chr1	doRiNA2	gene	1	1000	.	+	.	ID=gene01.01	chr1	250	260	PARCLIP#scifi*scifi_cds	6	+',
+        'chr1	doRiNA2	gene	2001	3000	.	+	.	ID=gene01.02	chr1	2350	2360	PARCLIP#scifi*scifi_intron	5	+'
         ]
         for res in results:
             self.r.rpush(full_key, res)
