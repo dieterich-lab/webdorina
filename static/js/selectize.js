@@ -3375,7 +3375,7 @@
 				for (i = 0; i < n; i++) {
 					height_max = Math.max(height_max, $optgroups.eq(i).height());
 				}
-				$optgroups.css({height: height_max});
+				$optgroups.css({height: height_max+15});
 			}
 	
 			if (options.equalizeWidth) {
