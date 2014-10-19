@@ -134,6 +134,7 @@ function DoRiNAResult(line) {
 
 function DoRiNAViewModel(net, uuid, custom_regulator) {
     var self = this;
+    self.mode = ko.observable("choose_db");
     self.retry_after = 1000;
     self.loading_regulators = ko.observable(false);
     self.uuid = ko.observable(uuid);
@@ -225,6 +226,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             self.get_regulators(self.chosenAssembly()).then(function() {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
+                self.mode('search');
 
                 var $genes, genes;
                 var $regulators, regulators;
@@ -443,6 +445,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.run_search(false);
         $('#search').collapse('hide');
         $('#results').collapse('show');
+        self.mode('results');
     };
 
     self.load_more_results = function() {
@@ -454,6 +457,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         $('#search').collapse('hide');
         $('#results').collapse('hide');
         $('#chooseDatabase').collapse('show');
+        self.mode('choose_db');
     };
 
 }
