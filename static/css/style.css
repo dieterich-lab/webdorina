@@ -29,6 +29,14 @@
     background-color: #ddd;
 }
 
+.news-header {
+    font-weight: bold;
+}
+
+.news-list dd {
+    margin-bottom: 1em;
+}
+
 .flashes {
     padding-left: 0; }
     .flashes .error {
