@@ -1,7 +1,7 @@
           <h4>REST API</h4>
 
           <h5>List available genomes</h5>
-          <code class="language-bash">curl http://dorina.age.mpg.de/api/v1.0/genomes</code>
+          <code class="language-bash">curl http://dorina.mdc-berlin.de/api/v1.0/genomes</code>
           <pre><code class="language-javascript">{
   "genomes": [
     {
@@ -21,7 +21,7 @@
 }</code></pre>
 
           <h5>List available assemblies for <emph>H. sapiens</emph></h5>
-          <code class="language-bash">curl http://dorina.age.mpg.de/api/v1.0/assemblies/h_sapiens</code>
+          <code class="language-bash">curl http://dorina.mdc-berlin.de/api/v1.0/assemblies/h_sapiens</code>
           <pre><code class="language-javascript">{
   assemblies": [
        {
@@ -40,7 +40,7 @@
 }</code></pre>
 
           <h5>List available regulators for hg19</h5>
-          <code class="language-bash">curl http://dorina.age.mpg.de/api/v1.0/regulators/hg19</code>
+          <code class="language-bash">curl http://dorina.mdc-berlin.de/api/v1.0/regulators/hg19</code>
           <pre><code class="language-javascript">{
   "CLIPSEQ_AGO2_hg19": {
     "description": "This track contains 53,342 AGO-2 CLIP sites in HEK 293 cells.",
@@ -70,7 +70,7 @@
 }</code></pre>
 
           <h5>Run a search against PUM2 and hsa-miR-221-3p</h5>
-          <code class="language-bash">curl -d set_a[]=PARCLIP_PUM2_hg19 -d set_a[]=hsa-miR-221-3p -d assembly=hg19 -d match_a=all -d uuid=custom-uuid -X POST http://dorina.age.mpg.de/api/v1.0/search</code>
+          <code class="language-bash">curl -d set_a[]=PARCLIP_PUM2_hg19 -d set_a[]=hsa-miR-221-3p -d assembly=hg19 -d match_a=all -d uuid=custom-uuid -X POST http://dorina.mdc-berlin.de/api/v1.0/search</code>
           <pre><code class="language-javascript">{
   "state": "pending",
   "uuid": "custom-uuid"
