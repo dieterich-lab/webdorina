@@ -528,6 +528,9 @@ function RegulatorViewModel(net) {
             for (var reg in data) {
                 self.regulators.push(data[reg]);
             }
+            self.regulators.sort(function(a, b){
+                return (a.summary.toUpperCase() > b.summary.toUpperCase()) -
+                       (b.summary.toUpperCase() > a.summary.toUpperCase())});
         });
     };
 
