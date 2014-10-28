@@ -310,8 +310,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     render: {
                         option: function(item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
-                                   '</span><br><span class="description">' + escape(item.description) +
-                                   '</span></div>';
+                                   '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
+                                   + escape(item.description) + '</span></div>';
                         }
                     }
                 });
@@ -330,8 +330,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     render: {
                         option: function(item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
-                                   '</span><br><span class="description">' + escape(item.description) +
-                                   '</span></div>';
+                                   '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
+                                   + escape(item.description) + '</span></div>';
                         }
                     }
                 });
