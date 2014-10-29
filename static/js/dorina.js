@@ -454,10 +454,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.new_search = function() {
         self.reset_search_state();
-        $('#search').collapse('hide');
         $('#results').collapse('hide');
-        $('#chooseDatabase').collapse('show');
-        self.mode('choose_db');
+        $('#chooseDatabase').collapse('hide');
+        $('#search').collapse('show');
+        self.mode('search');
     };
 
 }
