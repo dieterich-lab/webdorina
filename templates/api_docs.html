@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <div class="panel-group">
+      <h3>API documentation</h3>
+      <ul class="nav nav-tabs help-tabs" role="tablist">
+        <li class="active"><a href="#python-api" role="tab" data-toggle="tab">Python API</a></li>
+        <li><a href="#rest-api" role="tab" data-toggle="tab">REST API</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="python-api">
+          {% include 'python_example.html' %}
+        </div>
+
+        <div class="tab-pane" id="rest-api">
+          {% include 'rest_example.html' %}
+        </div>
+
+    </div>
+{% endblock %}
+{% block extra_scripts %}
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('.help-tabs a[href=' + $(location).attr('hash') + ']').tab('show')
+      });
+    </script>
+{% endblock %}

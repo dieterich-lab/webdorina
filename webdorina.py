@@ -301,9 +301,14 @@ def news():
     return render_template('news.html')
 
 
-@app.route('/help')
-def help():
-    return render_template('help.html')
+@app.route('/tutorials')
+def tutorials():
+    return render_template('tutorials.html')
+
+
+@app.route('/docs')
+def docs():
+    return render_template('api_docs.html')
 
 
 @app.route('/acknowledgements')
