@@ -1,78 +1,89 @@
-          <h4>REST API</h4>
+          <h2>REST API</h2>
 
-          <h5>List available genomes</h5>
-          <code class="language-bash">curl http://dorina.mdc-berlin.de/api/v1.0/genomes</code>
-          <pre><code class="language-javascript">{
-  "genomes": [
-    {
-      "id": "h_sapiens",
-      "label": "Human",
-      "scientific": "Homo sapiens",
-      "weight": 10
-    },
-    /* ... */
-    {
-      "id": "c_elegans",
-      "label": "Roundworm",
-      "scientific": "Caenorhabditis elegans",
-      "weight": 2
-    }
-  ]
-}</code></pre>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th><h3>List available datasets</h3></th>
+                <th></th>
+              </tr>
+              <tr>
+                <th>Resource</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='genomes_get') }}">GET api/v1.0/genomes</a></td>
+                <td>List available genomes</td>
+              </tr>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='assemblies_genome_get') }}">GET api/v1.0/assemblies/:genome</a></td>
+                <td>List available assemblies for a genome</td>
+              </tr>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='regulators_assembly_get') }}">GET api/v1.0/regulators/:assembly</a></td>
+                <td>List available regulators for an assembly</td>
+              </tr>
+            </tbody>
 
-          <h5>List available assemblies for <emph>H. sapiens</emph></h5>
-          <code class="language-bash">curl http://dorina.mdc-berlin.de/api/v1.0/assemblies/h_sapiens</code>
-          <pre><code class="language-javascript">{
-  assemblies": [
-       {
-         "3_utr": true,
-         "5_utr": true,
-         "all": true,
-         "cds": true,
-         "genome": "h_sapiens",
-         "hg19": true,
-         "id": "hg19",
-         "intergenic": true,
-         "intron": true,
-         "weight": 19
-       }
-   ]
-}</code></pre>
+            <thead>
+              <tr>
+                <th><h3>Run search</h3></th>
+                <th></th>
+              </tr>
+              <tr>
+                <th>Resource</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='search_post') }}">POST api/v1.0/search</a></td>
+                <td>Run a doRiNA search</td>
+              </tr>
+            </tbody>
 
-          <h5>List available regulators for hg19</h5>
-          <code class="language-bash">curl http://dorina.mdc-berlin.de/api/v1.0/regulators/hg19</code>
-          <pre><code class="language-javascript">{
-  "CLIPSEQ_AGO2_hg19": {
-    "description": "This track contains 53,342 AGO-2 CLIP sites in HEK 293 cells.",
-    "experiment": "CLIPSEQ",
-    "id": "CLIPSEQ_AGO2_hg19",
-    "methods": "CLIP library preparation was carried out according to the original protocol. Additional details on data processing can be obtained from the original publication - section 'From reads to binding sites.' We have merged clusters from replicate experiments.",
-    "references": [
-      {
-        "authors": [
-          "Kishore S",
-          "Jaskiewicz L",
-          "Burger L",
-          "Hausser J",
-          "Khorshid M",
-          "Zavolan M"
-        ],
-        "journal": "Nature Methods",
-        "pages": "559-64",
-        "pubmed": "21572407",
-        "title": "A quantitative analysis of CLIP methods for identifying binding sites of RNA-binding proteins",
-        "year": "2011"
-      }
-    ],
-    "summary": "AGO2 CLIP-SEQ (Kishore 2011)"
-  },
-  /* ... */
-}</code></pre>
+            <thead>
+              <tr>
+                <th><h3>Query job information</h3></th>
+                <th></th>
+              </tr>
+              <tr>
+                <th>Resource</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='status_uuid_get') }}">GET api/v1.0/status/:uuid</a></td>
+                <td>Get the status for job :uuid</td>
+              </tr>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='result_uuid_get') }}">GET api/v1.0/result/:uuid</a></td>
+                <td>Get the result for job :uuid</td>
+              </tr>
+            </tbody>
 
-          <h5>Run a search against PUM2 and hsa-miR-221-3p</h5>
-          <code class="language-bash">curl -d set_a[]=PARCLIP_PUM2_hg19 -d set_a[]=hsa-miR-221-3p -d assembly=hg19 -d match_a=all -d uuid=custom-uuid -X POST http://dorina.mdc-berlin.de/api/v1.0/search</code>
-          <pre><code class="language-javascript">{
-  "state": "pending",
-  "uuid": "custom-uuid"
-}</code></pre>
+            <thead>
+              <tr>
+                <th><h3>Download data</h3></th>
+                <th></th>
+              </tr>
+              <tr>
+                <th>Resource</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='download_results_uuid_get') }}">GET api/v1.0/download/results/:uuid</a></td>
+                <td>Download all results for job :uuid</td>
+              </tr>
+              <tr>
+                <td><a href="{{ url_for('docs_api', page='download_regulator_assembly_name_get') }}">GET api/v1.0/download/regulator/:assembly/:name</a></td>
+                <td>Download the regulator :name for :assembly</td>
+              </tr>
+            </tbody>
+          </table>
+
 

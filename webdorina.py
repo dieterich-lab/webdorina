@@ -321,5 +321,10 @@ def regulators():
     return render_template('regulators.html')
 
 
+@app.route('/docs/api/<page>')
+def docs_api(page):
+    return render_template('api_{}.html'.format(page))
+
+
 if __name__ == "__main__":
     app.run(debug=True)
