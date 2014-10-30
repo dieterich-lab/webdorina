@@ -1,11 +1,11 @@
           <h4>Python API</h4>
 
           The dorina python API can be used to run local dorina queries. The
-          central entry point for all analyses is the <code>analyse</code> function.
+          central entry point for all analyses is the <code>run.analyse</code> function.
 
           <pre><code class="language-python">def analyse(genome, set_a, match_a='any', region_a='any',
             set_b=None, match_b='any', region_b='any',
-            combine='or', genes=None, slop=0,
+            combine='or', genes=None, window_a=-1, window_b=-1,
             datadir=None)</code></pre>
 
           It takes the name of the genome assembly to use, and at least a list of set A regulator names.
