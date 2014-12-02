@@ -13,14 +13,22 @@ import json
 from cStringIO import StringIO
 
 # basic doRiNA settings
-datadir = path.join(path.dirname(__file__), 'test', 'data')
-#datadir = "/data/projects/doRiNA2/"
+# load config.json if exists to overwrite settings
+config_file = path.join(path.dirname(__file__),  'config.json')
+conf = {}
+
+# can be overwritten with config.json
+if os.path.isfile(config_file):
+    conf = json.load(open(config_file))
+
+datadir        = conf.get('datadir', path.join(path.dirname(__file__), 'test', 'data'))
 # store results for 1 day
-SESSION_TTL = 3600
-RESULT_TTL = 86400
-REGULATORS_TTL = 3600
-MAX_RESULTS = 100
-SESSION_STORE = "/tmp/dorina-{unique_id}"
+SESSION_TTL    = conf.get('session_ttl',     3600)
+RESULT_TTL     = conf.get('result_ttl',     86400)
+REGULATORS_TTL = conf.get('regulators_ttl',  3600)
+MAX_RESULTS    = conf.get('max_results',      100)
+SESSION_STORE  = conf.get('session_store',  "/tmp/dorina-{unique_id}")
+
 
 app = Flask(__name__)
 
