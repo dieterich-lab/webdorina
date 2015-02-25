@@ -288,7 +288,7 @@ def download_results(uuid):
         out.write("{}\n".format(res))
 
     response = make_response(out.getvalue())
-    response.headers["Content-Disposition"] = "attachment; filename=dorina.bed"
+    response.headers["Content-Disposition"] = "attachment; filename=dorina.tsv"
     return response
 
 
