@@ -44,3 +44,8 @@
         background-color: #faa;
         padding: 1em;
         list-style: none; }
+
+.citation {
+    margin-left: 3em; }
+    .citation .journal {
+        font-style: italic; }
