@@ -317,7 +317,9 @@ def tutorials():
 @app.route('/docs')
 def docs():
     return render_template('api_docs.html')
-
+@app.route('/help')
+def help():
+    return render_template('api_docs.html')
 
 @app.route('/acknowledgements')
 def acknowledgements():
