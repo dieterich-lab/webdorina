@@ -168,12 +168,6 @@ def status(uuid):
 def search():
     query = {}
 
-    unique_id = request.form.get('uuid', u'invalid')
-    session = "sessions:{}".format(unique_id)
-    if unique_id == 'invalid' or not redis_store.exists(session):
-        unique_id = _create_session()
-        session = "sessions:{}".format(unique_id)
-
     query['genes'] = request.form.getlist('genes[]')
     if query['genes'] == []:
         query['genes'] = [u'all']
@@ -204,6 +198,12 @@ def search():
     query_pending_key = "%s_pending" % query_key
 
     print query_key
+
+    unique_id = request.form.get('uuid', u'invalid')
+    session = "sessions:{}".format(unique_id)
+    if unique_id == 'invalid' or not redis_store.exists(session):
+        unique_id = _create_session()
+        session = "sessions:{}".format(unique_id)
 
     if redis_store.exists(query_key):
         session_dict = dict(uuid=unique_id, state='done')
