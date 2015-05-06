@@ -168,8 +168,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.ucsc_url = ko.computed(function() {
         var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
-        url += "&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt"
-        url += "&position="
+        url += "&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt";
+        url += "&position=";
         return url;
     }, self);
 
@@ -260,7 +260,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         regulators.clearOptions();
                         if (values && values.length > 0) {
                             var filtered_regs = self.regulators().filter(function(reg) {
-                                return values.indexOf(reg.experiment) > -1
+                                return values.indexOf(reg.experiment) > -1;
                             });
 
                             for (var i in filtered_regs) {
@@ -283,7 +283,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         regulators_setb.clearOptions();
                         if (values && values.length > 0) {
                             var filtered_regs = self.regulators().filter(function(reg) {
-                                return values.indexOf(reg.experiment) > -1
+                                return values.indexOf(reg.experiment) > -1;
                             });
 
                             for (var i in filtered_regs) {
@@ -338,7 +338,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 regulators_setb = $regulators_setb[0].selectize;
 
                 for (var i in self.regulator_types()) {
-                    var reg = self.regulator_types()[i].id
+                    var reg = self.regulator_types()[i].id;
                     shown_types.addItem(reg);
                     shown_types_setb.addItems(reg);
                 }
@@ -369,7 +369,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         // if there's any selection made for set B regulators,
         // send set B data
         if (self.selected_regulators_setb().length > 0) {
-            search_data.set_b = self.selected_regulators_setb()
+            search_data.set_b = self.selected_regulators_setb();
             search_data.match_b= self.match_b();
             search_data.region_b = self.region_b();
             search_data.combinatorial_op = self.combinatorialOperation();
@@ -516,7 +516,7 @@ function RegulatorViewModel(net) {
     self.get_assemblies = function(genome) {
         return net.getJSON('api/v1.0/assemblies/' + genome).then(function(data) {
             for (var i in data.assemblies) {
-                self.assemblies.push(data.assemblies[i])
+                self.assemblies.push(data.assemblies[i]);
             }
         });
     };
@@ -530,7 +530,8 @@ function RegulatorViewModel(net) {
             }
             self.regulators.sort(function(a, b){
                 return (a.summary.toUpperCase() > b.summary.toUpperCase()) -
-                       (b.summary.toUpperCase() > a.summary.toUpperCase())});
+                       (b.summary.toUpperCase() > a.summary.toUpperCase());
+            });
         });
     };
 
