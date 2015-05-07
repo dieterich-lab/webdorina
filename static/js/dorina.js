@@ -140,6 +140,24 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.uuid = ko.observable(uuid);
     self.custom_regulator = ko.observable(custom_regulator);
 
+    self.galaxy_url = ko.computed(function() {
+      var qstring = window.location.search,
+          i, l, temp, params = {}, queries;
+
+      if (qstring.length) {
+        queries = qstring.split("?")[1].split("&");
+        // Convert the array of strings into an object
+        for (i=0, l=queries.length; i<l; i++) {
+          temp = queries[i].split('=');
+          params[temp[0]] = temp[1];
+        }
+        return params['GALAXY_URL'];
+      } else {
+        return null;
+      }
+    }, self);
+    self.origin = ko.observable(window.location.origin);
+
     self.chosenAssembly = ko.observable();
 
     self.regulators = ko.observableArray([]);

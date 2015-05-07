@@ -15,7 +15,13 @@
                 <a href="{{ url_for('download_results', uuid=uuid)}}" class="btn btn-default btn-sm text-right">
                   <span class="glyphicon glyphicon-download"></span> Download results (TSV file)</a>
               </div>
-              <div class="col-md-3 col-md-offset-3 text-right">
+              <!-- ko if: galaxy_url -->
+              <div class="col-md-1 col-md-offset-1 text-right">
+                <a data-bind="attr:{href:decodeURIComponent(galaxy_url())+'?tool_id=dorina_search&STATUS=OK&URL='+origin()+'{{url_for('download_results', uuid=uuid)}}'}" class="btn btn-default btn-sm text-right">
+                  <span class="glyphicon glyphicon-share"></span> Send to Galaxy</a>
+              </div>
+              <!-- /ko -->
+              <div class="col-md-3 col-md-offset-1 text-right">
                 <button type="button" class="btn btn-default btn-sm" data-bind="click: new_search">
                   <span class="glyphicon glyphicon-repeat"></span> Redo search</button>
               </div>
