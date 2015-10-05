@@ -134,7 +134,7 @@ metadata from JSON manifests into track information."""
                     PARENTS.append(parent)
                     TRACK_PARENTS_ENTRY.append([
                         "track "+parent,
-                        "superTrack on show",
+                        "superTrack on",
                         "shortLabel "+parent,
                         "longLabel "+parent,
                     ])
@@ -142,7 +142,6 @@ metadata from JSON manifests into track information."""
                 track_info = [
                     "track " + basename,
                     "parent " + parent,
-                    "visibility dense",
                     "bigDataUrl " + basename+'.'+data_file_ext,
                     "shortLabel " + basename,
                     "longLabel " + longLabel,
