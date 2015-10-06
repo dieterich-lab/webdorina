@@ -1,9 +1,11 @@
 import json
 from redis import Redis
-from dorina.run import analyse
 import time
+from dorina import run
 
 def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False):
+    dorina = run.Dorina(datadir)
+
     from webdorina import RESULT_TTL, SESSION_TTL, SESSION_STORE
     redis_store = Redis()
 
@@ -30,7 +32,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, timeit=False
                 set_b.append(regulator)
         query['set_b'] = set_b
     try:
-        result = str(analyse(datadir=datadir, **query))
+        result = str(dorina.analyse(**query))
     except Exception as e:
         result = '\t\t\t\t\t\t\t\tJob failed: %s' % str(e).replace('\n', ' ').replace('\t', ' ')
 

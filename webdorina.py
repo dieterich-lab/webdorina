@@ -7,7 +7,6 @@ from os import path
 from flask import Flask, flash, render_template, jsonify, request, abort, send_file, make_response
 from flask_redis import Redis
 from rq import Queue
-from dorina import utils, config
 import run
 import json
 from cStringIO import StringIO
@@ -29,6 +28,11 @@ REGULATORS_TTL = conf.get('regulators_ttl',  3600)
 MAX_RESULTS    = conf.get('max_results',      100)
 SESSION_STORE  = conf.get('session_store',  "/tmp/dorina-{unique_id}")
 
+# Initialise genomes and regulators once.
+from dorina.genome    import Genome
+from dorina.regulator import Regulator
+Genome.init(datadir)
+Regulator.init(datadir)
 
 app = Flask(__name__)
 
@@ -75,7 +79,7 @@ def _create_session(create_dir=False):
 
 
 def _list_genomes():
-    available_genomes = utils.get_genomes(datadir=datadir)
+    available_genomes = Genome.all()
     genome_list = available_genomes.values()
     for g in genome_list:
         del g['assemblies']
@@ -84,7 +88,7 @@ def _list_genomes():
 
 
 def _list_assemblies():
-    available_genomes = utils.get_genomes(datadir=datadir)
+    available_genomes = Genome.all()
     assemblies = []
     for g in available_genomes.values():
         for key, val in g['assemblies'].items():
@@ -116,7 +120,7 @@ def list_regulators(assembly):
         regulators = json.loads(redis_store.get(cache_key))
     else:
         regulators = {}
-        available_regulators = utils.get_regulators(datadir=datadir)
+        available_regulators = Regulator.all()
         for genome in available_regulators:
             if assembly in available_regulators[genome]:
                 for key, val in available_regulators[genome][assembly].items():
@@ -143,7 +147,7 @@ def list_genes(assembly, query):
     cache_key = "genes:{0}".format(assembly)
 
     if not redis_store.exists(cache_key):
-        new_genes = utils.get_genes(assembly, datadir)
+        new_genes = Genome.get_genes(assembly)
         for gene in new_genes:
             redis_store.zadd(cache_key, gene, 0)
 
@@ -266,12 +270,12 @@ def get_result(uuid, offset):
 
 @app.route('/api/v1.0/download/regulator/<assembly>/<name>')
 def download_regulator(assembly, name):
-    regulator = utils.get_regulator_by_name(name, datadir)
-    if regulator is None:
+    try:
+        regulator = Regulator.from_name(name, assembly)
+    except:
         return abort(404)
 
-    filename = "{}.bed".format(regulator)
-    return send_file(filename, as_attachment=True)
+    return send_file(regulator.path, as_attachment=True)
 
 
 @app.route('/api/v1.0/download/results/<uuid>')
