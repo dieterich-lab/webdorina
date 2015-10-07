@@ -88,9 +88,8 @@ def _list_genomes():
 
 
 def _list_assemblies():
-    available_genomes = Genome.all()
     assemblies = []
-    for g in available_genomes.values():
+    for g in Genome.all().values():
         for key, val in g['assemblies'].items():
             val['id'] = key
             val['weight'] = int(key[2:])
