@@ -79,10 +79,12 @@ def _create_session(create_dir=False):
 
 
 def _list_genomes():
-    available_genomes = Genome.all()
-    genome_list = available_genomes.values()
-    for g in genome_list:
-        del g['assemblies']
+    def without_assemblies(h):
+        h1 = h.copy()
+        del h1['assemblies']
+        return h1
+
+    genome_list = map(without_assemblies, Genome.all().values())
     genome_list.sort(lambda x,y: cmp(x['weight'], y['weight']), reverse=True)
     return genome_list
 
