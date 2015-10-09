@@ -1,5 +1,12 @@
 // -*- mode: js2; js2-additional-externs: '("$" "ko" "setTimeout") -*-
 
+/*
+FIXME: the hub ID depends on internal state of the UCSC browser.  Our hub
+       was assigned this particular identifier.  For different browsers and
+       different hubs at different times this identifier will differ.
+*/
+var DorinaHubId = 39859;
+
 function DoRiNAResult(line) {
     var self = this;
     self.cols = line.split('\t');
@@ -186,9 +193,59 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.use_window_b = ko.observable(false);
     self.window_b = ko.observable(0);
 
+    // Generate URL parametres for the UCSC URL to make selected supertracks
+    // and subtracks visible.
+    self.trackVisibility = ko.computed(function () {
+      /* A supertrack is identified by the "experiment" field in the regulator
+       * structure.  A subtrack is identified by the basename of the
+       * associated metadata file stored in the "file" field.
+       */
+      if (self.selected_regulators().length > 0) {
+        // selected_regulators only contains the ids but we need the full
+        // objects.
+        var regs = self.selected_regulators().reduce(function (acc, reg) {
+          var full = self.regulators().find(function (obj) {
+            return obj.id === reg;
+          });
+          return full ? acc.concat([full]) : acc;
+        }, []);
+
+        var supertracks = regs.reduce(function (acc, reg) {
+          if (acc.indexOf(reg.experiment) === -1) {
+            return acc.concat([reg.experiment]);
+          } else {
+            return acc;
+          }
+        }, []).map(function (name) {
+          // Remove invalid characters.  I don't know why they didn't use just
+          // one replacement character for invalid characters...
+          return name.replace(/\s/g, '-').replace(/:/g, '_');
+        });
+
+        var trackNamePattern = /([^\/]+)\.json/;
+        var subtracks = regs.reduce(function (acc, reg) {
+          var trackName = reg.file.match(trackNamePattern)[1];
+          return acc.concat([trackName]);
+        }, []);
+
+        var hubPrefix = "hub_" + DorinaHubId + "_";
+        var result = "&" +
+          supertracks.map(function (name) {
+            return hubPrefix + name + "=show";
+          }).join("&") + "&" +
+          subtracks.map(function (name) {
+            return hubPrefix + name + "=dense";
+          }).join("&");
+        return result;
+      } else {
+        return "";
+      }
+    }, self);
+
     self.ucsc_url = ko.computed(function() {
         var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
         url += "&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt";
+        url += self.trackVisibility();
         url += "&position=";
         return url;
     }, self);
