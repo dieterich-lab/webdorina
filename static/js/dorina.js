@@ -264,7 +264,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         }
                         net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function(res) {
 
-                            callback(res.genes.map(function(r) {return {id: r}}));
+                          callback(res.genes.map(function(r) {return {id: r};}));
                         });
                     }
                 });
@@ -493,7 +493,7 @@ function RegulatorViewModel(net) {
             var promises = [];
             for (var i in self.genomes()) {
                 var genome = self.genomes()[i].id;
-                promises.push(self.get_assemblies(genome))
+                promises.push(self.get_assemblies(genome));
             }
 
             $.when.apply(null, promises).then(function() {
