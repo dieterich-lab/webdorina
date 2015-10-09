@@ -1,3 +1,5 @@
+// -*- mode: js2; js2-additional-externs: '("$" "ko" "setTimeout") -*-
+
 function DoRiNAResult(line) {
     var self = this;
     self.cols = line.split('\t');
