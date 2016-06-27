@@ -26,7 +26,6 @@ REGULATORS_PATH = os.path.join(DATA_PATH, "regulators")
 PREFIX = "/usr/local"
 bedToBigBed     = os.path.join(PREFIX, "/bin/bedToBigBed") # path to bedToBigBed binary
 bedSort         = os.path.join(PREFIX, "/bin/bedSort") # path to bedSort binary
-remove_scores   = os.path.join(PREFIX, "/bin/remove_scores_and_dashes.sh") # path to cleanup script
 
 # ugly global variable
 HUB_GENOMES     = [] # genomes.txt
@@ -58,8 +57,14 @@ def convert_bed_to_bigbed(bed_path,bb_path,remove_scores_path,coordinates):
 
     print ">>>>> START " + bed_path
     try:
-        #remove scores
-        subprocess.call([remove_scores, bed_path, remove_scores_path])
+        # Replace score field with "0"
+        # Make sure we have only 6 columns
+        with open(bed_path,'r') as f, open(remove_scores_path,'w') as g:
+            for line in f:
+                fields = line.split('\t')
+                new_line = '\t'.join(fields[0:4] + ["0"] + [fields[5]]) + "\n"
+                g.write(new_line)
+
         #sort file
         subprocess.call([bedSort,remove_scores_path,remove_scores_path])
         #convert
