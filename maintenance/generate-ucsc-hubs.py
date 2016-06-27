@@ -150,7 +150,7 @@ metadata from JSON manifests into track information."""
                     "bigDataUrl " + basename+'.'+data_file_ext,
                     "shortLabel " + basename,
                     "longLabel " + longLabel,
-                    "type " + data_file_type,
+                    "type " + data_file_type + " 6",
                     "html " + basename
                 ]
 
