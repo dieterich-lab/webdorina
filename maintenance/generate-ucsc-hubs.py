@@ -22,10 +22,9 @@ HUB_PATH        = os.path.join("/data/dorinaHub")
 GENOMES_PATH    = os.path.join(DATA_PATH,"genomes")
 REGULATORS_PATH = os.path.join(DATA_PATH, "regulators")
 
-# paths to executables
-PREFIX = "/usr/local"
-bedToBigBed     = os.path.join(PREFIX, "/bin/bedToBigBed") # path to bedToBigBed binary
-bedSort         = os.path.join(PREFIX, "/bin/bedSort") # path to bedSort binary
+# paths to kent executables
+bedToBigBed     = "/usr/local/bin/bedToBigBed"
+bedSort         = "/usr/local/bin/bedSort"
 
 # ugly global variable
 HUB_GENOMES     = [] # genomes.txt
