@@ -1,36 +1,45 @@
 #!/usr/bin/env python
-# :set fileencoding=utf-8 :
+# coding=utf-8
+from __future__ import print_function
+from __future__ import unicode_literals
+from past.builtins import cmp
+from future import standard_library
 
+standard_library.install_aliases()
 import os
-import uuid
-from os import path
-from flask import Flask, flash, render_template, jsonify, request, abort, send_file, make_response
-from flask_redis import Redis
-from rq import Queue
-import run
 import json
-from cStringIO import StringIO
+from io import StringIO
+
+from flask import (Flask, flash, render_template, jsonify, request, abort,
+                   send_file, make_response)
+from redis import Redis
+from rq import Queue
+import uuid
+
+from dorina.genome import Genome
+from dorina.regulator import Regulator
+import run
 
 # basic doRiNA settings
 # load config.json if exists to overwrite settings
-config_file = path.join(path.dirname(__file__),  'config.json')
+config_file = os.path.join(os.path.dirname(__file__), 'config.json')
 conf = {}
 
 # can be overwritten with config.json
 if os.path.isfile(config_file):
     conf = json.load(open(config_file))
 
-datadir        = conf.get('datadir', path.join(path.dirname(__file__), 'test', 'data'))
+datadir = conf.get('datadir', os.path.join(
+    os.path.dirname(__file__), 'test', 'data'))
 # store results for 1 day
-SESSION_TTL    = conf.get('session_ttl',     3600)
-RESULT_TTL     = conf.get('result_ttl',     86400)
-REGULATORS_TTL = conf.get('regulators_ttl',  3600)
-MAX_RESULTS    = conf.get('max_results',      100)
-SESSION_STORE  = conf.get('session_store',  "/tmp/dorina-{unique_id}")
+SESSION_TTL = conf.get('session_ttl', 3600)
+RESULT_TTL = conf.get('result_ttl', 86400)
+REGULATORS_TTL = conf.get('regulators_ttl', 3600)
+MAX_RESULTS = conf.get('max_results', 100)
+SESSION_STORE = conf.get('session_store', "/tmp/dorina-{unique_id}")
 
 # Initialise genomes and regulators once.
-from dorina.genome    import Genome
-from dorina.regulator import Regulator
+
 Genome.init(datadir)
 Regulator.init(datadir)
 
@@ -38,7 +47,8 @@ app = Flask(__name__)
 
 # generate session key
 app.secret_key = os.urandom(24)
-redis_store = Redis(app)
+redis_store = Redis(app, charset="utf-8", decode_responses=True)
+
 
 @app.route('/')
 def welcome():
@@ -54,7 +64,7 @@ def index():
         if bedfile and bedfile.filename.endswith('.bed'):
             filename = "{}.bed".format(unique_id)
             dirname = SESSION_STORE.format(unique_id=unique_id)
-            bedfile.save(path.join(dirname, filename))
+            bedfile.save(os.path.join(dirname, filename))
             custom_regulator = 'true'
         else:
             flash(u'Bedfile must end on ".bed"', 'error')
@@ -84,15 +94,16 @@ def _list_genomes():
         del h1['assemblies']
         return h1
 
-    genome_list = map(without_assemblies, Genome.all().values())
-    genome_list.sort(lambda x,y: cmp(x['weight'], y['weight']), reverse=True)
+    # genome_list = [without_assemblies(x) for x in Genome.all().values()]
+    genome_list = list(map(without_assemblies, Genome.all().values()))
+    genome_list.sort(lambda x, y: cmp(x['weight'], y['weight']), reverse=True)
     return genome_list
 
 
 def _list_assemblies():
     assemblies = []
-    for g in Genome.all().values():
-        for key, val in g['assemblies'].items():
+    for g in list(Genome.all().values()):
+        for key, val in list(g['assemblies'].items()):
             val['id'] = key
             val['weight'] = int(key[2:])
             val['genome'] = g['id']
@@ -108,14 +119,13 @@ def api_list_genomes():
 
 @app.route('/api/v1.0/assemblies/<genome>')
 def api_list_assemblies(genome):
-    assemblies = filter(lambda x: x['genome'] == genome, _list_assemblies())
-    assemblies.sort(lambda x,y: cmp(x['weight'], y['weight']), reverse=True)
+    assemblies = [x for x in _list_assemblies() if x['genome'] == genome]
+    assemblies.sort(lambda x, y: cmp(x['weight'], y['weight']), reverse=True)
     return jsonify(dict(assemblies=assemblies))
 
 
 @app.route('/api/v1.0/regulators/<assembly>')
 def list_regulators(assembly):
-
     cache_key = "regulators:{0}".format(assembly)
     if redis_store.exists(cache_key):
         regulators = json.loads(redis_store.get(cache_key))
@@ -124,7 +134,8 @@ def list_regulators(assembly):
         available_regulators = Regulator.all()
         for genome in available_regulators:
             if assembly in available_regulators[genome]:
-                for key, val in available_regulators[genome][assembly].items():
+                for key, val in list(
+                        available_regulators[genome][assembly].items()):
                     regulators[key] = val
 
                 redis_store.set(cache_key, json.dumps(regulators))
@@ -136,7 +147,6 @@ def list_regulators(assembly):
 @app.route('/api/v1.0/genes/<assembly>', defaults={'query': ''})
 @app.route('/api/v1.0/genes/<assembly>/<query>')
 def list_genes(assembly, query):
-
     if query != '':
         start = "[{0}".format(query)
         end = "(" + start[1:-1] + chr(ord(start[-1]) + 1)
@@ -153,7 +163,6 @@ def list_genes(assembly, query):
 
     genes = redis_store.zrangebylex(cache_key, start, end)
     return jsonify(dict(genes=genes[:500]))
-
 
 
 @app.route('/api/v1.0/status/<uuid>')
@@ -184,7 +193,7 @@ def search():
 
     query['set_b'] = request.form.getlist('set_b[]')
     # werkzeug/Flask insists on returning an empty list, but dorina.analyse
-    #expects 'None'
+    # expects 'None'
     if query['set_b'] == []:
         query['set_b'] = None
     query['match_b'] = request.form.get('match_b', u'any')
@@ -201,7 +210,7 @@ def search():
     query_key = "results:%s" % json.dumps(query, sort_keys=True)
     query_pending_key = "%s_pending" % query_key
 
-    print query_key
+    print(query_key)
 
     unique_id = request.form.get('uuid', u'invalid')
     session = "sessions:{}".format(unique_id)
@@ -214,7 +223,8 @@ def search():
         redis_store.expire(query_key, RESULT_TTL)
         redis_store.set(session, json.dumps(session_dict))
         redis_store.expire(session, SESSION_TTL)
-        redis_store.set("results:{0}".format(session), json.dumps(dict(redirect=query_key)))
+        redis_store.set("results:{0}".format(session),
+                        json.dumps(dict(redirect=query_key)))
         redis_store.expire("results:{0}".format(session), SESSION_TTL)
         return jsonify(session_dict)
 
@@ -228,10 +238,13 @@ def search():
             redis_store.set(query_pending_key, True)
             redis_store.expire(query_pending_key, 30)
             session_dict = dict(state='pending', uuid=unique_id)
-            redis_store.set('sessions:{0}'.format(unique_id), json.dumps(session_dict))
+            redis_store.set('sessions:{0}'.format(unique_id),
+                            json.dumps(session_dict))
             redis_store.expire('sessions:{0}'.format(unique_id), SESSION_TTL)
             q = Queue(connection=redis_store.connection, default_timeout=600)
-            q.enqueue(run.filter, query['genes'], full_query_key, query_key, query_pending_key, unique_id)
+            q.enqueue(run.filter, query['genes'], full_query_key, query_key,
+                      query_pending_key,
+                      unique_id)
             return jsonify(session_dict)
 
     session_dict = dict(state='pending', uuid=unique_id)
@@ -245,7 +258,8 @@ def search():
     redis_store.expire(query_pending_key, 30)
 
     q = Queue(connection=redis_store.connection, default_timeout=600)
-    q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query, unique_id)
+    q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query,
+              unique_id)
 
     return jsonify(session_dict)
 
@@ -265,7 +279,7 @@ def get_result(uuid, offset):
     total_results = redis_store.llen(query_key)
     more_results = True if total_results > offset + MAX_RESULTS else False
     return jsonify(dict(state='done', results=result, more_results=more_results,
-                   next_offset=next_offset, total_results=total_results))
+                        next_offset=next_offset, total_results=total_results))
 
 
 @app.route('/api/v1.0/download/regulator/<assembly>/<name>')
@@ -305,7 +319,8 @@ def _dict_to_bed(data):
     data['start'] = start
     data['end'] = end
 
-    return "{chrom}\t{start}\t{end}\t{data_source}#{track}*{site}\t{score}\t{strand}".format(**data)
+    return "{chrom}\t{start}\t{end}\t{data_source}#{track}*{site}\t{score}\t{strand}".format(
+        **data)
 
 
 @app.route('/news')
@@ -321,9 +336,12 @@ def tutorials():
 @app.route('/docs')
 def docs():
     return render_template('api_docs.html')
+
+
 @app.route('/help')
 def help():
     return render_template('api_docs.html')
+
 
 @app.route('/acknowledgements')
 def acknowledgements():
