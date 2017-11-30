@@ -1,18 +1,22 @@
 #!/usr/bin/env python
-# :set fileencoding=utf-8 :
+# coding=utf-8
 
+from __future__ import print_function
+from __future__ import unicode_literals
 import shutil
 import daemon
 from os import path
 from redis import StrictRedis
 
+
 def callback(message):
     if message['data'].startswith('sessions:'):
         uuid = message['data'].split(':')[-1]
         session_dir = path.join('/tmp', "dorina-{}".format(uuid))
-        print "deleting {session_dir}".format(session_dir=session_dir)
+        print("deleting {session_dir}".format(session_dir=session_dir))
         if path.exists(session_dir):
             shutil.rmtree(session_dir, ignore_errors=True)
+
 
 def main():
     r = StrictRedis()
