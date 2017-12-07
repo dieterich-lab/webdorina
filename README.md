@@ -33,3 +33,4 @@ License
 
 webdorina is licensed under the GNU Affero General Public Licence (AGPL) version 3.
 See `LICENSE` file for details.
+

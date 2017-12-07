@@ -96,7 +96,8 @@ def _list_genomes():
 
     # genome_list = [without_assemblies(x) for x in Genome.all().values()]
     genome_list = list(map(without_assemblies, Genome.all().values()))
-    genome_list.sort(lambda x, y: cmp(x['weight'], y['weight']), reverse=True)
+    # genome_list.sort(key=lambda x, y: cmp(x['weight'], y['weight']),
+    #                  reverse=True)
     return genome_list
 
 
@@ -120,7 +121,7 @@ def api_list_genomes():
 @app.route('/api/v1.0/assemblies/<genome>')
 def api_list_assemblies(genome):
     assemblies = [x for x in _list_assemblies() if x['genome'] == genome]
-    assemblies.sort(lambda x, y: cmp(x['weight'], y['weight']), reverse=True)
+    # assemblies.sort(lambda x, y: cmp(x['weight'], y['weight']), reverse=True)
     return jsonify(dict(assemblies=assemblies))
 
 
@@ -359,4 +360,4 @@ def docs_api(page):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)  # TODO this is not right for production
