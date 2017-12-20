@@ -309,7 +309,7 @@ describe('RegulatorViewModel', function() {
                     "scientific": "Mus musculus",
                     "weight": 3
                 }
-            ]
+            ];
             fn.expected_url.push('api/v1.0/genomes');
             fn.return_data.push({"genomes": genomes});
 
@@ -386,7 +386,7 @@ describe('RegulatorViewModel', function() {
                     ],
                     "summary": "AGO2 CLIP-SEQ (Kishore 2011)"
                 }
-            }
+            };
             fn.expected_url.push('api/v1.0/regulators/hg19');
             fn.return_data.push(regulators);
 

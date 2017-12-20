@@ -139,8 +139,7 @@ function DoRiNAResult(line) {
         }
         return (self.cols.length > 14) ? self.cols[14] : '.';
     }, self);
-};
-
+}
 function DoRiNAViewModel(net, uuid, custom_regulator) {
     var self = this;
     self.mode = ko.observable("choose_db");

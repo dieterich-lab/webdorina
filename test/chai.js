@@ -236,11 +236,10 @@ function exclude () {
 
     return res;
   };
-};
-
-/*!
- * Primary Exports
- */
+}
+    /*!
+     * Primary Exports
+     */
 
 module.exports = AssertionError;
 
@@ -1161,7 +1160,7 @@ module.exports = function (chai, _) {
         for (var k in val) new Assertion(obj).property(k, val[k]);
         return;
       }
-      var subset = {}
+      var subset = {};
       for (var k in val) subset[k] = obj[k]
       expected = _.eql(subset, val);
     } else {
@@ -1699,9 +1698,8 @@ module.exports = function (chai, _) {
       , 'expected #{this} to be an instance of ' + name
       , 'expected #{this} to not be an instance of ' + name
     );
-  };
-
-  Assertion.addMethod('instanceof', assertInstanceOf);
+  }
+    Assertion.addMethod('instanceof', assertInstanceOf);
   Assertion.addMethod('instanceOf', assertInstanceOf);
 
   /**
@@ -2142,9 +2140,8 @@ module.exports = function (chai, _) {
     );
 
     flag(this, 'object', thrownError);
-  };
-
-  Assertion.addMethod('throw', assertThrows);
+  }
+    Assertion.addMethod('throw', assertThrows);
   Assertion.addMethod('throws', assertThrows);
   Assertion.addMethod('Throw', assertThrows);
 
@@ -3332,7 +3329,7 @@ module.exports = function (chai, util) {
 
   assert.sameMembers = function (set1, set2, msg) {
     new Assertion(set1, msg).to.have.same.members(set2);
-  }
+  };
 
   /**
    * ### .includeMembers(superset, subset, [message])
@@ -3351,7 +3348,7 @@ module.exports = function (chai, util) {
 
   assert.includeMembers = function (superset, subset, msg) {
     new Assertion(superset, msg).to.include.members(subset);
-  }
+  };
 
   /*!
    * Undocumented / untested
@@ -3442,10 +3439,10 @@ module.exports = function (chai, util) {
 
     should.exist = function (val, msg) {
       new Assertion(val, msg).to.exist;
-    }
+    };
 
     // negation
-    should.not = {}
+    should.not = {};
 
     should.not.equal = function (val1, val2, msg) {
       new Assertion(val1, msg).to.not.equal(val2);
@@ -3457,15 +3454,14 @@ module.exports = function (chai, util) {
 
     should.not.exist = function (val, msg) {
       new Assertion(val, msg).to.not.exist;
-    }
+    };
 
     should['throw'] = should['Throw'];
     should.not['throw'] = should.not['Throw'];
 
     return should;
-  };
-
-  chai.should = loadShould;
+  }
+    chai.should = loadShould;
   chai.Should = loadShould;
 };
 
@@ -3898,25 +3894,24 @@ function parsePath (path) {
     , parts = str.match(/(\\\.|[^.]+?)+/g);
   return parts.map(function (value) {
     var re = /\[(\d+)\]$/
-      , mArr = re.exec(value)
+      , mArr = re.exec(value);
     if (mArr) return { i: parseFloat(mArr[1]) };
     else return { p: value };
   });
-};
-
-/*!
- * ## _getPathValue(parsed, obj)
- *
- * Helper companion function for `.parsePath` that returns
- * the value located at the parsed address.
- *
- *      var value = getPathValue(parsed, obj);
- *
- * @param {Object} parsed definition from `parsePath`.
- * @param {Object} object to search against
- * @returns {Object|Undefined} value
- * @api private
- */
+}
+    /*!
+     * ## _getPathValue(parsed, obj)
+     *
+     * Helper companion function for `.parsePath` that returns
+     * the value located at the parsed address.
+     *
+     *      var value = getPathValue(parsed, obj);
+     *
+     * @param {Object} parsed definition from `parsePath`.
+     * @param {Object} object to search against
+     * @returns {Object|Undefined} value
+     * @api private
+     */
 
 function _getPathValue (parsed, obj) {
   var tmp = obj
@@ -3934,8 +3929,7 @@ function _getPathValue (parsed, obj) {
     }
   }
   return res;
-};
-
+}
 });
 require.register("chai/lib/chai/utils/getProperties.js", function(exports, require, module){
 /*!
@@ -4566,7 +4560,7 @@ module.exports = function (ctx, name, getter) {
     , _super = function () {};
 
   if (_get && 'function' === typeof _get.get)
-    _super = _get.get
+    _super = _get.get;
 
   Object.defineProperty(ctx, name,
     { get: function () {
