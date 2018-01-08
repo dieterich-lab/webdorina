@@ -47,9 +47,7 @@ app = Flask(__name__)
 
 # generate session key
 app.secret_key = os.urandom(24)
-
-# for some reason initialising the Redis(app) breaks with str vs unicode bug
-redis_store = Redis(charset="utf-8", decode_responses=True)
+redis_store = Redis(app, charset="utf-8", decode_responses=True)
 
 
 @app.route('/')
@@ -81,13 +79,10 @@ def index():
 
 
 def _create_session(create_dir=False):
-    redis_store.set('foo', 'bar')
     unique_id = str(uuid.uuid4())
     session = "sessions:{0}".format(unique_id)
     session_dict = dict(uuid=unique_id, state='initialised')
-    redis_store.setex(name=session,
-                      value=json.dumps(session_dict),
-                      time=SESSION_TTL)
+    redis_store.setex(session, json.dumps(session_dict), SESSION_TTL)
     if create_dir:
         os.mkdir(SESSION_STORE.format(unique_id=unique_id))
     return unique_id
