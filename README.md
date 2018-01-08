@@ -21,9 +21,9 @@ Running the Web UI
 To run the development / test server:
 
 ```
-redis-server &
-python3 webdorina.py &
-rqworker &
+$ service redis start
+$ python webdorina.py &
+$ rqworker &
 ```
 
 For a deployment setup, you will want to run a proper WSGI server.
