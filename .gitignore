@@ -7,3 +7,4 @@ cover/*
 *.key
 *.pem
 data/*
+test/data/*
