@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # coding=utf-8
 from __future__ import print_function
+from __future__ import unicode_literals
+from past.builtins import cmp
+from future import standard_library
+
+standard_library.install_aliases()
 import os
 import json
 from io import StringIO
@@ -42,7 +47,7 @@ app = Flask(__name__)
 
 # generate session key
 app.secret_key = os.urandom(24)
-redis_store = Redis(app)
+redis_store = Redis(app, charset="utf-8", decode_responses=True)
 
 
 @app.route('/')
@@ -77,9 +82,7 @@ def _create_session(create_dir=False):
     unique_id = str(uuid.uuid4())
     session = "sessions:{0}".format(unique_id)
     session_dict = dict(uuid=unique_id, state='initialised')
-    redis_store.setex(name=session,
-                      time=SESSION_TTL,
-                      value=json.dumps(session_dict))
+    redis_store.setex(session, json.dumps(session_dict), SESSION_TTL)
     if create_dir:
         os.mkdir(SESSION_STORE.format(unique_id=unique_id))
     return unique_id
@@ -309,7 +312,7 @@ def download_results(uuid):
 
 
 def _dict_to_bed(data):
-    """Convert dorina dict to BED format"""
+    '''Convert dorina dict to BED format'''
     chrom, coords = data['location'].split(':')
     start, end = coords.split('-')
 
@@ -357,4 +360,4 @@ def docs_api(page):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, port=49200)
+    app.run(debug=True)  # TODO this is not right for production
