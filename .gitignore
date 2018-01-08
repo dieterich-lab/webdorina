@@ -3,3 +3,6 @@
 dorina
 .coverage
 cover/*
+*.crt
+*.key
+*.pem
