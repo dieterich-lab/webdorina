@@ -2,10 +2,6 @@
 # coding=utf-8
 from __future__ import print_function
 from __future__ import unicode_literals
-from past.builtins import cmp
-from future import standard_library
-
-standard_library.install_aliases()
 import os
 import json
 from io import StringIO
@@ -47,9 +43,9 @@ app = Flask(__name__)
 
 # generate session key
 app.secret_key = os.urandom(24)
-
-# for some reason initialising the Redis(app) breaks with str vs unicode bug
 redis_store = Redis(charset="utf-8", decode_responses=True)
+# assert redis is running
+redis_store.ping()
 
 
 @app.route('/')
@@ -81,7 +77,6 @@ def index():
 
 
 def _create_session(create_dir=False):
-    redis_store.set('foo', 'bar')
     unique_id = str(uuid.uuid4())
     session = "sessions:{0}".format(unique_id)
     session_dict = dict(uuid=unique_id, state='initialised')
