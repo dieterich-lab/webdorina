@@ -33,6 +33,8 @@ RESULT_TTL = conf.get('result_ttl', 86400)
 REGULATORS_TTL = conf.get('regulators_ttl', 3600)
 MAX_RESULTS = conf.get('max_results', 100)
 SESSION_STORE = conf.get('session_store', "/tmp/dorina-{unique_id}")
+HOST = conf.get('host', '0.0.0.0')
+PORT = conf.get('port', 5000)
 
 # Initialise genomes and regulators once.
 
@@ -93,6 +95,7 @@ def _list_genomes():
         h1 = h.copy()
         del h1['assemblies']
         return h1
+
 
     # genome_list = [without_assemblies(x) for x in Genome.all().values()]
     genome_list = list(map(without_assemblies, Genome.all().values()))
@@ -351,6 +354,7 @@ def acknowledgements():
 
 @app.route('/regulators')
 def regulators():
+
     return render_template('regulators.html')
 
 
@@ -360,4 +364,4 @@ def docs_api(page):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)  # TODO this is not right for production
+    app.run(debug=True, host=HOST, port=PORT)  # TODO this is not  right for production
