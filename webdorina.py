@@ -245,7 +245,7 @@ def search():
             redis_store.set('sessions:{0}'.format(unique_id),
                             json.dumps(session_dict))
             redis_store.expire('sessions:{0}'.format(unique_id), SESSION_TTL)
-            q = Queue(connection=redis_store.connection, default_timeout=600)
+            q = Queue(connection=redis_store, default_timeout=600)
             q.enqueue(run.filter, query['genes'], full_query_key, query_key,
                       query_pending_key,
                       unique_id)
@@ -261,7 +261,7 @@ def search():
     redis_store.set(query_pending_key, True)
     redis_store.expire(query_pending_key, 30)
 
-    q = Queue(connection=redis_store.connection, default_timeout=600)
+    q = Queue(connection=redis_store, default_timeout=600)
     q.enqueue(run.run_analyse, datadir, query_key, query_pending_key, query,
               unique_id)
 
