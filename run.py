@@ -1,25 +1,22 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
-
-from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
-import time
+import logging
 
 from dorina import run
 from redis import Redis
 
+log = logging.getLogger('webdorina')
 
-def run_analyse(datadir, query_key, query_pending_key, query, uuid,
-                timeit=False):
+
+def run_analyse(datadir, query_key, query_pending_key, query, uuid):
+    log.info('Running analysis for {}'.format(query_key))
     dorina = run.Dorina(datadir)
 
     from webdorina import RESULT_TTL, SESSION_TTL, SESSION_STORE
     redis_store = Redis(charset="utf-8", decode_responses=True)
-
-    if timeit:
-        started = time.time()
 
     session_store = SESSION_STORE.format(unique_id=uuid)
     custom_regulator_file = '{session_store}/{uuid}.bed'.format(
@@ -41,14 +38,11 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid,
                 set_b.append(regulator)
         query['set_b'] = set_b
     try:
+        log.debug('Storing analysis result for {}'.format(query_key))
         result = str(dorina.analyse(**query))
     except Exception as e:
         result = '\t\t\t\t\t\t\t\tJob failed: %s' % str(e).replace(
             '\n', ' ').replace('\t', ' ')
-
-    if timeit:
-        analysed = time.time()
-        print("analyse() ran {} seconds".format(analysed - started))
 
     lines = result.split('\n')
     if lines[-1] == '':
@@ -65,12 +59,8 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid,
 
     lines.sort(key=get_score, reverse=True)
 
-    if timeit:
-        sorted_time = time.time()
-        print("sort() ran {} seconds".format(sorted_time - analysed))
-
     num_results = len(lines)
-    print("returning %s rows" % num_results)
+    log.debug("returning {} rows".format(num_results))
 
     if num_results == 0:
         lines = ['\t\t\t\t\t\t\t\tNo results found']
@@ -87,11 +77,6 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid,
         redirect=query_key)), SESSION_TTL)
 
     redis_store.delete(query_pending_key)
-    if timeit:
-        json_time = 0  # I can't find this variable in the project
-        pushed = time.time()
-        print("push() ran {} seconds".format(pushed - json_time))
-        print("total time taken: {} seconds".format(pushed - started))
 
 
 def filter(genes, full_query_key, query_key, query_pending_key, uuid):

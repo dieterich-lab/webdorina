@@ -18,3 +18,15 @@ Most error are related with mocking:
 replace timings for logging with timestamps
 log info instead print()
 log error for every try except errors
+
+# How to debug rq failed workers
+
+python3
+
+`from redis import Redis`
+`from rq import Queue`
+`q = Queue('failed', connection=Redis())`
+`print(q.jobs[-1].exc_info)`
+
+Will print the stacktrace of the last failed job
+

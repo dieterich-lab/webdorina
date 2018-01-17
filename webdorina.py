@@ -1,11 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 from __future__ import print_function
 from __future__ import unicode_literals
+
+import logging
 import os
 import json
 from io import StringIO
 
+import sys
 from flask import (Flask, flash, render_template, jsonify, request, abort,
                    send_file, make_response)
 from redis import Redis
@@ -48,6 +51,11 @@ app.secret_key = os.urandom(24)
 redis_store = Redis(charset="utf-8", decode_responses=True)
 # assert redis is running
 redis_store.ping()
+
+log = logging.getLogger(__name__)
+logging.captureWarnings(True)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s ')
 
 
 @app.route('/')

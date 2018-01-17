@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os, sys, logging, site
 
-import sys
-# this was for the hello world
-# Now we are using /home/carina/webdorina/webdorina.py
-#sys.path.append('/home/carina/webapps/carina')
-#from carina import app as application
-sys.path.append('/home/carina/webdorina/')
+# The path of the webdorina project directory is the same as the directory of this file
+PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+logging.basicConfig(stream=sys.stderr)
+
+site.addsitedir(PROJECT_DIR)
+sys.path.append(PROJECT_DIR)
+
 from webdorina import app as application
