@@ -3,20 +3,18 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import logging
-import os
 import json
+import os
+import uuid
 from io import StringIO
 
-import sys
+from dorina.genome import Genome
+from dorina.regulator import Regulator
 from flask import (Flask, flash, render_template, jsonify, request, abort,
                    send_file, make_response)
 from redis import Redis
 from rq import Queue
-import uuid
 
-from dorina.genome import Genome
-from dorina.regulator import Regulator
 import run
 
 # basic doRiNA settings
@@ -51,11 +49,6 @@ app.secret_key = os.urandom(24)
 redis_store = Redis(charset="utf-8", decode_responses=True)
 # assert redis is running
 redis_store.ping()
-
-log = logging.getLogger(__name__)
-logging.captureWarnings(True)
-logging.basicConfig(stream=sys.stderr, level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s ')
 
 
 @app.route('/')
@@ -103,8 +96,6 @@ def _list_genomes():
         h1 = h.copy()
         del h1['assemblies']
         return h1
-
-
     # genome_list = [without_assemblies(x) for x in Genome.all().values()]
     genome_list = list(map(without_assemblies, Genome.all().values()))
     # genome_list.sort(key=lambda x, y: cmp(x['weight'], y['weight']),
@@ -140,20 +131,20 @@ def api_list_assemblies(genome):
 def list_regulators(assembly):
     cache_key = "regulators:{0}".format(assembly)
     if redis_store.exists(cache_key):
-        regulators = json.loads(redis_store.get(cache_key))
+        regulators_ = json.loads(redis_store.get(cache_key))
     else:
-        regulators = {}
+        regulators_ = {}
         available_regulators = Regulator.all()
         for genome in available_regulators:
             if assembly in available_regulators[genome]:
                 for key, val in list(
                         available_regulators[genome][assembly].items()):
-                    regulators[key] = val
+                    regulators_[key] = val
 
-                redis_store.set(cache_key, json.dumps(regulators))
+                redis_store.set(cache_key, json.dumps(regulators_))
                 redis_store.expire(cache_key, REGULATORS_TTL)
 
-    return jsonify(regulators)
+    return jsonify(regulators_)
 
 
 @app.route('/api/v1.0/genes/<assembly>', defaults={'query': ''})
@@ -181,32 +172,31 @@ def list_genes(assembly, query):
 def status(uuid):
     key = "sessions:{0}".format(uuid)
     if redis_store.exists(key):
-        status = json.loads(redis_store.get(key))
-        status['ttl'] = redis_store.ttl(key)
+        _status = json.loads(redis_store.get(key))
+        _status['ttl'] = redis_store.ttl(key)
     else:
-        status = dict(uuid=uuid, state='expired')
+        _status = dict(uuid=uuid, state='expired')
 
-    return jsonify(status)
+    return jsonify(_status)
 
 
 @app.route('/api/v1.0/search', methods=['POST'])
 def search():
-    query = {}
+    query = {'genes': request.form.getlist('genes[]')}
 
-    query['genes'] = request.form.getlist('genes[]')
-    if query['genes'] == []:
+    if not query['genes']:
         query['genes'] = [u'all']
 
     query['match_a'] = request.form.get('match_a', u'any')
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
     query['set_a'] = request.form.getlist('set_a[]')
-    offset = request.form.get('offset', 0, int)
+    # offset = request.form.get('offset', 0, int)
 
     query['set_b'] = request.form.getlist('set_b[]')
     # werkzeug/Flask insists on returning an empty list, but dorina.analyse
     # expects 'None'
-    if query['set_b'] == []:
+    if not query['set_b']:
         query['set_b'] = None
     query['match_b'] = request.form.get('match_b', u'any')
     query['region_b'] = request.form.get('region_b', u'any')
@@ -298,7 +288,8 @@ def get_result(uuid, offset):
 def download_regulator(assembly, name):
     try:
         regulator = Regulator.from_name(name, assembly)
-    except:
+    except Exception as e:
+        app.logger.error(e, assembly, name)
         return abort(404)
 
     return send_file(regulator.path, as_attachment=True)
@@ -323,7 +314,7 @@ def download_results(uuid):
 
 
 def _dict_to_bed(data):
-    '''Convert dorina dict to BED format'''
+    """Convert dorina dict to BED format"""
     chrom, coords = data['location'].split(':')
     start, end = coords.split('-')
 
@@ -349,10 +340,10 @@ def tutorials():
 def docs():
     return render_template('api_docs.html')
 
-
-@app.route('/help')
-def help():
-    return render_template('api_docs.html')
+#
+# @app.route('/help')
+# def help():
+#     return render_template('api_docs.html')
 
 
 @app.route('/acknowledgements')
@@ -362,7 +353,6 @@ def acknowledgements():
 
 @app.route('/regulators')
 def regulators():
-
     return render_template('regulators.html')
 
 
@@ -372,4 +362,4 @@ def docs_api(page):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=PORT)  # TODO this is not  right for production
+    app.run(debug=True, host=HOST, port=PORT)
