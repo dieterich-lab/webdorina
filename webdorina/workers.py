@@ -9,10 +9,8 @@ import json
 from dorina import run
 from redis import Redis
 
-from webdorina.app import app
 
-
-def run_analyse(datadir, query_key, query_pending_key, query, uuid):
+def run_analyse(datadir, query_key, query_pending_key, query, uuid, app):
     app.logger.info('Running analysis for {}'.format(query_key))
     dorina = run.Dorina(datadir)
 
@@ -79,7 +77,8 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid):
     redis_store.delete(query_pending_key)
 
 
-def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid):
+def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid,
+                 app):
     """Filter for a given set of gene names"""
     redis_store = Redis(charset="utf-8", decode_responses=True)
 

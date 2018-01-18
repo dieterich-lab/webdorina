@@ -15,7 +15,7 @@ from redis import Redis
 import flask
 from rq import Queue
 
-from webdorina.workers import filter_genes, run_analyse
+from workers import filter_genes, run_analyse
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 app = flask.Flask('webdorina',
@@ -199,9 +199,9 @@ def search():
             redis_store.expire(
                 'sessions:{0}'.format(unique_id), app.config['SESSION_TTL'])
             q = Queue(connection=redis_store, default_timeout=600)
+
             q.enqueue(filter_genes, query['genes'], full_query_key, query_key,
-                      query_pending_key,
-                      unique_id)
+                      query_pending_key, unique_id, app=app)
             return flask.jsonify(session_dict)
 
     session_dict = dict(state='pending', uuid=unique_id)
@@ -217,7 +217,7 @@ def search():
 
     q = Queue(connection=redis_store, default_timeout=600)
     q.enqueue(run_analyse, app.config['DATA_PATH'], query_key,
-              query_pending_key, query, unique_id)
+              query_pending_key, query, unique_id, app=app)
 
     return flask.jsonify(session_dict)
 
@@ -353,8 +353,6 @@ def get_result(uuid, offset):
     return flask.jsonify(
         dict(state='done', results=result, more_results=more_results,
              next_offset=next_offset, total_results=total_results))
-
-
 
 
 if __name__ == "__main__":
