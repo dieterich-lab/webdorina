@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # coding=utf-8
-from __future__ import print_function
-
 """
 Concatenate JSON manifests to provide collections of all related
 experiments.
 """
+from __future__ import print_function
 from __future__ import unicode_literals
 import os
 import json

@@ -1,4 +1,9 @@
-import os, sys, logging, site
+#!/usr/bin/env python
+# coding=utf-8
+import os
+import sys
+import logging
+import site
 
 # The path of the webdorina project directory is the same as the directory of this file
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))

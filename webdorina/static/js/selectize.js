@@ -331,7 +331,7 @@
 	 *   - fields {string|array}
 	 *   - sort {array}
 	 *   - score {function}
-	 *   - filter {bool}
+	 *   - _filter {bool}
 	 *   - limit {integer}
 	 *
 	 * Returns an object containing:
@@ -887,7 +887,7 @@
 	 *
 	 * @param {object} $parent - Parent element to listen on.
 	 * @param {string} event - Event name.
-	 * @param {string} selector - Descendant selector to filter by.
+	 * @param {string} selector - Descendant selector to _filter by.
 	 * @param {function} fn - Event handler.
 	 */
 	var watchChildEvent = function($parent, event, selector, fn) {
@@ -1999,7 +1999,7 @@
 				result = $.extend(true, {}, self.currentResults);
 			}
 	
-			// filter out selected items
+			// _filter out selected items
 			if (settings.hideSelected) {
 				for (i = result.items.length - 1; i >= 0; i--) {
 					if (self.items.indexOf(hash_key(result.items[i].id)) !== -1) {
