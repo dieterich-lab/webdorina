@@ -13,4 +13,4 @@ logging.basicConfig(stream=sys.stderr)
 site.addsitedir(PROJECT_DIR)
 sys.path.append(PROJECT_DIR)
 
-from webdorina import app as application
+from webdorina.app import app as application
