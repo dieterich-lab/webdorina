@@ -8,3 +8,4 @@ MAX_RESULTS=100
 SESSION_STORE="/tmp/dorina-{unique_id}"
 PORT=49200
 HOST='0.0.0.0'
+DEBUG=True
