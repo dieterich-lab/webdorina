@@ -30,3 +30,7 @@ python3
 
 Will print the stacktrace of the last failed job
 
+## Linking the old dataset
+old_stuff/genomes/* genomes/
+old_stuff/regulators.old/* regulators/
+crossmap/regulators/h_sapiens/GRCh38/ regulators/h_sapiens/GRCh38/

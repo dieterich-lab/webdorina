@@ -5,18 +5,21 @@ Created on 15:57 18/01/2018 2018
 
 """
 import json
+import logging
 
 from dorina import run
 from redis import Redis
 
+logger = logging.getLogger('webdorina')
 
-def run_analyse(datadir, query_key, query_pending_key, query, uuid, app):
-    app.logger.info('Running analysis for {}'.format(query_key))
+def run_analyse(datadir, query_key, query_pending_key, query, uuid, SESSION_STORE=None,
+                RESULT_TTL=None, SESSION_TTL=None):
+    logger.info('Running analysis for {}'.format(query_key))
     dorina = run.Dorina(datadir)
 
     redis_store = Redis(charset="utf-8", decode_responses=True)
 
-    session_store = app.config['SESSION_STORE'].format(unique_id=uuid)
+    session_store = SESSION_STORE.format(unique_id=uuid)
     custom_regulator_file = '{session_store}/{uuid}.bed'.format(
         session_store=session_store, uuid=uuid)
     set_a = []
@@ -36,7 +39,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, app):
                 set_b.append(regulator)
         query['set_b'] = set_b
     try:
-        app.logger.debug('Storing analysis result for {}'.format(query_key))
+        logger.debug('Storing analysis result for {}'.format(query_key))
         result = str(dorina.analyse(**query))
     except Exception as e:
         result = '\t\t\t\t\t\t\t\tJob failed: %s' % str(e).replace(
@@ -58,7 +61,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, app):
     lines.sort(key=get_score, reverse=True)
 
     num_results = len(lines)
-    app.logger.debug("returning {} rows".format(num_results))
+    logger.debug("returning {} rows".format(num_results))
 
     if num_results == 0:
         lines = ['\t\t\t\t\t\t\t\tNo results found']
@@ -68,17 +71,17 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, app):
         res = lines[i:i + 1000]
         redis_store.rpush(query_key, *res)
 
-    redis_store.expire(query_key, app.config['RESULT_TTL'])
+    redis_store.expire(query_key, RESULT_TTL)
     redis_store.setex('sessions:{0}'.format(uuid), json.dumps(dict(
-        state='done', uuid=uuid)), app.config['SESSION_TTL'])
+        state='done', uuid=uuid)), SESSION_TTL)
     redis_store.setex('results:sessions:{0}'.format(uuid), json.dumps(dict(
-        redirect=query_key)), app.config['SESSION_TTL'])
+        redirect=query_key)), SESSION_TTL)
 
     redis_store.delete(query_pending_key)
 
 
 def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid,
-                 app):
+                 SESSION_TTL=None, RESULT_TTL=None):
     """Filter for a given set of gene names"""
     redis_store = Redis(charset="utf-8", decode_responses=True)
 
@@ -103,10 +106,10 @@ def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid,
         res = results[i:i + 1000]
         redis_store.rpush(query_key, *res)
 
-    redis_store.expire(query_key, app.config['RESULT_TTL'])
+    redis_store.expire(query_key, RESULT_TTL)
     redis_store.delete(query_pending_key)
 
     redis_store.setex('sessions:{0}'.format(uuid), json.dumps(dict(
-        state='done', uuid=uuid)), app.config['SESSION_TTL'])
+        state='done', uuid=uuid)), SESSION_TTL)
     redis_store.setex('results:sessions:{0}'.format(uuid), json.dumps(dict(
-        redirect=query_key)), app.config['SESSION_TTL'])
+        redirect=query_key)), SESSION_TTL)
