@@ -4,3 +4,4 @@ dorina
 .coverage
 cover/*
 .idea/
+__pycache__/

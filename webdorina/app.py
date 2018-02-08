@@ -11,6 +11,7 @@ from io import StringIO
 
 from dorina.genome import Genome
 from dorina.regulator import Regulator
+from flask import flash
 from redis import Redis
 import flask
 from rq import Queue
@@ -93,7 +94,7 @@ def _dict_to_bed(data):
 
 @app.route('/')
 def welcome():
-    return flask.render_template('welcome.html')
+    return flask.render_template('welcome.html', title='Home')
 
 
 @app.route('/go', methods=['GET', 'POST'])
@@ -107,8 +108,10 @@ def index():
             dirname = app.config['SESSION_STORE'].format(unique_id=unique_id)
             bedfile.save(os.path.join(dirname, filename))
             custom_regulator = 'true'
+            flask.flash(u'File loaded"', 'success')
         else:
-            flask.flash(u'Bedfile must end on ".bed"', 'error')
+            flask.flash(u'The file must end on ".bed"', 'danger')
+            return flask.render_template('welcome.html')
     else:
         unique_id = _create_session()
 
@@ -116,7 +119,8 @@ def index():
     assemblies = json.dumps(_list_assemblies())
     return flask.render_template('index.html', genomes=genomes,
                                  assemblies=assemblies, uuid=unique_id,
-                                 custom_regulator=custom_regulator)
+                                 custom_regulator=custom_regulator,
+                                 title='Search')
 
 
 @app.route('/api/v1.0/status/<uuid>')
