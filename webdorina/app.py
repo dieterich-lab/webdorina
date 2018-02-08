@@ -11,11 +11,9 @@ from io import StringIO
 
 from dorina.genome import Genome
 from dorina.regulator import Regulator
-from flask import flash
 from redis import Redis
 import flask
 from rq import Queue
-
 from webdorina.workers import filter_genes, run_analyse
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -94,7 +92,7 @@ def _dict_to_bed(data):
 
 @app.route('/')
 def welcome():
-    return flask.render_template('welcome.html', title='Home')
+    return flask.render_template('welcome.html')
 
 
 @app.route('/go', methods=['GET', 'POST'])
@@ -119,8 +117,7 @@ def index():
     assemblies = json.dumps(_list_assemblies())
     return flask.render_template('index.html', genomes=genomes,
                                  assemblies=assemblies, uuid=unique_id,
-                                 custom_regulator=custom_regulator,
-                                 title='Search')
+                                 custom_regulator=custom_regulator)
 
 
 @app.route('/api/v1.0/status/<uuid>')

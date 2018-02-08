@@ -1,70 +1,49 @@
+{# <h3> {{ active_page }} </h3>#}
+<form class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-8">
 
-<div class="jumbotron mb-xl px-lg-md text-white" id="doc_jumbotron">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xl-8">
-                <h1 class="typography-display-4">Carina</h1>
-                <p class="font-weight-light typography-title">Carina is
-                    database of RNA regulatory elements associated with the
-                    Cardiovascular system. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla.
-                </p>
+            <h3 class="typography-display-4">Select a genomic assembly</h3>
+        </div>
+        <form class="form-inline" role="form"
+              data-bind="submit: show_simple_search"></form>
+            <div class="row">
+                <div class="form-group">
+                    <label for="assembly">Assembly</label>
+                </div>
+                <select class="form-control " id="assembly"
+                        data-bind="value: chosenAssembly"
+                        placeholder="Select assembly...">
+                </select>
+                <button type="submit " class="btn btn-primary"
+                        data-bind="enable: chosenAssembly">
+                    <span class="glyphicon glyphicon-hdd"></span> Search Database
+                </button>
             </div>
-        </div>
+            <div class="row">
+                <div class="form-group col-xs-10"></div>
+                </div>
+            </div>
 
+
+</div>
+
+
+<div id="chooseDatabase" class="panel-collapse collapse in">
+    <div class="panel-body">
 
     </div>
+
 </div>
-<div class="jumbotron mb-xl px-lg-md text-white" id="doc_jumbotron">
-{#    #}
-{#    <div class="container">#}
-{#        <div class="row justify-content-center">#}
-{#            <div class="col-xl-8">#}
-{#                <h1 class="typography-display-4">Select a genomic assembly</h1>#}
-{#                <p class="font-weight-light typography-title">Carina is#}
-{#                    database of RNA regulatory elements associated with the#}
-{#                    Cardiovascular system.</p>#}
-{#            </div>#}
-{#            <form class="form-inline" role="form" data-bind="submit: show_simple_search">#}
-{#              <div class="row">#}
-{#                <div class="form-group">#}
-{#                  <label for="assembly">Assembly</label>#}
-{#                </div>#}
-{#                  <select class="form-control" id="assembly" data-bind="value: chosenAssembly" placeholder="Select assembly...">#}
-{#                </select>#}
-{#                  <button type="submit" class="btn btn-primary" data-bind="enable: chosenAssembly">#}
-{#                <span class="glyphicon glyphicon-hdd"></span> Search Database</button>#}
-{#              </div>#}
-{#                <div class="row">#}
-{#                    <div class="form-group col-xs-10">#}
+<div class="form-group col-xs-2">
 
-
-
-        </div>
+    <div class="form-group col-xs-2" data-bind="visible: loading_regulators">
+        <p class="text-center">Loading regulators...</p>
+        </select>
     </div>
 </div>
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#          </h4>#}
-{#        </div>#}
-{#        <div id="chooseDatabase" class="panel-collapse collapse in">#}
-{#          <div class="panel-body">#}
-{##}
-{#              </div>#}
-{##}
-{#              </div>#}
-{#              <div class="form-group col-xs-2">#}
-{##}
-{#              <div class="form-group col-xs-2" data-bind="visible: loading_regulators">#}
-{#                <p class="text-center">Loading regulators...</p>#}
-{#                </select>#}
-{#              </div>#}
-{#             </div>#}
-{#            </form>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{##}
+</form>
+</div>
+</div>
+</div>
+

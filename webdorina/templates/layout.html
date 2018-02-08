@@ -3,7 +3,7 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    {% set active_page = active_page|default('index') -%}
+{#   TODO   {% set active_page = active_page|default('index') -%}#}
     <title>Carina &middot; {{ active_page | title }} </title>
     {#    <meta name="description" content=""> TODO #}
     <meta content="initial-scale=1, shrink-to-fit=no, width=device-width"
@@ -16,66 +16,76 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
     <!-- Add Material CSS, replace Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/material.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.css">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/material.min.css') }}">
 
     {% block extra_headers %}{% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-md">
-{% set navigation_bar = [
+<nav class="navbar navbar-inverse navbar-expand-md">
+    {% set navigation_bar = [
     ('/', 'index', 'Index'),
     ('/regulators', 'regulators', 'Regulators'),
     ('/news', 'news', 'News'),
     ('/tutorials', 'tutorials', 'Tutorials'),
-    ('/docs', 'docs', 'Docs'),
+    ('/docs', 'documentation', 'Documentation'),
     ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
 
-<button class="navbar-toggler" type="button" data-toggle="collapse"
+    <button class="navbar-toggler pull-left" type="button"
+            data-toggle="collapse"
             data-target="#navbarToggler"
             aria-controls="navbarToggler" aria-expanded="false"
             aria-label="Toggle navigation">
+        <span class="icon-bar"></span>
+
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href={{ url_for('welcome') }}>Carina</a>
+    <div class="container">
+        <a class="navbar-brand hidden-xs"
+           href={{ url_for('welcome') }}>Carina</a>
+    </div>
     <div class="collapse navbar-collapse" id="navbarToggler">
-        <ul class="navbar-nav mr-auto mt-2" id="navigation">
+        <ul class="navbar-nav" id="navigation">
             {% for href, id, caption in navigation_bar %}
                 <a {% if id == active_page %} class="nav-link active"
-                {% else %} class="nav-link" {%endif%}
-                href="{{ href|e }}"> {{ caption|e }}</a>
-                {% endfor %}
-            </ul>
-
+                {% else %} class="nav-link" {% endif %}
+                                              href="{{ href|e }}"> {{ caption|e }}</a>
+            {% endfor %}
+        </ul>
     </div>
 </nav>
-<main class="px-lg-md">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-9 col-xl-6">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }}
-                                alert-dismissible fade show" role="alert">
-                                    <button type="button" class="close"
-                                            data-dismiss="alert"
-                                            aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
 
-                    {% endif %}
-                {% endwith %}
-                <div class="bd-content mb-xl">
-                    {% block body %}{% endblock %}
-                </div>
+<div class="container pt-4"> {# pt-4 adjust padding to the top from 1 to 5 #}
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-6">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}
+                                alert-dismissible fade show"
+                             role="alert">
+                            <button type="button"
+                                    class="close"
+                                    data-dismiss="alert"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+            {% endwith %}
+            <div class="bd-content mb-xl">
+                {% block body %}{% endblock %}
             </div>
         </div>
     </div>
-</main>
+</div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -85,7 +95,6 @@
 
 <!-- Then Material JavaScript on top of Bootstrap JavaScript -->
 <script src="{{ url_for('static', filename='js/material.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 <!-- Optional JavaScript -->
 <script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 <script src="{{ url_for('static', filename='js/knockstrap.js') }}"></script>
@@ -93,6 +102,9 @@
 <script src="{{ url_for('static', filename='js/dorina.net.js') }}"></script>
 <script src="{{ url_for('static', filename='js/selectize.js') }}"></script>
 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>

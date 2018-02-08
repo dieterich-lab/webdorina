@@ -1,33 +1,35 @@
 {% extends 'layout.html' %}
+{% set active_page = 'regulators' -%}
 {% block body %}
-    <h1> test </h1>
-    <div class="spacer-3">&nbsp;<div>
-    <div class="row well">
+    <div class="jumbotron">
+    <h4 class="typography-display-1">Available regulators</h4>
+    <div class="spacer-2">&nbsp;
       <div class="form-group">
-        <label class="col-md-2 control-label" for="assembly">Species &amp; assembly</label>
-        <div class="col-md-10">
           <select class="form-control" id="assembly" data-bind="value: selected_assembly"
-            placeholder="Select species and assembly...">
+            placeholder="Select species and assembly">
           </select>
-        </div>
       </div>
     </div>
-    <div class="spacer-3">&nbsp;<div>
-    <div class="regulator-group" data-bind="foreach: regulators">
-      <div class="regulator-entry">
-        <span class="glyphicon glyphicon-chevron-right"></span> <span data-bind="text: summary"></span>
-        <ul>
-          <li data-bind="text: description"></li>
-          <li><span data-bind="text: sites"></span> sites</li>
-          <li><a data-bind="attr: {href: 'api/v1.0/download/regulator/' + $parent.selected_assembly() + '/' + id}">Download</a></li>
-        </ul>
-      </div>
     </div>
-{% endblock %}
+    {#    <div class="spacer-3">&nbsp;<div>#}
+    {#    <div class="regulator-group" data-bind="foreach: regulators">#}
+    {#      <div class="regulator-entry">#}
+    {#        <span class="glyphicon glyphicon-chevron-right"></span> <span data-bind="text: summary"></span>#}
+    {#        <ul>#}
+    {#          <li data-bind="text: description"></li>#}
+    {#          <li><span data-bind="text: sites"></span> sites</li>#}
+    {#          <li><a data-bind="attr: {href: 'api/v1.0/download/regulator/' + $parent.selected_assembly() + '/' + id}">Download</a></li>#}
+    {#        </ul>#}
+    {#      </div>#}
+    {#    </div>#}
+    {#</div>#}
+    {#    </div>#}
 
+{% endblock %}
 {% block extra_scripts %}
   <script type="text/javascript">
-
+    var net;
+    var viewmodel;
     $(document).ready(function() {
         var net = new DoRiNANet();
         var viewmodel = new RegulatorViewModel(net);
@@ -44,6 +46,5 @@
               .addClass('glyphicon-plus');
         });
     });
-
   </script>
 {% endblock %}

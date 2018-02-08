@@ -1,52 +1,47 @@
 {% extends 'layout.html' %}
-{% set active_page = "index" %}
+
 {% block body %}
 
-      {% include "choose_db.html" %}
-
-      {% include "search.html" %}
-
-      {% include "results.html" %}
+    {% include "choose_db.html" %}
+    {#      {% include "search.html" %}#}
+    {#      {% include "results.html" %}#}
 
 {% endblock %}
-
-
 {% block extra_scripts %}
-  <script type="text/javascript">
+    <script type="text/javascript">
 
-    $(document).ready(function() {
-        var net = new DoRiNANet();
-        var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
-        ko.applyBindings(viewmodel);
-        SetViewModel(viewmodel);
-        $("[data-toggle='tooltip']").tooltip();
-        $('#assembly').selectize({
-            valueField: 'id',
-            labelField: 'id',
-            searchField: 'id',
-            options: {{ assemblies|safe }},
-            sortField: [{ field: 'weight', direction: 'desc'}],
-            optgroupField: 'genome',
-            optgroupValueField: 'id',
-            optgroups: {{ genomes|safe }},
-            plugins: ['optgroup_columns'],
-            render: {
-                optgroup_header: function(data, escape) {
-                    return '<div class="optgroup-header">' + escape(data.label) +
-                           ' (<span class="scientific">' + escape(data.scientific) +
-                           '</span>)</div>';
-                 }
-            }
+        $(document).ready(function () {
+            var net = new DoRiNANet();
+            var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
+            ko.applyBindings(viewmodel);
+            SetViewModel(viewmodel);
+            $("[data-toggle='tooltip']").tooltip();
+            $('#assembly').selectize({
+                valueField: 'id',
+                labelField: 'id',
+                searchField: 'id',
+                options: {{ assemblies|safe }},
+                sortField: [{field: 'weight', direction: 'desc'}],
+                optgroupField: 'genome',
+                optgroupValueField: 'id',
+                optgroups: {{ genomes|safe }},
+                plugins: ['optgroup_columns'],
+                render: {
+                    optgroup_header: function (data, escape) {
+                        return '<div class="optgroup-header">' + escape(data.label) +
+                            ' (<span class="scientific">' + escape(data.scientific) +
+                            '</span>)</div>';
+                    }
+                }
+            });
+
+            $('#genes').on('show.bs.collapse', function () {
+                $('#genes-icon').removeClass('glyphicon-plus')
+                    .addClass('glyphicon-minus');
+            }).on('hide.bs.collapse', function () {
+                $('#genes-icon').removeClass('glyphicon-minus')
+                    .addClass('glyphicon-plus');
+            });
         });
-
-        $('#genes').on('show.bs.collapse', function() {
-            $('#genes-icon').removeClass('glyphicon-plus')
-              .addClass('glyphicon-minus');
-        }).on('hide.bs.collapse', function() {
-            $('#genes-icon').removeClass('glyphicon-minus')
-              .addClass('glyphicon-plus');
-        });
-    });
-
-  </script>
+    </script>
 {% endblock %}

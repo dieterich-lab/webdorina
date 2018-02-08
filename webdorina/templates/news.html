@@ -1,17 +1,24 @@
 {% extends 'layout.html' %}
+{% set active_page = 'news' -%}
 {% block body %}
-    <div class="panel-group">
-      <h2>What's new</h2>
-      <dl class="dl-horizontal news-list">
-        <dt>2014-10-22</dt>
-        <dd><div class="news-header">Documentation updated.</div>
-          Check out the "Documentation" tab for tutorials on regulator-centric
-          and target-centric searches using the web interface.
-        </dd>
-
-        <dt>2014-10-20</dt>
-        <dd><div class="news-header">Public release of the updated doRiNA database.</div>
-        </dd>
-      </dl>
+    <div class="jumbotron">
+        <div class="panel-group">
+            <h4 class="typography-display-1">What's new</h4>
+            <dl class="dl-horizontal news-list">
+                <dt>2014-10-22</dt>
+                <dd>
+                    <div class="news-header">Documentation updated.</div>
+                    Check out the "Documentation" tab for tutorials on
+                    regulator-centric
+                    and target-centric searches using the web interface.
+                </dd>
+                <dt>2014-10-20</dt>
+                <dd>
+                    <div class="news-header">Public release of the updated
+                        doRiNA database.
+                    </div>
+                </dd>
+            </dl>
+        </div>
     </div>
 {% endblock %}
