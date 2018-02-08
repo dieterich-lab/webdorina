@@ -3,7 +3,8 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <title>Carina &middot; {{ title or '' }} </title>
+    {% set active_page = active_page|default('index') -%}
+    <title>Carina &middot; {{ active_page | title }} </title>
     {#    <meta name="description" content=""> TODO #}
     <meta content="initial-scale=1, shrink-to-fit=no, width=device-width"
           name="viewport">
@@ -22,7 +23,15 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md">
-    <button class="navbar-toggler" type="button" data-toggle="collapse"
+{% set navigation_bar = [
+    ('/', 'index', 'Index'),
+    ('/regulators', 'regulators', 'Regulators'),
+    ('/news', 'news', 'News'),
+    ('/tutorials', 'tutorials', 'Tutorials'),
+    ('/docs', 'docs', 'Docs'),
+    ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
+
+<button class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarToggler"
             aria-controls="navbarToggler" aria-expanded="false"
             aria-label="Toggle navigation">
@@ -30,36 +39,22 @@
     </button>
     <a class="navbar-brand" href={{ url_for('welcome') }}>Carina</a>
     <div class="collapse navbar-collapse" id="navbarToggler">
-        <ul class="navbar-nav mr-auto mt-2">
-            <li>
-                <a class="nav-link" href={{ url_for('news') }}> News </a>
-            </li>
-            <li>
-                <a class="nav-link" href={{ url_for('index') }}> Search </a>
-            </li>
+        <ul class="navbar-nav mr-auto mt-2" id="navigation">
+            {% for href, id, caption in navigation_bar %}
+                <a {% if id == active_page %} class="nav-link active"
+                {% else %} class="nav-link" {%endif%}
+                href="{{ href|e }}"> {{ caption|e }}</a>
+                {% endfor %}
+            </ul>
 
-            <li>
-                <a class="nav-link" href={{ url_for('tutorials') }}>
-                    Tutorials</a>
-            </li>
-            <li>
-                <a class="nav-link" href={{ url_for('regulators') }}>
-                    Regulators</a>
-            </li>
-            <li>
-                <a class="nav-link" href={{ url_for('acknowledgements') }}>
-                    Acknowledgements</a>
-            </li>
-        </ul>
     </div>
 </nav>
-<main class="doc-main px-lg-md">
+<main class="px-lg-md">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9 col-xl-6">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
-
                             {% for category, message in messages %}
                                 <div class="alert alert-{{ category }}
                                 alert-dismissible fade show" role="alert">
