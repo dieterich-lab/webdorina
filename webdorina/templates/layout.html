@@ -3,7 +3,6 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-{#   TODO   {% set active_page = active_page|default('index') -%}#}
     <title>Carina &middot; {{ active_page | title }} </title>
     {#    <meta name="description" content=""> TODO #}
     <meta content="initial-scale=1, shrink-to-fit=no, width=device-width"
@@ -22,6 +21,8 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.css">
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/material.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/selectize.css') }}">
 
     {% block extra_headers %}{% endblock %}
 </head>
@@ -34,7 +35,7 @@
     ('/tutorials', 'tutorials', 'Tutorials'),
     ('/docs', 'documentation', 'Documentation'),
     ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
-
+    {# TODO sidebar instead navbar #}
     <button class="navbar-toggler pull-left" type="button"
             data-toggle="collapse"
             data-target="#navbarToggler"
@@ -100,7 +101,7 @@
 <script src="{{ url_for('static', filename='js/knockstrap.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dorina.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dorina.net.js') }}"></script>
-<script src="{{ url_for('static', filename='js/selectize.js') }}"></script>
+<script src="{{ url_for('static', filename='js/selectize.min.js') }}"></script>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
