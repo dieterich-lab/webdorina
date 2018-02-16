@@ -1,10 +1,11 @@
+{% set active_page = "Search" %}
 {% extends 'layout.html' %}
 
 {% block body %}
 
     {% include "choose_db.html" %}
-    {#      {% include "search.html" %}#}
-    {#      {% include "results.html" %}#}
+    {% include "search.html" %}
+    {% include "results.html" %}
 
 {% endblock %}
 {% block extra_scripts %}

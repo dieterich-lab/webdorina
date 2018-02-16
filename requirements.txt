@@ -1,6 +1,6 @@
 daemon
 Flask
-Flask-Redis
+flask-redis
 Jinja2
 MarkupSafe
 Werkzeug
@@ -11,6 +11,5 @@ pytz
 redis
 rq
 six
-times
 python-daemon
 future

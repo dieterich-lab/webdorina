@@ -60,9 +60,9 @@
             </div>
             </div>
             <div class="row" data-bind="visible: pending">
-              <div class="col-md-3 col-md-offset-3">
-                <img src="{{url_for('static', filename='loading.gif')}}" alt="loading..." />
-              </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-indeterminate" role="progressbar"></div>
+                    </div>
               <div class="col-md-6">
                 Loading
               </div>

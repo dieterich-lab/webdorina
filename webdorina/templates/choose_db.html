@@ -1,49 +1,52 @@
-{# <h3> {{ active_page }} </h3>#}
-<form class="container">
-    <div class="row justify-content-center">
-        <div class="col-xl-8">
-
-            <h3 class="typography-display-4">Select a genomic assembly</h3>
-        </div>
-        <form class="form-inline" role="form"
-              data-bind="submit: show_simple_search"></form>
-            <div class="row">
-                <div class="form-group">
-                    <label for="assembly">Assembly</label>
-                </div>
-                <select class="form-control " id="assembly"
-                        data-bind="value: chosenAssembly"
-                        placeholder="Select assembly...">
+<div class="jumbotron">
+        <div class="spacer-2">&nbsp;
+            <div class="form-group form-row align-items-center">
+                <select class="form-control" id="assembly"
+                        data-bind="value: selected_assembly"
+                        placeholder="Select species and assembly">
                 </select>
-                <button type="submit " class="btn btn-primary"
-                        data-bind="enable: chosenAssembly">
-                    <span class="glyphicon glyphicon-hdd"></span> Search Database
-                </button>
             </div>
-            <div class="row">
-                <div class="form-group col-xs-10"></div>
+        </div>
+    </div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            Choose a doRiNA database
+        </h4>
+    </div>
+    <div id="chooseDatabase" class="expansion-panel list-group-item">
+        <div class="panel-body">
+            <form class="form-inline" role="form"
+                  data-bind="submit: show_simple_search">
+                <div class="row">
+                    <div class="form-group col-md-2">
+                        <label for="assembly">Assembly</label>
+                    </div>
                 </div>
-            </div>
-
-
-</div>
-
-
-<div id="chooseDatabase" class="panel-collapse collapse in">
-    <div class="panel-body">
-
+                <div class="row">
+                    <div class="form-group col-xs-10">
+                        <select class="form-control" id="assembly"
+                                data-bind="value: chosenAssembly"
+                                placeholder="Select assembly...">
+                        </select>
+                    </div>
+                    <div class="form-group col-xs-2">
+                        <button type="submit" class="btn btn-primary"
+                                data-bind="enable: chosenAssembly">
+                            <span class="glyphicon glyphicon-hdd"></span> Search
+                            Database
+                        </button>
+                    </div>
+                    <div class="form-group col-xs-2"
+                         data-bind="visible: loading_regulators">
+                        <p class="text-center">Loading regulators...</p>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-
-</div>
-<div class="form-group col-xs-2">
-
-    <div class="form-group col-xs-2" data-bind="visible: loading_regulators">
-        <p class="text-center">Loading regulators...</p>
-        </select>
-    </div>
-</div>
-</form>
-</div>
-</div>
 </div>
 
