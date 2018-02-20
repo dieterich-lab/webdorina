@@ -13,6 +13,7 @@ remove _ (dash) from 1st col
 """
 from __future__ import print_function
 from __future__ import unicode_literals
+from io import open
 import os
 import json
 import shutil
@@ -20,14 +21,14 @@ import subprocess
 from subprocess import CalledProcessError
 
 # paths
-DATA_PATH = os.path.join("/data/projects/doRiNA2/")
-HUB_PATH = os.path.join("/data/dorinaHub")
+DATA_PATH = os.path.join("/Volumes/prj/dorina2/")
+HUB_PATH = os.path.join("/Volumes/prj/dorina2/data/dorinaHub")
 GENOMES_PATH = os.path.join(DATA_PATH, "genomes")
 REGULATORS_PATH = os.path.join(DATA_PATH, "regulators")
 
 # paths to kent executables
-bedToBigBed = "/usr/local/bin/bedToBigBed"
-bedSort = "/usr/local/bin/bedSort"
+bedToBigBed = "/Users/tbrittoborges/bedToBigBed"
+bedSort = "/Users/tbrittoborges/bedSort"
 
 # ugly global variable
 HUB_GENOMES = []  # genomes.txt
@@ -45,13 +46,18 @@ def generate_html_desc(path, description, methods, references):
     with open(path, 'w+') as desc_file:
         if description:
             desc_file.write("<H2>Description</H2>")
-            desc_file.write(description.encode('utf-8'))
+            desc_file.write(description)
         if methods:
             desc_file.write("<H2>Methods</H2>")
-            desc_file.write(methods.encode('utf-8'))
+            desc_file.write(methods)
         if references:
-            desc_file.write("<H2>References</H2>")
-            desc_file.write(references.encode('utf-8'))
+            if isinstance(references, dict):
+                desc_file.write("<H2>References</H2>")
+                desc_file.write(" ".join(references.values()))
+            elif isinstance(references, str):
+                desc_file.write("<H2>References</H2>")
+                desc_file.write(" ".join(references))
+
     desc_file.close()
 
 
@@ -64,11 +70,15 @@ def convert_bed_to_bigbed(bed_path, bb_path, remove_scores_path, coordinates):
     try:
         # Replace score field with "0"
         # Make sure we have only 6 columns
-        with open(bed_path, 'r') as f, open(remove_scores_path, 'w') as g:
+        with open(bed_path,) as f, open(remove_scores_path, 'w') as g:
             for line in f:
                 fields = line.split('\t')
-                new_line = '\t'.join(fields[0:4] + ["0"] + [fields[5]]) + "\n"
-                g.write(new_line)
+                try:
+                    new_line = '\t'.join(fields[0:4] + ["0"] + [fields[5]]) + "\n"
+                    g.write(new_line)
+                except IndexError:
+                    print('Problem with {} {} {}'.format(bed_path, bb_path, remove_scores_path) )
+
 
         # sort file
         subprocess.call([bedSort, remove_scores_path, remove_scores_path])
@@ -179,15 +189,15 @@ metadata from JSON manifests into track information."""
                                    json_info['references'])
             # write trackDB.txt file
             with open(os.path.join(
-                    hub_genome_dir, "trackDb.txt"), "wb") as track_file:
+                    hub_genome_dir, "trackDb.txt"), "w") as track_file:
                 for p in TRACK_PARENTS_ENTRY:
                     for e in p:
-                        track_file.write(e.encode('utf-8') + "\n")
-                    track_file.write(b"\n")
+                        track_file.write(e + "\n")
+                    track_file.write("\n")
                 for s in TRACK_SLAVES_ENTRY:
                     for e in s:
-                        track_file.write(e.encode('utf-8') + "\n")
-                    track_file.write(b"\n")
+                        track_file.write(e + "\n")
+                    track_file.write("\n")
             track_file.close()
 
             # gather information for genomes.txt
@@ -199,8 +209,8 @@ metadata from JSON manifests into track information."""
 process_hierarchy(REGULATORS_PATH)
 
 # write genomes.txt
-with open(os.path.join(HUB_PATH, "genomes.txt"), "wb") as track_genomes_file:
+with open(os.path.join(HUB_PATH, "genomes.txt"), "w") as track_genomes_file:
     for g in HUB_GENOMES:
         track_genomes_file.write(g[0])
-        track_genomes_file.write(b"\n")
+        track_genomes_file.write("\n")
 track_genomes_file.close()
