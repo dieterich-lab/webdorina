@@ -27,64 +27,69 @@
     {% block extra_headers %}{% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-inverse navbar-expand-md">
-    {% set navigation_bar = [
+{% set navigation_bar = [
     ('/', 'index', 'Index'),
-    ('/regulators', 'regulators', 'Regulators'),
     ('/news', 'news', 'News'),
     ('/tutorials', 'tutorials', 'Tutorials'),
+    ('/regulators', 'regulators', 'Regulators'),
     ('/docs', 'documentation', 'Documentation'),
     ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
-    {# TODO sidebar instead navbar #}
-    <button class="navbar-toggler pull-left" type="button"
-            data-toggle="collapse"
-            data-target="#navbarToggler"
-            aria-controls="navbarToggler" aria-expanded="false"
-            aria-label="Toggle navigation">
-        <span class="icon-bar"></span>
 
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="container">
-        <a class="navbar-brand hidden-xs"
-           href={{ url_for('welcome') }}>Carina</a>
-    </div>
-    <div class="collapse navbar-collapse" id="navbarToggler">
-        <ul class="navbar-nav" id="navigation">
-            {% for href, id, caption in navigation_bar %}
-                <a {% if id == active_page %} class="nav-link active"
-                {% else %} class="nav-link" {% endif %}
-                                              href="{{ href|e }}"> {{ caption|e }}</a>
-            {% endfor %}
-        </ul>
-    </div>
-</nav>
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <aside class="col-12 col-md-2 p-0" id="asideLayout">
+            <nav class="navbar navbar-expand flex-md-column flex-row py-2">
+                <div class="collapse navbar-collapse">
+                    <ul class="flex-md-column flex-row navbar-nav justify-content-between">
+                        <a class="nav-link pl-0 " href="/">
+                            <i class="material-icons">&#xE87C;</i>
+                            <span class="font-weight-bold">Carina</span></a>
 
-<div class="container pt-4"> {# pt-4 adjust padding to the top from 1 to 5 #}
-    <div class="row justify-content-center">
-        <div class="col-lg-9 col-xl-6">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}
+
+                        {% for href, id, caption in navigation_bar %}
+                            <li class="nav-item pl-0">
+
+                                <a {% if id == active_page %}
+                                    class="nav-link active"
+                                {% else %} class="nav-link" {% endif %}
+                                    href="{{ href|e }}"> {{ caption|e }}</a>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        <main class="col bg-faded py-3">
+            <div class="container pt-4">
+                {# pt-4 adjust padding to the top from 1 to 5 #}
+                <div class="row justify-content-center">
+                    <div class="col-lg-9 col-xl-6">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }}
                                 alert-dismissible fade show"
-                             role="alert">
-                            <button type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+                                         role="alert">
+                                        <button type="button"
+                                                class="close"
+                                                data-dismiss="alert"
+                                                aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
 
-                {% endif %}
-            {% endwith %}
-            <div class="bd-content mb-xl">
-                {% block body %}{% endblock %}
+                            {% endif %}
+                        {% endwith %}
+                        <div class="bd-content mb-xl">
+                            {% block body %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 </div>
 
