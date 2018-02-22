@@ -3,17 +3,18 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
 import json
 import os
+import sys
 import uuid
 from io import StringIO
 
+import flask
 from dorina.genome import Genome
 from dorina.regulator import Regulator
 from redis import Redis
-import flask
 from rq import Queue
+
 from webdorina.workers import filter_genes, run_analyse
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -202,7 +203,8 @@ def search():
             q = Queue(connection=redis_store, default_timeout=600)
 
             q.enqueue(filter_genes, query['genes'], full_query_key, query_key,
-                      query_pending_key, unique_id, SESSION_TTL=app.config['SESSION_TTL'],
+                      query_pending_key, unique_id,
+                      SESSION_TTL=app.config['SESSION_TTL'],
                       RESULT_TTL=app.config['RESULT_TTL'])
             return flask.jsonify(session_dict)
 
@@ -219,8 +221,10 @@ def search():
 
     q = Queue(connection=redis_store, default_timeout=600)
     q.enqueue(run_analyse, app.config['DATA_PATH'], query_key,
-              query_pending_key, query, unique_id, SESSION_STORE=app.config['SESSION_STORE'],
-                RESULT_TTL=app.config['RESULT_TTL'], SESSION_TTL=app.config['SESSION_TTL'] )
+              query_pending_key, query, unique_id,
+              SESSION_STORE=app.config['SESSION_STORE'],
+              RESULT_TTL=app.config['RESULT_TTL'],
+              SESSION_TTL=app.config['SESSION_TTL'])
 
     return flask.jsonify(session_dict)
 
