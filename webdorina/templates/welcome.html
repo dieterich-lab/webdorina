@@ -22,15 +22,13 @@
                        title="Manual query">
                         Search</a>
                 </div>
-                {#  TODO does this buttom needs its  #}
-                {#  TODO client side file validation #}
                 <div class="col-md-4 col-md-offset-1">
                     <input type="file" class="input btn-lg" title="upload"
                            id="bedfile" name="bedfile">
                 </div>
                 <div class="col-md-4 col-md-offset-1">
                     <input class="btn btn-info disabled btn-lg"
-                           disabled="True"
+                           disabled
                            id="upload-go"
                            type="submit"
                            value="Go"
@@ -54,7 +52,7 @@
 
         $(document).ready(function () {
             $('#bedfile').on('change', file_uploaded).bootstrapFileInput();
-            $('#upload-go').disable();
+            {#$('#upload-go').disable();#}
         });
     </script>
 {% endblock %}
