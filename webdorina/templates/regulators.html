@@ -4,19 +4,44 @@
     <div class="jumbotron">
         <h4 class="typography-display-1">Available regulators</h4>
         <div class="spacer-2">&nbsp;
-            <div class="form-group form-row align-items-center">
-                <select class="form-control" id="assembly"
+            <div class="form-row">
+
+
+                <select class="form col-sm-10"
+                        id="assembly"
                         data-bind="value: selected_assembly"
                         placeholder="Select species and assembly">
                 </select>
+
+
+                <div class="form-inline col-sm-1 invisible"
+                     id="regulatorProgressBar">
+                    <div class="progress-circular">
+                        <div class="progress-circular-wrapper">
+                            <div class="progress-circular-inner">
+                                <div class="progress-circular-left">
+                                    <div class="progress-circular-spinner"></div>
+                                </div>
+                                <div class="progress-circular-gap"></div>
+                                <div class="progress-circular-right">
+                                    <div class="progress-circular-spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            </form>
         </div>
     </div>
 
-    <div class="regulator-group" data-bind="foreach: regulators">
+
+    <div class="regulator-group"
+         data-bind="foreach: regulators">
         <div class="jumbotron">
             <div class="regulator-entry">
-                <span class="glyphicon glyphicon-chevron-right"></span>
+{#                <span class="glyphicon glyphicon-chevron-right"></span>#}
                 <span data-bind="text: summary"></span>
                 <ul>
                     <li data-bind="text: description"></li>
@@ -39,16 +64,10 @@
             var viewmodel = new RegulatorViewModel(net);
             ko.applyBindings(viewmodel);
             SetViewModel(viewmodel);
-{#            $("[data-toggle='tooltip']").tooltip();#}
             viewmodel.init();
-
-            $('#genes').on('show.bs.collapse', function () {
-                $('#genes-icon').removeClass('glyphicon-plus')
-                    .addClass('glyphicon-minus');
-            }).on('hide.bs.collapse', function () {
-                $('#genes-icon').removeClass('glyphicon-minus')
-                    .addClass('glyphicon-plus');
-            });
         });
+
+
+
     </script>
 {% endblock %}
