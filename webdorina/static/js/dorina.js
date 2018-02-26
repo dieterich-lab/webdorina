@@ -525,7 +525,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
      * moment */
     self.run_simple_search = function () {
         self.run_search(false);
-        $('#search').collapse('hide');
+        // here
+        $(document.getElementById('collapseThree')).collapse('show');
         $('#results').collapse('show');
         self.mode('results');
     };

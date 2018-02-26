@@ -34,17 +34,17 @@
     ('/regulators', 'regulators', 'Regulators'),
     ('/docs', 'documentation', 'Documentation'),
     ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
-
-<div class="container-fluid h-100">
-    <div class="row h-100">
+{# from https://www.codeply.com/go/Rgq96HykJ2 #}
+<div class="container-fluid">
+    <div class="row">
         <aside class="col-12 col-md-2 p-0" id="asideLayout">
             <nav class="navbar navbar-expand flex-md-column flex-row py-2">
                 <div class="collapse navbar-collapse">
-                    <ul class="flex-md-column flex-row navbar-nav justify-content-between">
-                        <a class="nav-link pl-0 " href="/">
-                            <i class="material-icons">&#xE87C;</i>
-                            <span class="font-weight-bold">Carina</span></a>
-
+                    <ul class="flex-md-column flex-row navbar-nav justify-content-between mr-auto ">
+                        <a class="nav-link pl-0 text-nowrap" href="/">
+                            <i class="material-icons ">&#xE87C;</i>
+                            <span class="font-weight-bold ">Carina</span>
+                        </a>
 
                         {% for href, id, caption in navigation_bar %}
                             <li class="nav-item pl-0">
@@ -55,13 +55,22 @@
                                     href="{{ href|e }}"> {{ caption|e }}</a>
                             </li>
                         {% endfor %}
+                        <button class="navbar-toggler" type="button"
+                                data-toggle="collapse"
+                                data-target="#navbarNavDropdown"
+                                aria-controls="navbarNavDropdown"
+                                aria-expanded="false"
+                                aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
 
                     </ul>
                 </div>
             </nav>
         </aside>
         <main class="col bg-faded py-3">
-            <div class="container pt-4">
+            <div class="container pt-4 ">
                 {# pt-4 adjust padding to the top from 1 to 5 #}
                 <div class="row justify-content-center">
                     <div class="col-lg-9 col-xl-6">
