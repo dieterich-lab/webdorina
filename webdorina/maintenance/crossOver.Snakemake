@@ -1,0 +1,60 @@
+# -*- coding: utf-8
+"""Snakemake file to crossmap old Dorina data to current assemblies
+..usage:
+    snakemake  -drmaa --jobs 100
+"""
+
+__author__ = "Thiago Britto Borges"
+__copyright__ = "Copyright 2017, Dieterichlab"
+__email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
+__license__ = "MIT"
+
+base = '/prj/dorina2/crossmap/'
+organim = 'h_sapiens'
+assembly = 'GRCh38'
+out_dir = base + 'regulators/{organim}/{assembly}'.format(
+    organim=organim, assembly=assembly)
+
+sample, = glob_wildcards(
+    '/prj/dorina2/old_stuff/regulators.old/h_sapiens/hg19/{sample}.bed')
+
+rule all:
+    input:
+        out_dir,
+         expand('{out_dir}/{sample}.{ext}',
+             out_dir=out_dir, sample=sample, ext=('bed', 'json'))
+
+rule clean:
+    shell: "rm -rf " + out_dir
+
+rule out_dir:
+    output: out_dir
+    shell: "mkdir -p " + out_dir
+
+rule crossmap:
+    input:
+        '/prj/dorina2/old_stuff/regulators.old/h_sapiens/hg19/{sample}.bed'
+    output:
+        '{out_dir}/{sample}.bed'
+    params:
+        chain= "/biodb/encode/chains/hg19ToHg38.over.chain",
+        crossmap= "/home/tbrittoborges/bin/miniconda3/envs/crossmap/bin/CrossMap.py"
+    shell: '''
+python {params.crossmap} bed {params.chain} {input} {output}
+'''
+
+rule move_json:
+    input:
+        '/prj/dorina2/old_stuff/regulators.old/h_sapiens/hg19/{sample}.json'
+    output:
+        '{out_dir}/{sample}.json'
+    run:
+        import json
+        with open(input[0]) as data_file:
+            data = json.load(data_file)
+
+        for entry in data:
+            entry['description'] += ' . Liftover to GRCh38 assembly with crossmap.'
+
+        with open(output[0], 'w') as out_file:
+            json.dump(data, out_file)
