@@ -10,199 +10,184 @@ are most welcome.
 
 col 5th must be 0 (zero)
 remove _ (dash) from 1st col
+
+curl http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/bedSort
 """
 from __future__ import print_function
 from __future__ import unicode_literals
-from io import open
-import os
+
 import json
+import os
 import shutil
 import subprocess
+import sys
+from io import open
+from pathlib import Path
 from subprocess import CalledProcessError
 
-# paths
-DATA_PATH = os.path.join("/Volumes/prj/dorina2/")
-HUB_PATH = os.path.join("/Volumes/prj/dorina2/data/dorinaHub")
-GENOMES_PATH = os.path.join(DATA_PATH, "genomes")
-REGULATORS_PATH = os.path.join(DATA_PATH, "regulators")
-
-# paths to kent executables
-bedToBigBed = "/Users/tbrittoborges/bedToBigBed"
-bedSort = "/Users/tbrittoborges/bedSort"
-
-# ugly global variable
+DATA_PATH = Path("/Volumes/prj/dorina2/")
+HUB_PATH = Path("/Volumes/prj/trackhubs/dorinaHub/")
+GENOMES_PATH = Path(DATA_PATH / "genomes/")
+# REGULATORS_PATH = Path(DATA_PATH, "regulators")
+REGULATORS_PATH = Path(
+    '/Users/tbrittoborges/Projects/webdorina/webdorina/regulators')
 HUB_GENOMES = []  # genomes.txt
+
+# kent executables
+bedToBigBed = Path("/Users/tbrittoborges/bedToBigBed")
+bedSort = Path("/Users/tbrittoborges/bedSort")
 
 
 # parse json file and return id and experiment
 def json_parse(json_file):
     with open(json_file) as data_file:
         data = json.load(data_file)
-    data_file.close()
-    return data[0]  # the json files contain one-element lists
+        return data[0]  # the json files contain one-element lists
 
 
-def generate_html_desc(path, description, methods, references):
+def write_html_description(path, json_file):
     with open(path, 'w+') as desc_file:
-        if description:
-            desc_file.write("<H2>Description</H2>")
-            desc_file.write(description)
-        if methods:
-            desc_file.write("<H2>Methods</H2>")
-            desc_file.write(methods)
-        if references:
-            if isinstance(references, dict):
-                desc_file.write("<H2>References</H2>")
-                desc_file.write(" ".join(references.values()))
-            elif isinstance(references, str):
-                desc_file.write("<H2>References</H2>")
-                desc_file.write(" ".join(references))
-
-    desc_file.close()
+        for field in ('description', 'methods', 'references'):
+            if field in json_file:
+                desc_file.write("<H2>{}</H2>\n".format(field))
+                desc_file.write(str(json_file[field]))
 
 
 def convert_bed_to_bigbed(bed_path, bb_path, remove_scores_path, coordinates):
     # skip conversion if conversion already done in the past
-    if os.path.exists(bb_path):
-        return
-
-    print(">>>>> START " + bed_path)
+    print(">>>>> START " + str(bed_path))
     try:
         # Replace score field with "0"
         # Make sure we have only 6 columns
-        with open(bed_path,) as f, open(remove_scores_path, 'w') as g:
-            for line in f:
+        with open(bed_path) as file_in, \
+                open(remove_scores_path, 'w') as file_out:
+            for line in file_in:
                 fields = line.split('\t')
                 try:
-                    new_line = '\t'.join(fields[0:4] + ["0"] + [fields[5]]) + "\n"
-                    g.write(new_line)
+                    new_line = '\t'.join(fields[0:4] + ["0"] + [fields[5]])
                 except IndexError:
-                    print('Problem with {} {} {}'.format(bed_path, bb_path, remove_scores_path) )
-
+                    new_line = line
+                file_out.write(new_line)
 
         # sort file
         subprocess.call([bedSort, remove_scores_path, remove_scores_path])
         # convert
         subprocess.call([bedToBigBed, remove_scores_path, coordinates, bb_path])
-        print(">>>>> DONE " + bb_path)
+        print(">>>>> DONE " + str(bb_path))
     except CalledProcessError as e:
-        print("ERROR: " + e.returncode)
+        print("BigBedConversionError: ", e, bed_path)
 
 
-# for each species
 def process_hierarchy(root):
-    """Traverse a hierarchy of species/genomes/regulators, converting
-metadata from JSON manifests into track information."""
-    for sp in os.listdir(root):
+    """
+    Traverse a hierarchy of species/genomes/regulators, converting
+    metadata from JSON manifests into track information.
+    """
+    root = Path(root)
+    for sp in (r.name for r in root.iterdir() if r.is_dir()):
         # trackDb.txt
-        PARENTS = []
-        TRACK_PARENTS_ENTRY = []
-        TRACK_SLAVES_ENTRY = []
+        parents = []
+        track_parents_entry = []
+        track_slaves_entry = []
 
         # browse for all genomes
-        for g in os.listdir(os.path.join(root, sp)):  # genome list
+        for genome in (g.name for g in (
+                GENOMES_PATH / sp).iterdir() if g.is_dir()):
+
             # create target dir for genome
-            hub_genome_dir = os.path.join(HUB_PATH, sp, g)
-            if not os.path.exists(hub_genome_dir):
-                os.makedirs(hub_genome_dir)
+            hub_dir = Path(HUB_PATH) / sp
+            if not hub_dir.exists():
+                hub_dir.mkdir()
 
             # for all files with metadata in current genome
-            for f in sorted(os.listdir(os.path.join(root, sp, g))):
+            for f in (root / sp / genome).iterdir():
+
                 # only work on json manifests
-                if f[-4:] != "json":
+                if f.suffix != ".json":
                     continue
-                # ignore concatenated files
-                if "_all.json" in f:
-                    continue
-                # ignore dummy files
-                if "dummy.json" in f:
+                elif f.stem == 'description':
                     continue
 
-                basename = f[:-5]
-
-                json_path = os.path.join(root, sp, g, f)
-                json_info = json_parse(json_path)
-                print(json_path)
+                try:
+                    json_info = json_parse(root / sp / genome / f)
+                except KeyError:
+                    print('error with {}'.format(root / sp / genome / f))
+                    sys.exit(0)
 
                 parent = json_info['experiment'].replace(' ', '-')
                 if "miRNA" in parent:
-                    longLabel = parent
+                    long_label = parent
                 else:
-                    longLabel = json_info['summary'].replace("\n", ' ')
+                    long_label = json_info['summary'].replace("\n", ' ')
 
                 # run conversion only for associated bed files
-                bed_path = os.path.join(root, sp, g, basename + ".bed")
-                if os.path.exists(bed_path):
-                    data_file_type = "bigBed"
-                    data_file_ext = "bb"
-                    bb_path = os.path.join(hub_genome_dir, basename + ".bb")
-                    remove_scores_path = os.path.join(
-                        hub_genome_dir, basename + "bed.0")
-                    coordinates = os.path.join(
-                        GENOMES_PATH, sp, g, g + ".genome")
-                    convert_bed_to_bigbed(bed_path,
-                                          bb_path,
-                                          remove_scores_path,
-                                          coordinates)
+                data_file_type = "bigBed"
+                data_file_ext = "bb"
+                bed_path = (root / sp / genome / f.stem).with_suffix(".bed")
+                bb_path = (hub_dir / f.stem).with_suffix(".bb")
+                remove_scores_path = (hub_dir / f.stem).with_suffix(".bed.0")
+                coordinates = (GENOMES_PATH / sp / genome / genome).with_suffix(
+                    ".chrom.sizes")
+                convert_bed_to_bigbed(bed_path,
+                                      bb_path,
+                                      remove_scores_path,
+                                      coordinates)
 
-                bigwig_path = os.path.join(root, sp, g, basename + ".bw")
-                if os.path.exists(bigwig_path):
-                    data_file_type = "bigWig"
-                    data_file_ext = "bw"
-                    # copy the data file to hub target dir
-                    shutil.copy2(bigwig_path, os.path.join(
-                        hub_genome_dir, basename + ".bw"))
+                bigwig_path = (root / sp / genome / f.stem).with_suffix(".bw")
+                bigwig_path.touch(exist_ok=True)
+                data_file_type = "bigWig"
+                data_file_ext = "bw"
+                # copy the data file to hub target dir
+                shutil.copy2(bigwig_path,
+                             (hub_dir / f.stem).with_suffix(".bw"))
 
                 # add parent track entry
                 # experiment name for the first json entry
                 # <- must be adjusted ???     # slave track TODO
-                if json_info[
-                    'experiment'] not in PARENTS and parent not in PARENTS:
-                    PARENTS.append(parent)
-                    TRACK_PARENTS_ENTRY.append([
+                if json_info['experiment'] not in parents and \
+                        parent not in parents:
+                    parents.append(parent)
+                    track_parents_entry.append([
                         "track " + parent,
                         "superTrack on",
                         "shortLabel " + parent,
-                        "longLabel " + parent,
+                        "long_label " + parent,
                     ])
 
                 track_info = [
-                    "track " + basename,
+                    "track " + str(f.stem),
                     "parent " + parent,
-                    "bigDataUrl " + basename + '.' + data_file_ext,
-                    "shortLabel " + basename,
-                    "longLabel " + longLabel,
+                    "bigDataUrl " + str(f.stem) + '.' + data_file_ext,
+                    "shortLabel " + str(f.stem),
+                    "long_label " + long_label,
                     "type " + data_file_type + " 6",
-                    "html " + basename
-                ]
+                    "html " + str(f.stem)]
 
                 if 'autoScale' in json_info and json_info['autoScale'] == 'on':
                     track_info.append("autoScale on")
 
                 # add child track entry
-                TRACK_SLAVES_ENTRY.append(track_info)
+                track_slaves_entry.append(track_info)
 
                 # write html desc file
-                generate_html_desc(os.path.join(hub_genome_dir, basename + ".html"),
-                                   json_info['description'],
-                                   json_info['methods'],
-                                   json_info['references'])
-            # write trackDB.txt file
-            with open(os.path.join(
-                    hub_genome_dir, "trackDb.txt"), "w") as track_file:
-                for p in TRACK_PARENTS_ENTRY:
+                write_html_description(
+                    json_file=json_info,
+                    path=(hub_dir / f.stem).with_suffix(".html"))
+
+            with open(hub_dir / Path("trackDb.txt"), "w") as track_file:
+                for p in track_parents_entry:
                     for e in p:
                         track_file.write(e + "\n")
                     track_file.write("\n")
-                for s in TRACK_SLAVES_ENTRY:
+                for s in track_slaves_entry:
                     for e in s:
                         track_file.write(e + "\n")
                     track_file.write("\n")
             track_file.close()
 
             # gather information for genomes.txt
-            HUB_GENOMES.append(
-                ["genome " + g + "\n" + "trackDb " + sp + "/" + g + "/trackDb.txt\n"])
+            HUB_GENOMES.append(["genome " + str(genome) + "\n" + "trackDb " +
+                                str(sp) + "/" + str(genome) + "/trackDb.txt\n"])
 
 
 # start
