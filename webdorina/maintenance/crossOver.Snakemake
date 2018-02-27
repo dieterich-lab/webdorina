@@ -1,6 +1,9 @@
 # -*- coding: utf-8
-"""Snakemake file to crossmap old Dorina data to current assemblies
+"""Snakemake file to crossmap old Dorina data to current assemblymblies
 ..usage:
+    wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+    gzip -d hg19ToHg38.over.chain.gz
+    conda activate crossmap
     snakemake  -drmaa --jobs 100
 """
 
@@ -10,20 +13,24 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 base = '/prj/dorina2/crossmap/'
-organim = 'h_sapiens'
-assembly = 'GRCh38'
-out_dir = base + 'regulators/{organim}/{assembly}'.format(
-    organim=organim, assembly=assembly)
+organism = 'h_sapiens'
+assembly = 'hg38'
+old_assembly = 'hg19'
+chain_path = '/prj/dorina2/crossmap/hg19ToHg38.over.chain'
+out_dir = base + 'regulators/{}/{}'.format(
+    organism, assembly)
 
-sample, = glob_wildcards(
-    '/prj/dorina2/old_stuff/regulators.old/h_sapiens/hg19/{sample}.bed')
 
+path = '/prj/dorina2/old_stuff/regulators.old/{}/{}/{}.bed'.format(
+    organism, old_assembly, '{sample}')
+sample, = glob_wildcards(path)
+print(sample)
 rule all:
     input:
         out_dir,
-         expand('{out_dir}/{sample}.{ext}',
-             out_dir=out_dir, sample=sample, ext=('bed', 'json'))
-
+        expand('{out_dir}/{sample}.{ext}', 
+            out_dir=out_dir, sample=sample, ext=('bed', 'json'))
+        
 rule clean:
     shell: "rm -rf " + out_dir
 
@@ -32,29 +39,33 @@ rule out_dir:
     shell: "mkdir -p " + out_dir
 
 rule crossmap:
-    input:
-        '/prj/dorina2/old_stuff/regulators.old/h_sapiens/hg19/{sample}.bed'
-    output:
+    input: 
+        '/prj/dorina2/old_stuff/regulators.old/{}/{}/{}.bed'.format(
+organism, old_assembly, '{sample}')
+    output: 
         '{out_dir}/{sample}.bed'
     params:
-        chain= "/biodb/encode/chains/hg19ToHg38.over.chain",
-        crossmap= "/home/tbrittoborges/bin/miniconda3/envs/crossmap/bin/CrossMap.py"
+        chain = chain_path,
+        crossmap = "/home/tbrittoborges/bin/miniconda3/envs/crossmap/bin/CrossMap.py"
     shell: '''
 python {params.crossmap} bed {params.chain} {input} {output}
 '''
 
 rule move_json:
-    input:
-        '/prj/dorina2/old_stuff/regulators.old/h_sapiens/hg19/{sample}.json'
+    input: 
+        '/prj/dorina2/old_stuff/regulators.old/{}/{}/{}.json'.format(
+            organism, old_assembly, '{sample}')
     output:
         '{out_dir}/{sample}.json'
     run:
         import json
-        with open(input[0]) as data_file:
+        with open(input[0]) as data_file:    
             data = json.load(data_file)
-
+        
         for entry in data:
-            entry['description'] += ' . Liftover to GRCh38 assembly with crossmap.'
+
+            entry['description'] += ' Liftover to {} assembly with crossmap.'.format(
+                assembly)
 
         with open(output[0], 'w') as out_file:
             json.dump(data, out_file)
