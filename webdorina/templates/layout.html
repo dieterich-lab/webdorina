@@ -26,7 +26,11 @@
 
     {% block extra_headers %}{% endblock %}
 </head>
-<body>
+
+
+</head>
+<body class="doc-body">
+
 {% set navigation_bar = [
     ('/', 'index', 'Index'),
     ('/news', 'news', 'News'),
@@ -34,18 +38,15 @@
     ('/regulators', 'regulators', 'Regulators'),
     ('/docs', 'documentation', 'Documentation'),
     ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
-{# from https://www.codeply.com/go/Rgq96HykJ2 #}
 
-</head>
-<body class="doc-body">
-<div class="navbar navbar-dark toolbar-waterfall doc-navbar" id="doc-navbar">
+<div class="navbar toolbar-waterfall doc-navbar" id="doc-navbar">
     <button aria-controls="doc-navdrawer" aria-expanded="false"
-            aria-label="Toggle Navdrawer" class="navbar-toggler d-lg-none"
+            aria-label="Toggle Navdrawer" class="navbar-toggler "
             data-breakpoint="lg" data-target="#doc-navdrawer"
             data-toggle="navdrawer" data-type="permanent">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand d-lg-none mr-auto" href="/material/">Carina</a>
+    <a class="navbar-brand d-lg-none mr-auto">Carina</a>
     {#  <div class="d-lg-none ml-auto">#}
     {#    <div class="dropdown">#}
     {#      <button aria-expanded="false" aria-haspopup="true" class="navbar-toggler" data-toggle="dropdown" id="doc-dropdown-follow" type="button">#}
@@ -68,7 +69,7 @@
     <div class="navdrawer-content">
         <div class="d-flex flex-column doc-navdrawer-body">
             <div class="navdrawer-header">
-                <a class="navbar-brand px-0" href="/material/">Material</a>
+                <a class="navbar-brand px-0" href="/material/">Carina</a>
             </div>
 
             <nav class="navdrawer-nav"><a class="nav-item nav-link "
@@ -88,222 +89,17 @@
                         href="/material/docs/4.0/getting-started/tooling/"><span
                         class="font-weight-normal">Tooling</span></a></div>
                 <div class="navdrawer-divider"></div>
-                <a class="nav-item nav-link collapsed" data-toggle="collapse"
-                   href="#doc-navdrawer-components">
-                    <strong>Components</strong>
-                </a>
-                <div class="collapse pb-2 " id="doc-navdrawer-components"><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/alerts/"><span
-                        class="font-weight-normal">Alerts</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/badge/"><span
-                        class="font-weight-normal">Badge</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/breadcrumb/"><span
-                        class="font-weight-normal">Breadcrumb</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/buttons/"><span
-                        class="font-weight-normal">Buttons</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/button-group/"><span
-                        class="font-weight-normal">Button group</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/card/"><span
-                        class="font-weight-normal">Card</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/carousel/"><span
-                        class="font-weight-normal">Carousel</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/collapse/"><span
-                        class="font-weight-normal">Collapse</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/dropdowns/"><span
-                        class="font-weight-normal">Dropdowns</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/forms/"><span
-                        class="font-weight-normal">Forms</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/input-group/"><span
-                        class="font-weight-normal">Input group</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/jumbotron/"><span
-                        class="font-weight-normal">Jumbotron</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/list-group/"><span
-                        class="font-weight-normal">List group</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/modal/"><span
-                        class="font-weight-normal">Modal</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/navs/"><span
-                        class="font-weight-normal">Navs</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/navbar/"><span
-                        class="font-weight-normal">Navbar</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/pagination/"><span
-                        class="font-weight-normal">Pagination</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/popovers/"><span
-                        class="font-weight-normal">Popovers</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/progress/"><span
-                        class="font-weight-normal">Progress</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/scrollspy/"><span
-                        class="font-weight-normal">Scrollspy</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/components/tooltips/"><span
-                        class="font-weight-normal">Tooltips</span></a></div>
-                <a class="nav-item nav-link collapsed" data-toggle="collapse"
-                   href="#doc-navdrawer-content">
-                    <strong>Content</strong>
-                </a>
-                <div class="collapse pb-2 " id="doc-navdrawer-content"><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/content/code/"><span
-                        class="font-weight-normal">Code</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/content/figures/"><span
-                        class="font-weight-normal">Figures</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/content/images/"><span
-                        class="font-weight-normal">Images</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/content/tables/"><span
-                        class="font-weight-normal">Tables</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/content/typography/"><span
-                        class="font-weight-normal">Typography</span></a></div>
-                <a class="nav-item nav-link collapsed" data-toggle="collapse"
-                   href="#doc-navdrawer-layout">
-                    <strong>Layout</strong>
-                </a>
-                <div class="collapse pb-2 " id="doc-navdrawer-layout"><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/layout/grid/"><span
-                        class="font-weight-normal">Grid</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/layout/media-object/"><span
-                        class="font-weight-normal">Media object</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/layout/utilities-for-layout/"><span
-                        class="font-weight-normal">Utilities for layout</span></a>
-                </div>
-                <a class="nav-item nav-link collapsed" data-toggle="collapse"
-                   href="#doc-navdrawer-utilities">
-                    <strong>Utilities</strong>
-                </a>
-                <div class="collapse pb-2 " id="doc-navdrawer-utilities"><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/borders/"><span
-                        class="font-weight-normal">Borders</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/clearfix/"><span
-                        class="font-weight-normal">Clearfix</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/close-icon/"><span
-                        class="font-weight-normal">Close icon</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/colors/"><span
-                        class="font-weight-normal">Colors</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/display/"><span
-                        class="font-weight-normal">Display</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/embed/"><span
-                        class="font-weight-normal">Embed</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/flex/"><span
-                        class="font-weight-normal">Flex</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/float/"><span
-                        class="font-weight-normal">Float</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/image-replacement/"><span
-                        class="font-weight-normal">Image replacement</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/position/"><span
-                        class="font-weight-normal">Position</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/screenreaders/"><span
-                        class="font-weight-normal">Screenreaders</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/sizing/"><span
-                        class="font-weight-normal">Sizing</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/spacing/"><span
-                        class="font-weight-normal">Spacing</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/text/"><span
-                        class="font-weight-normal">Text</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/vertical-align/"><span
-                        class="font-weight-normal">Vertical align</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/utilities/visibility/"><span
-                        class="font-weight-normal">Visibility</span></a></div>
-                <div class="navdrawer-divider"></div>
-                <a class="nav-item nav-link collapsed" data-toggle="collapse"
-                   href="#doc-navdrawer-material">
-                    <strong>Material</strong>
-                </a>
-                <div class="collapse pb-2 " id="doc-navdrawer-material"><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/buttons/"><span
-                        class="font-weight-normal">Buttons</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/cards/"><span
-                        class="font-weight-normal">Cards</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/chips/"><span
-                        class="font-weight-normal">Chips</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/data-tables/"><span
-                        class="font-weight-normal">Data tables</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/dialogs/"><span
-                        class="font-weight-normal">Dialogs</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/expansion-panels/"><span
-                        class="font-weight-normal">Expansion panels</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/icons/"><span
-                        class="font-weight-normal">Icons</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/menu/"><span
-                        class="font-weight-normal">Menu</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/navigation-drawer/"><span
-                        class="font-weight-normal">Navigation drawer</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/pickers/"><span
-                        class="font-weight-normal">Pickers</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/progress/"><span
-                        class="font-weight-normal">Progress</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/selection-controls/"><span
-                        class="font-weight-normal">Selection controls</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/steppers/"><span
-                        class="font-weight-normal">Steppers</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/tabs/"><span
-                        class="font-weight-normal">Tabs</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/text-fields/"><span
-                        class="font-weight-normal">Text fields</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/toolbars/"><span
-                        class="font-weight-normal">Toolbars</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/tooltips/"><span
-                        class="font-weight-normal">Tooltips</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/material/typography/"><span
-                        class="font-weight-normal">Typography</span></a></div>
+{#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
+{#                   href="#doc-navdrawer-components">#}
+{#                    <strong>Regulators</strong>#}
+{#                </a>#}
+{#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
+{#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
+{#                        href="/material/docs/4.0/components/alerts/"><span#}
+{#                        class="font-weight-normal">template#}
+{#                    </span>#}
+{#                    </a>#}
+{#                </div>#}
             </nav>
 
             <div class="mt-auto">
