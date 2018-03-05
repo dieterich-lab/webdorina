@@ -69,37 +69,29 @@
     <div class="navdrawer-content">
         <div class="d-flex flex-column doc-navdrawer-body">
             <div class="navdrawer-header">
-                <a class="navbar-brand px-0" href="/material/">Carina</a>
+                <a class="navbar-brand px-0 ">Carina</a>
             </div>
+            {% for href, id, caption in navigation_bar %}
 
-            <nav class="navdrawer-nav"><a class="nav-item nav-link "
-                                          data-toggle="collapse"
-                                          href="#doc-navdrawer-getting-started">
-                <strong>Getting started</strong>
-            </a>
-                <div class="collapse pb-2 show"
-                     id="doc-navdrawer-getting-started"><a
-                        class="nav-item nav-link pl-4 py-2 active"
-                        href="/material/docs/4.0/getting-started/introduction/"><span
-                        class="font-weight-normal">Introduction</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/getting-started/theming/"><span
-                        class="font-weight-normal">Theming</span></a><a
-                        class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                        href="/material/docs/4.0/getting-started/tooling/"><span
-                        class="font-weight-normal">Tooling</span></a></div>
-                <div class="navdrawer-divider"></div>
-{#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
-{#                   href="#doc-navdrawer-components">#}
-{#                    <strong>Regulators</strong>#}
-{#                </a>#}
-{#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
-{#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
-{#                        href="/material/docs/4.0/components/alerts/"><span#}
-{#                        class="font-weight-normal">template#}
-{#                    </span>#}
-{#                    </a>#}
-{#                </div>#}
+                <a {% if id == active_page %}
+                    class="nav-link nav-item text-black font-weight-bold"
+                {% else %}
+                    class="nav-link nav-item text-black-secondary" {% endif %}
+                    href="{{ href|e }}"> {{ caption|e }}
+                </a>
+
+            {% endfor %}
+            {#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
+            {#                   href="#doc-navdrawer-components">#}
+            {#                    <strong>Regulators</strong>#}
+            {#                </a>#}
+            {#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
+            {#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
+            {#                        href="/material/docs/4.0/components/alerts/"><span#}
+            {#                        class="font-weight-normal">template#}
+            {#                    </span>#}
+            {#                    </a>#}
+            {#                </div>#}
             </nav>
 
             <div class="mt-auto">
@@ -121,40 +113,6 @@
     </div>
 </div>
 
-{#<div class="container-fluid h-100">#}
-{#    <div class="row wrapper h-100">#}
-{#        <aside class="col-12 col-md-2 p-0" id="asideLayout">#}
-{#            <nav class="navbar navbar-expand flex-md-column flex-row py-2">#}
-{#                <div class="collapse navbar-collapse">#}
-{#                    <ul class="flex-md-column flex-row navbar-nav justify-content-between mr-auto ">#}
-{#                        <a class="nav-link pl-0 text-nowrap" href="/">#}
-{#                            <i class="material-icons ">&#xE87C;</i>#}
-{#                            <span class="font-weight-bold ">Carina</span>#}
-{#                        </a>#}
-{##}
-{#                        {% for href, id, caption in navigation_bar %}#}
-{#                            <li class="nav-item pl-0">#}
-{##}
-{#                                <a {% if id == active_page %}#}
-{#                                    class="nav-link active"#}
-{#                                {% else %} class="nav-link" {% endif %}#}
-{#                                    href="{{ href|e }}"> {{ caption|e }}</a>#}
-{#                            </li>#}
-{#                        {% endfor %}#}
-{#                        <button class="navbar-toggler" type="button"#}
-{#                                data-toggle="collapse"#}
-{#                                data-target="#navbarNavDropdown"#}
-{#                                aria-controls="navbarNavDropdown"#}
-{#                                aria-expanded="false"#}
-{#                                aria-label="Toggle navigation">#}
-{#                            <span class="navbar-toggler-icon"></span>#}
-{#                        </button>#}
-{##}
-{##}
-{#                    </ul>#}
-{#                </div>#}
-{#            </nav>#}
-{#        </aside>#}
 <main class="col bg-faded py-3">
     <div class="container pt-4 ">
         {# pt-4 adjust padding to the top from 1 to 5 #}

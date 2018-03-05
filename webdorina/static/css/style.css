@@ -29,9 +29,6 @@
     font-style: italic;
 }
 
-/* NAVBAR */
-/*https://work.smarchal.com/twbscolor/4.0.0/css/2259bc3fa6adecf0f11717170*/
-
 
 .bd-example,
 .highlight {
@@ -64,7 +61,7 @@
 }
 
 .section-nav {
-  border-left: 0.3125rem solid #ff4081;
+  border-left: 0.3125rem solid #598dff;
   position: sticky;
   top: 1rem;
 }
@@ -81,7 +78,7 @@
 }
 
 .toc-entry a.active {
-  color: #ff4081;
+  color: #598dff;
   opacity: 1;
 }
 
@@ -116,7 +113,7 @@
 }
 
 .bd-example .card .card-body .btn-primary, .bd-example .card .card-body .btn-primary:active, .bd-example .card .card-body .btn-primary:focus, .bd-example .card .card-body .btn-primary:hover {
-  color: #9c27b0;
+  color: #598dff;
 }
 
 .bd-example .card .card-body .btn-primary.disabled, .bd-example .card .card-body .btn-primary:disabled {
@@ -124,7 +121,7 @@
 }
 
 .bd-example .card .card-body .btn-secondary, .bd-example .card .card-body .btn-secondary:active, .bd-example .card .card-body .btn-secondary:focus, .bd-example .card .card-body .btn-secondary:hover {
-  color: #ff4081;
+  color: #598dff;
 }
 
 .bd-example .card .card-body .btn-secondary.disabled, .bd-example .card .card-body .btn-secondary:disabled {
