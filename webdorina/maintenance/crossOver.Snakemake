@@ -13,10 +13,10 @@ __email__ = "Thiago.BrittoBorges@uni-heidelberg.de"
 __license__ = "MIT"
 
 base = '/prj/dorina2/crossmap/'
-organism = 'h_sapiens'
-assembly = 'hg38'
-old_assembly = 'hg19'
-chain_path = '/prj/dorina2/crossmap/hg19ToHg38.over.chain'
+organism = 'm_musculus'
+assembly = 'mm10'
+old_assembly = 'mm9'
+chain_path = '/prj/dorina2/crossmap/mm9ToMm10.over.chain'
 out_dir = base + 'regulators/{}/{}'.format(
     organism, assembly)
 
@@ -24,7 +24,7 @@ out_dir = base + 'regulators/{}/{}'.format(
 path = '/prj/dorina2/old_stuff/regulators.old/{}/{}/{}.bed'.format(
     organism, old_assembly, '{sample}')
 sample, = glob_wildcards(path)
-print(sample)
+
 rule all:
     input:
         out_dir,

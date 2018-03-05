@@ -33,12 +33,13 @@ except IndexError:
           'configuration file. Please see example_user_config.py'
     app.logger.warn(msg)
 
+Genome.init(app.config['DATA_PATH'])
+Regulator.init(app.config['DATA_PATH'])
+
 redis_store = Redis(charset="utf-8", decode_responses=True)
 # assert redis is running
 redis_store.ping()
-
-Genome.init(app.config['DATA_PATH'])
-Regulator.init(app.config['DATA_PATH'])
+os.system("rqworker &")
 
 
 def _create_session(create_dir=False):
@@ -59,10 +60,8 @@ def _list_genomes():
         del h1['assemblies']
         return h1
 
-    # genome_list = [without_assemblies(x) for x in Genome.all().values()]
     genome_list = list(map(without_assemblies, Genome.all().values()))
-    # genome_list.sort(key=lambda x, y: cmp(x['weight'], y['weight']),
-    #                  reverse=True)
+
     return genome_list
 
 
