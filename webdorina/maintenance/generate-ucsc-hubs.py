@@ -5,20 +5,37 @@ This script processes a regulator directory hierarchy containing
 species, genomes, and associated regulators and produces track hub
 text files for use with the UCSC genome browser.
 
-It's not at all a pretty script but it works for us.  YMMV.  Patches
-are most welcome.
-
 col 5th must be 0 (zero)
 remove _ (dash) from 1st col
 
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2Skalsky2012e_hg19.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2Skalsky2012d_hg19.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/TargetScanCons_mirna_hg19.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2Skalsky2012c_hg19.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/pictar_mirna_up2fishCons_hg19.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/pictar_mirna_up2chickenCons_hg19.bed.0, you sure it's a bed file?
+Error line 2027 of /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_ELAVL1MNASE_hg19.bed.0: name [PARCLIP#ELAVL1MNASE_hg19*NM_001102398_2219_2258NM_001102398_2219_2258NM_001102398_2259_2298NM_001102398_2259_2298NM_001102398_2299_2338NM_001102398_2299_2338NM_001102398_2339_2378NM_001102398_2339_2378NM_001102398_2379_2418NM_001102398_2379_2418NM_001102398_2419_2458NM_001102398_] is too long (must not exceed 255 characters)
+Error line 6499 of /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2MNASE_hg19.bed.0: name [PARCLIP#AGO2MNASE_hg19*NM_012342_1095_1134NM_012342_1097_1136NM_012342_1137_1176NM_012342_1142_1181NM_012342_1177_1216NM_012342_1185_1224NM_012342_1225_1264NM_012342_1225_1264NM_012342_1265_1304NM_012342_1276_1315NM_012342_1316_1355NM_012342_1319_1358NM_012342_1359_1398NM_01234] is too long (must not exceed 255 characters)
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/pictar_mirna_up2mammalsCons_hg19.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/pictar_mirna_up2mammalsCons_mm9.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/TargetScanCons_mirna_mm9.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/PARCLIP_Rbm3Liu2013_mm9.bed.0, you sure it's a bed file?
+Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/PARCLIP_CirbpLiu2013_mm9.bed.0, you sure it's a bed file?
+
+chmod -R 0755
+
+for f in *.bed.0; /Users/tbrittoborges/bedSort $f $f; /Users/tbrittoborges/bedToBigBed $f  /Volumes/prj/dorina2/genomes/h_sapiens/hg38/hg38.chrom.sizes  (basename $f .bed.0).bb; end
+
+
 curl http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/bedSort
+
+~/hubCheck http://porta.dieterichlab.org/trackhubs/dorinaHub/hub.txt
 """
 from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
 import os
-import shutil
 import subprocess
 import sys
 from io import open
@@ -28,9 +45,7 @@ from subprocess import CalledProcessError
 DATA_PATH = Path("/Volumes/prj/dorina2/")
 HUB_PATH = Path("/Volumes/prj/trackhubs/dorinaHub/")
 GENOMES_PATH = Path(DATA_PATH / "genomes/")
-# REGULATORS_PATH = Path(DATA_PATH, "regulators")
-REGULATORS_PATH = Path(
-    '/Users/tbrittoborges/Projects/webdorina/webdorina/regulators')
+REGULATORS_PATH = Path(DATA_PATH, "regulators")
 HUB_GENOMES = []  # genomes.txt
 
 # kent executables
@@ -95,9 +110,9 @@ def process_hierarchy(root):
                 GENOMES_PATH / sp).iterdir() if g.is_dir()):
 
             # create target dir for genome
-            hub_dir = Path(HUB_PATH) / sp
+            hub_dir = Path(HUB_PATH) / sp / genome
             if not hub_dir.exists():
-                hub_dir.mkdir()
+                hub_dir.mkdir(parents=True)
 
             # for all files with metadata in current genome
             for f in (root / sp / genome).iterdir():
@@ -133,14 +148,6 @@ def process_hierarchy(root):
                                       remove_scores_path,
                                       coordinates)
 
-                bigwig_path = (root / sp / genome / f.stem).with_suffix(".bw")
-                bigwig_path.touch(exist_ok=True)
-                data_file_type = "bigWig"
-                data_file_ext = "bw"
-                # copy the data file to hub target dir
-                shutil.copy2(bigwig_path,
-                             (hub_dir / f.stem).with_suffix(".bw"))
-
                 # add parent track entry
                 # experiment name for the first json entry
                 # <- must be adjusted ???     # slave track TODO
@@ -151,7 +158,7 @@ def process_hierarchy(root):
                         "track " + parent,
                         "superTrack on",
                         "shortLabel " + parent,
-                        "long_label " + parent,
+                        "longLabel " + parent,
                     ])
 
                 track_info = [
@@ -159,9 +166,10 @@ def process_hierarchy(root):
                     "parent " + parent,
                     "bigDataUrl " + str(f.stem) + '.' + data_file_ext,
                     "shortLabel " + str(f.stem),
-                    "long_label " + long_label,
+                    "longLabel " + long_label,
                     "type " + data_file_type + " 6",
-                    "html " + str(f.stem)]
+                    "html " + str(f.stem),
+                    'visibility full']
 
                 if 'autoScale' in json_info and json_info['autoScale'] == 'on':
                     track_info.append("autoScale on")
