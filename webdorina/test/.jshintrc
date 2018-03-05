@@ -1,5 +1,0 @@
-jshint: {
-  options: {
-    mocha: true,
-  }
-}

@@ -31,7 +31,7 @@
 
 {% set navigation_bar = [
     ('/', 'index', 'Home'),
-    ('/go', 'go', 'Search'),
+    ('/go', 'Search', 'Search'),
     ('/news', 'news', 'News'),
     ('/tutorials', 'tutorials', 'Tutorials'),
     ('/regulators', 'regulators', 'Regulators'),
@@ -68,10 +68,12 @@
     <div class="navdrawer-content">
         <div class="d-flex flex-column doc-navdrawer-body">
             <div class="navdrawer-header">
-                <a class="navbar-brand px-0 ">Carina</a>
+                <a class="navbar-brand px-0 navbar-toggler">Carina</a>
             </div>
             <nav class="navdrawer-nav">
                 {% for href, id, caption in navigation_bar %}
+
+
 
                     <a {% if id == active_page %}
                         class="nav-link nav-item text-black font-weight-bold"
@@ -80,18 +82,19 @@
                         href="{{ href|e }}"> {{ caption|e }}
                     </a>
                 {% endfor %}
-                {#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
-                {#                   href="#doc-navdrawer-components">#}
-                {#                    <strong>Regulators</strong>#}
-                {#                </a>#}
-                {#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
-                {#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
-                {#                        href="/material/docs/4.0/components/alerts/"><span#}
-                {#                        class="font-weight-normal">template#}
-                {#                    </span>#}
-                {#                    </a>#}
-                {#                </div>#}
             </nav>
+{#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
+{#                   href="#doc-navdrawer-components">#}
+{#                    <strong>Regulators</strong>#}
+{#                </a>#}
+{#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
+{#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
+{#                       href="/material/docs/4.0/components/alerts/"><span#}
+{#                            class="font-weight-normal">template#}
+{#                                    </span>#}
+{#                    </a>#}
+{#                </div>#}
+{#            </nav>#}
 
             <div class="mt-auto">
                 <div class="navdrawer-divider mt-no"></div>
