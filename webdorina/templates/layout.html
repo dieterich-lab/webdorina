@@ -27,12 +27,11 @@
     {% block extra_headers %}{% endblock %}
 </head>
 
-
-</head>
 <body class="doc-body">
 
 {% set navigation_bar = [
-    ('/', 'index', 'Index'),
+    ('/', 'index', 'Home'),
+    ('/go', 'go', 'Search'),
     ('/news', 'news', 'News'),
     ('/tutorials', 'tutorials', 'Tutorials'),
     ('/regulators', 'regulators', 'Regulators'),
@@ -46,7 +45,7 @@
             data-toggle="navdrawer" data-type="permanent">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand d-lg-none mr-auto">Carina</a>
+    <a class="navbar-brand d-lg-none mr-auto"></a>
     {#  <div class="d-lg-none ml-auto">#}
     {#    <div class="dropdown">#}
     {#      <button aria-expanded="false" aria-haspopup="true" class="navbar-toggler" data-toggle="dropdown" id="doc-dropdown-follow" type="button">#}
@@ -71,26 +70,27 @@
             <div class="navdrawer-header">
                 <a class="navbar-brand px-0 ">Carina</a>
             </div>
-            {% for href, id, caption in navigation_bar %}
+            <nav class="navdrawer-nav">
+                {% for href, id, caption in navigation_bar %}
 
-                <a {% if id == active_page %}
-                    class="nav-link nav-item text-black font-weight-bold"
-                {% else %}
-                    class="nav-link nav-item text-black-secondary" {% endif %}
-                    href="{{ href|e }}"> {{ caption|e }}
-                </a>
-            {% endfor %}
-            {#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
-            {#                   href="#doc-navdrawer-components">#}
-            {#                    <strong>Regulators</strong>#}
-            {#                </a>#}
-            {#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
-            {#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
-            {#                        href="/material/docs/4.0/components/alerts/"><span#}
-            {#                        class="font-weight-normal">template#}
-            {#                    </span>#}
-            {#                    </a>#}
-            {#                </div>#}
+                    <a {% if id == active_page %}
+                        class="nav-link nav-item text-black font-weight-bold"
+                    {% else %}
+                        class="nav-link nav-item text-black-secondary" {% endif %}
+                        href="{{ href|e }}"> {{ caption|e }}
+                    </a>
+                {% endfor %}
+                {#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
+                {#                   href="#doc-navdrawer-components">#}
+                {#                    <strong>Regulators</strong>#}
+                {#                </a>#}
+                {#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
+                {#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
+                {#                        href="/material/docs/4.0/components/alerts/"><span#}
+                {#                        class="font-weight-normal">template#}
+                {#                    </span>#}
+                {#                    </a>#}
+                {#                </div>#}
             </nav>
 
             <div class="mt-auto">
@@ -102,7 +102,7 @@
                         <i class="material-icons mr-3">code</i>Source code
                     </a>
                     <a class="nav-item nav-link text-black-secondary"
-                       href="mail:thiago.brittoborges@uni-heidelberg.de"
+                       href="mailto:thiago.brittoborges@uni-heidelberg.de"
                        target="_blank">
                         <i class="material-icons mr-3">email</i> Contact
                     </a>
