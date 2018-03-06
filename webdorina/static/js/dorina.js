@@ -304,8 +304,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
                 $(document.getElementById('collapseTwo')).collapse('show');
-
-
                 self.mode('search');
 
                 var $genes, genes;
@@ -496,6 +494,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
         net.getJSON(url).then(function(data) {
             self.pending(false);
+
+
             self.more_results(data.more_results);
             self.total_results(data.total_results);
             for (var i in data.results) {
@@ -528,10 +528,11 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
      * moment */
     self.run_simple_search = function () {
         self.run_search(false);
-        // here
-        $(document.getElementById('collapseThree')).collapse('show');
-        $('#results').collapse('show');
         self.mode('results');
+        $('#search').collapse('hide');
+        $('#results').collapse('show');
+        $(document.getElementById("collapseThree")).collapse("show");
+
     };
 
     self.load_more_results = function () {
