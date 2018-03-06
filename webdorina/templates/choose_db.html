@@ -7,7 +7,7 @@
                     data-target="#collapseOne"
                     aria-expanded="false"
                     aria-controls="collapseOne">
-                    Choose a database
+                    <span data-bind="text: chosenAssembly() ? chosenAssembly() + ' selected' : 'Choose an assembly '"></span>
                 </h4>
             </h5>
         </div>
@@ -16,17 +16,20 @@
             <div class="card-body">
                 <form class="form-inline" role="form"
                       data-bind="submit: show_simple_search">
-                    <select class="form-inline col-sm-8"
+                    <select class="form-inline col-sm-7"
                             id="assembly"
                             data-bind="value: chosenAssembly"
                             placeholder="Select assembly..."
                             type="submit ">
                     </select>
-                    <div class="form col-sm-3">
+                    <div class="form col-sm-4">
                         <button type="submit"
                                 class="btn btn-info"
                                 data-bind="enable: chosenAssembly">
-                            <label>Search</label>
+                            <label>
+                                <span class="material-icons">search</span>
+                                Search
+                            </label>
                         </button>
                     </div>
 
