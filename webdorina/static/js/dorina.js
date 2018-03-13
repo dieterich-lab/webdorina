@@ -12,7 +12,7 @@ function DoRiNAResult(line) {
     self.cols = line.split('\t');
     self.error_state = ko.observable(false);
 
-    self.annotations = ko.computed(function() {
+    self.annotations = ko.computed(function () {
         return (self.cols.length > 12) ? self.cols[12] : 'unknown#unknown*unknown';
     }, self);
 
@@ -358,11 +358,11 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     options: self.regulator_types(),
                     valueField: 'id',
                     labelField: 'id',
-                    onChange: function(values) {
+                    onChange: function (values) {
                         regulators_setb.disable();
                         regulators_setb.clearOptions();
                         if (values && values.length > 0) {
-                            var filtered_regs = self.regulators().filter(function(reg) {
+                            var filtered_regs = self.regulators().filter(function (reg) {
                                 return values.indexOf(reg.experiment) > -1;
                             });
 
@@ -388,7 +388,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     optgroupValueField: 'id',
                     optgroupLabelField: 'id',
                     render: {
-                        option: function(item, escape) {
+                        option: function (item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
                                 '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
                                 + escape(item.description) + '</span></div>';
@@ -408,7 +408,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     optgroupValueField: 'id',
                     optgroupLabelField: 'id',
                     render: {
-                        option: function(item, escape) {
+                        option: function (item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
                                 '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
                                 + escape(item.description) + '</span></div>';
@@ -432,7 +432,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }, 10);
     };
 
-    self.run_search = function(keep_data) {
+    self.run_search = function (keep_data) {
         var search_data = {
             set_a: self.selected_regulators(),
             assembly: self.chosenAssembly(),
@@ -450,7 +450,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         // send set B data
         if (self.selected_regulators_setb().length > 0) {
             search_data.set_b = self.selected_regulators_setb();
-            search_data.match_b= self.match_b();
+            search_data.match_b = self.match_b();
             search_data.region_b = self.region_b();
             search_data.combinatorial_op = self.combinatorialOperation();
             if (self.use_window_b()) {
@@ -464,17 +464,17 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         if (!keep_data) {
             self.results.removeAll();
         }
-        return net.post('api/v1.0/search', search_data).then(function(data) {
+        return net.post('api/v1.0/search', search_data).then(function (data) {
             self.uuid(data.uuid);
             self.poll_result(data.uuid);
         });
     };
 
-    self.poll_result = function(uuid) {
+    self.poll_result = function (uuid) {
         var url = 'api/v1.0/status/' + uuid;
-        net.getJSON(url).then(function(data) {
+        net.getJSON(url).then(function (data) {
             if (data.state == 'pending') {
-                setTimeout(function() {
+                setTimeout(function () {
                     self.poll_result(uuid);
                 }, self.retry_after);
                 return;
@@ -486,13 +486,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     };
 
 
-    self.get_results = function(uuid, more) {
+    self.get_results = function (uuid, more) {
         var url = 'api/v1.0/result/' + uuid;
         if (more) {
             url += '/' + self.offset();
         }
 
-        net.getJSON(url).then(function(data) {
+        net.getJSON(url).then(function (data) {
             self.pending(false);
 
 
@@ -549,74 +549,18 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
 }
 
-function RegulatorViewModel(net) {
+function RegulatorViewModel(net, value) {
     var self = this;
 
-    self.genomes = ko.observableArray([]);
-    self.assemblies = ko.observableArray([]);
     self.regulators = ko.observableArray([]);
-    self.selected_assembly = ko.observable();
-    self.pb = document.getElementById('regulatorProgressBar');
 
     self.init = function () {
-        self.get_genomes().then(function () {
-            var promises = [];
-
-            for (var i in self.genomes()) {
-
-                var genome = self.genomes()[i].id;
-                promises.push(self.get_assemblies(genome));
-
-            }
-
-            $.when.apply(null, promises).then(function () {
-                $('#assembly').selectize({
-                    valueField: 'id',
-                    labelField: 'id',
-                    searchField: 'id',
-                    options: self.assemblies(),
-                    sortField: [{field: 'weight', direction: 'desc'}],
-                    optgroupField: 'genome',
-                    optgroupValueField: 'id',
-                    optgroups: self.genomes(),
-                    render: {
-                        optgroup_header: function (data, escape) {
-                            return '<div class="font-weight-bold">' + escape(data.label) +
-                                ' (<span class="font-italic">' + escape(data.scientific) +
-                                '</span>)</div>';
-                        }
-                    },
-                    onChange: function(value) {
-                        if (!value) {
-                            return;
-                        }
-                        self.get_regulators(value);
-
-                    }
-                });
-            });
-        });
-    };
-
-    self.get_genomes = function () {
-        return net.getJSON('api/v1.0/genomes').then(function (data) {
-            self.genomes = ko.observableArray(data.genomes);
-        });
-
-
-    };
-
-    self.get_assemblies = function (genome) {
-        return net.getJSON('api/v1.0/assemblies/' + genome).then(function (data) {
-            for (var i in data.assemblies) {
-                self.assemblies.push(data.assemblies[i]);
-            }
-        });
+        self.get_regulators(value);
     };
 
     self.get_regulators = function (assembly) {
 
-        return net.getJSON('api/v1.0/regulators/' + assembly).then(function (data) {
+        return net.getJSON('/api/v1.0/regulators/' + assembly).then(function (data) {
             self.regulators.removeAll();
             self.regulators.extend({rateLimit: 60});
             for (var reg in data) {
@@ -631,7 +575,6 @@ function RegulatorViewModel(net) {
             });
         });
     };
-
 }
 
 function SetViewModel(view_model) {

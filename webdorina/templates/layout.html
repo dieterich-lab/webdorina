@@ -6,7 +6,7 @@
     <title>Carina &middot; {{ active_page | title }} </title>
     <meta name="description" content="Carina curates post-transcription
     information associated with the heart physiology and cardiovascular
-    diseases" >
+    diseases">
     <meta content="initial-scale=1, shrink-to-fit=no, width=device-width"
           name="viewport">
     <meta name="author" content="Thiago Britto-Borges">
@@ -36,15 +36,14 @@
     ('/go', 'Search', 'Search'),
     ('/news', 'news', 'News'),
     ('/tutorials', 'tutorials', 'Tutorials'),
-    ('/regulators', 'regulators', 'Regulators'),
     ('/docs', 'documentation', 'Documentation'),
     ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
 
 <div class="navbar toolbar-waterfall doc-navbar" id="doc-navbar">
     <button aria-controls="doc-navdrawer" aria-expanded="false"
             aria-label="Toggle Navdrawer" class="navbar-toggler "
-            data-breakpoint="xl" data-target="#doc-navdrawer"
-            data-toggle="navdrawer" data-type="permanent">
+            data-breakpoint="lg" data-target="#doc-navdrawer"
+            data-toggle="navdrawer" type="button">
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand d-lg-none mr-auto"></a>
@@ -65,7 +64,7 @@
     {#  </div>#}
 </div>
 
-<div aria-hidden="true" class="navdrawer navdrawer-permanent-lg doc-navdrawer"
+<div aria-hidden="true" class="navdrawer navdrawer-temporary doc-navdrawer"
      id="doc-navdrawer" tabindex="-1">
     <div class="navdrawer-content">
         <div class="d-flex flex-column doc-navdrawer-body">
@@ -82,18 +81,21 @@
                     </a>
                 {% endfor %}
             </nav>
-            {#                <a class="nav-item nav-link collapsed" data-toggle="collapse"#}
-            {#                   href="#doc-navdrawer-components">#}
-            {#                    <strong>Regulators</strong>#}
-            {#                </a>#}
-            {#                <div class="collapse pb-2 " id="doc-navdrawer-components">#}
-            {#                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"#}
-            {#                       href="/material/docs/4.0/components/alerts/"><span#}
-            {#                            class="font-weight-normal">template#}
-            {#                                    </span>#}
-            {#                    </a>#}
-            {#                </div>#}
-            {#            </nav>#}
+            <a {% if 'regulators' == active_page %}
+                class="nav-link nav-item text-black font-weight-bold"
+            {% else %}
+                class="nav-link nav-item text-black-secondary" {% endif %}
+                data-toggle="collapse" href="#doc-navdrawer-components">
+                Regulators
+            </a>
+
+            <div class="collapse pb-2 " id="doc-navdrawer-components">
+                {% for assembly in _assemblies %}
+                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"
+                       href=" {{ url_for('regulators', assembly=assembly) }}">
+                        {{ assembly | safe }} </a>
+                {% endfor %}
+            </div>
 
             <div class="mt-auto">
                 <div class="navdrawer-divider mt-no"></div>
@@ -143,8 +145,7 @@
         </div>
     </div>
 </main>
-</div>
-</div>
+
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"

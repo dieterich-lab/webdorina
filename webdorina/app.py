@@ -90,6 +90,13 @@ def _dict_to_bed(data):
         **data)
 
 
+@app.context_processor
+def inject_data():
+    assemblies = [x['assemblies'] for x in Genome.all().values()]
+    assemblies = (xx for x in assemblies for xx in x)
+    return dict(_assemblies=assemblies)
+
+
 @app.route('/')
 def welcome():
     return flask.render_template('welcome.html')
@@ -277,9 +284,13 @@ def acknowledgements():
     return flask.render_template('acknowledgements.html')
 
 
-@app.route('/regulators')
-def regulators():
-    return flask.render_template('regulators.html')
+@app.route('/regulators/<assembly>')
+def regulators(assembly=None):
+    if assembly is None:
+        return flask.render_template('regulators.html')
+    else:
+        return flask.render_template(
+            'regulators_for_assembly.html', assembly=assembly)
 
 
 @app.route('/docs/api/<page>')
