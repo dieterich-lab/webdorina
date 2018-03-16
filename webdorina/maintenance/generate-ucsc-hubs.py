@@ -8,19 +8,8 @@ text files for use with the UCSC genome browser.
 col 5th must be 0 (zero)
 remove _ (dash) from 1st col
 
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2Skalsky2012e_hg19.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2Skalsky2012d_hg19.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/TargetScanCons_mirna_hg19.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2Skalsky2012c_hg19.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/pictar_mirna_up2fishCons_hg19.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/pictar_mirna_up2chickenCons_hg19.bed.0, you sure it's a bed file?
 Error line 2027 of /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_ELAVL1MNASE_hg19.bed.0: name [PARCLIP#ELAVL1MNASE_hg19*NM_001102398_2219_2258NM_001102398_2219_2258NM_001102398_2259_2298NM_001102398_2259_2298NM_001102398_2299_2338NM_001102398_2299_2338NM_001102398_2339_2378NM_001102398_2339_2378NM_001102398_2379_2418NM_001102398_2379_2418NM_001102398_2419_2458NM_001102398_] is too long (must not exceed 255 characters)
 Error line 6499 of /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/PARCLIP_AGO2MNASE_hg19.bed.0: name [PARCLIP#AGO2MNASE_hg19*NM_012342_1095_1134NM_012342_1097_1136NM_012342_1137_1176NM_012342_1142_1181NM_012342_1177_1216NM_012342_1185_1224NM_012342_1225_1264NM_012342_1225_1264NM_012342_1265_1304NM_012342_1276_1315NM_012342_1316_1355NM_012342_1319_1358NM_012342_1359_1398NM_01234] is too long (must not exceed 255 characters)
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/h_sapiens/hg38/pictar_mirna_up2mammalsCons_hg19.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/pictar_mirna_up2mammalsCons_mm9.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/TargetScanCons_mirna_mm9.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/PARCLIP_Rbm3Liu2013_mm9.bed.0, you sure it's a bed file?
-Too many columns in /Volumes/prj/trackhubs/dorinaHub/m_musculus/mm10/PARCLIP_CirbpLiu2013_mm9.bed.0, you sure it's a bed file?
 
 chmod -R 0755
 
@@ -65,23 +54,33 @@ def write_html_description(path, json_file):
         for field in ('description', 'methods', 'references'):
             if field in json_file:
                 desc_file.write("<H2>{}</H2>\n".format(field))
-                desc_file.write(str(json_file[field]))
+                desc_file.write(str(json_file[field]) + '\n')
 
 
 def convert_bed_to_bigbed(bed_path, bb_path, remove_scores_path, coordinates):
-    # skip conversion if conversion already done in the past
     print(">>>>> START " + str(bed_path))
     try:
-        # Replace score field with "0"
-        # Make sure we have only 6 columns
         with open(bed_path) as file_in, \
                 open(remove_scores_path, 'w') as file_out:
             for line in file_in:
-                fields = line.split('\t')
+                fields = line.rstrip().split('\t')
                 try:
-                    new_line = '\t'.join(fields[0:4] + ["0"] + [fields[5]])
+                    # Replace score field with "0"
+                    # trims the name field
+
+                    if len(fields) > 4:
+                        new_line = '\t'.join(fields[0:3] + [fields[3][:254]]
+                                             + ["0"] + [fields[5]]) + '\n'
+                    else:
+                        # bed file without strand HITSCLIP_FOX2Yeo2009_hg19.bed
+                        new_line = '\t'.join(fields[0:3] + [fields[3][:254]]
+                                             + ["0", '+']) + '\n'
+
                 except IndexError:
-                    new_line = line
+                    print(">>>>> ERROR: problematic line in " + str(
+                        bed_path) + line)
+                    continue
+
                 file_out.write(new_line)
 
         # sort file
@@ -107,7 +106,7 @@ def process_hierarchy(root):
 
         # browse for all genomes
         for genome in (g.name for g in (
-                GENOMES_PATH / sp).iterdir() if g.is_dir()):
+                    GENOMES_PATH / sp).iterdir() if g.is_dir()):
 
             # create target dir for genome
             hub_dir = Path(HUB_PATH) / sp / genome
@@ -142,7 +141,7 @@ def process_hierarchy(root):
                 bb_path = (hub_dir / f.stem).with_suffix(".bb")
                 remove_scores_path = (hub_dir / f.stem).with_suffix(".bed.0")
                 coordinates = (GENOMES_PATH / sp / genome / genome).with_suffix(
-                    ".chrom.sizes")
+                    ".genome")
                 convert_bed_to_bigbed(bed_path,
                                       bb_path,
                                       remove_scores_path,
@@ -150,20 +149,19 @@ def process_hierarchy(root):
 
                 # add parent track entry
                 # experiment name for the first json entry
-                # <- must be adjusted ???     # slave track TODO
                 if json_info['experiment'] not in parents and \
-                        parent not in parents:
+                                parent not in parents:
                     parents.append(parent)
                     track_parents_entry.append([
-                        "track " + parent,
+                        "track " + parent + '-p',
                         "superTrack on",
                         "shortLabel " + parent,
                         "longLabel " + parent,
                     ])
 
                 track_info = [
-                    "track " + str(f.stem),
-                    "parent " + parent,
+                    "track " + f.stem[:f.stem.rfind('_')],
+                    "parent " + parent + '-p',
                     "bigDataUrl " + str(f.stem) + '.' + data_file_ext,
                     "shortLabel " + str(f.stem),
                     "longLabel " + long_label,
