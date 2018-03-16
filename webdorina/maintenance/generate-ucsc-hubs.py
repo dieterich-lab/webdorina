@@ -142,10 +142,13 @@ def process_hierarchy(root):
                 remove_scores_path = (hub_dir / f.stem).with_suffix(".bed.0")
                 coordinates = (GENOMES_PATH / sp / genome / genome).with_suffix(
                     ".genome")
-                convert_bed_to_bigbed(bed_path,
-                                      bb_path,
-                                      remove_scores_path,
-                                      coordinates)
+                try:
+                    convert_bed_to_bigbed(bed_path,
+                                          bb_path,
+                                          remove_scores_path,
+                                          coordinates)
+                except CalledProcessError:
+                    continue
 
                 # add parent track entry
                 # experiment name for the first json entry
@@ -160,14 +163,14 @@ def process_hierarchy(root):
                     ])
 
                 track_info = [
-                    "track " + f.stem[:f.stem.rfind('_')],
+                    "track " + f.stem,
                     "parent " + parent + '-p',
                     "bigDataUrl " + str(f.stem) + '.' + data_file_ext,
-                    "shortLabel " + str(f.stem),
+                    "shortLabel " + str(f.stem).replace(genome, ''),
                     "longLabel " + long_label,
                     "type " + data_file_type + " 6",
                     "html " + str(f.stem),
-                    'visibility full']
+                    'visibility squish']
 
                 if 'autoScale' in json_info and json_info['autoScale'] == 'on':
                     track_info.append("autoScale on")
