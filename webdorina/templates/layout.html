@@ -41,9 +41,9 @@
 
 <div class="navbar toolbar-waterfall doc-navbar" id="doc-navbar">
     <button aria-controls="doc-navdrawer" aria-expanded="false"
-            aria-label="Toggle Navdrawer" class="navbar-toggler "
+            aria-label="Toggle Navdrawer" class="navbar-toggler d-lg-none"
             data-breakpoint="lg" data-target="#doc-navdrawer"
-            data-toggle="navdrawer" type="button">
+            data-toggle="navdrawer" data-type="permanent">
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand d-lg-none mr-auto"></a>
@@ -64,7 +64,7 @@
     {#  </div>#}
 </div>
 
-<div aria-hidden="true" class="navdrawer navdrawer-temporary doc-navdrawer"
+<div aria-hidden="true" class="navdrawer navdrawer-permanent doc-navdrawer"
      id="doc-navdrawer" tabindex="-1">
     <div class="navdrawer-content">
         <div class="d-flex flex-column doc-navdrawer-body">
@@ -76,26 +76,29 @@
                     <a {% if id == active_page %}
                         class="nav-link nav-item text-black font-weight-bold"
                     {% else %}
-                        class="nav-link nav-item text-black-secondary" {% endif %}
+                        class="nav-link nav-item text-black-secondary"
+                    {% endif %}
                         href="{{ href|e }}"> {{ caption|e }}
                     </a>
                 {% endfor %}
-            </nav>
-            <a {% if 'regulators' == active_page %}
-                class="nav-link nav-item text-black font-weight-bold"
-            {% else %}
-                class="nav-link nav-item text-black-secondary" {% endif %}
-                data-toggle="collapse" href="#doc-navdrawer-components">
-                Regulators
-            </a>
 
-            <div class="collapse pb-2 " id="doc-navdrawer-components">
-                {% for assembly in _assemblies %}
-                    <a class="nav-item nav-link pl-4 py-2 text-black-secondary"
-                       href=" {{ url_for('regulators', assembly=assembly) }}">
-                        {{ assembly | safe }} </a>
-                {% endfor %}
-            </div>
+                <a {% if 'regulators' == active_page %}
+                    class="nav-link nav-item text-black font-weight-bold"
+                {% else %}
+                    class="nav-link nav-item text-black-secondary"
+                {% endif %}
+                    data-toggle="collapse" href="#doc-navdrawer-components">
+                    Regulators
+                </a>
+
+                <div class="collapse pb-2 " id="doc-navdrawer-components">
+                    {% for assembly in _assemblies %}
+                        <a class="nav-item nav-link pl-4 py-2 text-black-secondary"
+                           href=" {{ url_for('regulators', assembly=assembly) }}">
+                            {{ assembly | safe }} </a>
+                    {% endfor %}
+                </div>
+            </nav>
 
             <div class="mt-auto">
                 <div class="navdrawer-divider mt-no"></div>
@@ -120,7 +123,7 @@
     <div class="container">
         {# pt-4 adjust padding to the top from 1 to 5 #}
         <div class="row justify-content-center pt-5 ">
-            <div class="col-10 col-xl-9">
+            <div class="col-10 col-xl-12">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -151,7 +154,6 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
 
 <!-- Then Material JavaScript on top of Bootstrap JavaScript -->
 <script src="{{ url_for('static', filename='js/material.min.js') }}"></script>

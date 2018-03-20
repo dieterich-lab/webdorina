@@ -15,18 +15,18 @@
          aria-labelledby="headingThree" data-parent="#accordion">
         <div class="card-body collapse" id="results">
             <div class="row" data-bind="visible: pending">
-            <div class="progress-circular">
-                <div class="progress-circular-wrapper">
-                    <div class="progress-circular-inner">
-                        <div class="progress-circular-left">
-                            <div class="progress-circular-spinner"></div>
-                        </div>
-                        <div class="progress-circular-gap"></div>
-                        <div class="progress-circular-right">
-                            <div class="progress-circular-spinner"></div>
+                <div class="progress-circular">
+                    <div class="progress-circular-wrapper">
+                        <div class="progress-circular-inner">
+                            <div class="progress-circular-left">
+                                <div class="progress-circular-spinner"></div>
+                            </div>
+                            <div class="progress-circular-gap"></div>
+                            <div class="progress-circular-right">
+                                <div class="progress-circular-spinner"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </div>
 
@@ -78,10 +78,13 @@
             </div>
             <div class="row ">
                 <div class="col-6 align-content-end">
-                    <a href="{{ url_for('welcome') }}"
-                       class="btn btn-default"> New search</a>
-                    <a href="{{ url_for('download_results', uuid=uuid) }}"
-                       class="btn btn-default"> Download </a>
+                    <button type="button" class="btn btn-default"
+                            data-bind="click: new_search">
+                        New search
+                    </button>
+                    <button href="{{ url_for('download_results', uuid=uuid) }}"
+                            class="btn btn-default"> Download
+                    </button>
                     {#                    <!-- ko if: galaxy_url -->#}
                     {#                    <a data-bind="attr:{href:decodeURIComponent(galaxy_url())+'?tool_id=dorina_search&STATUS=OK&URL='+origin()+'{{ url_for('download_results', uuid=uuid) }}'}"#}
                     {#                       class="btn btn-default btn-sm text-right">#}

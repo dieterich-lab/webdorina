@@ -21,19 +21,19 @@
                     <div class="row form-group">
                         <div class="col-6">
                             <label for="regulators">Regulators (set A)</label>
-                            <select class="form-control" id="regulators"
+                            <select multiple class="form-control" id="regulators"
                                     data-bind="selectedOptions: selected_regulators"
-                                    placeholder="Select one or more regulators..."
-                                    multiple>
+                                    placeholder="Select one or more regulators...">
                             </select>
                         </div>
 
                         <div class="col-6">
-                            <label for="shown-types">Regulator types to
-                                show</label>
-                            <select class="form-control" id="shown-types"
-                                    placeholder="Select regulator types to show..."
-                                    multiple>
+                            <label for="shown-types">
+                                Regulator types to show
+                            </label>
+                            <select multiple
+                                    class="form-control" id="shown-types"
+                                    placeholder="Select regulator types to show...">
                             </select>
                         </div>
                     </div>
