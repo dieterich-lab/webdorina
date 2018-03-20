@@ -10,8 +10,11 @@
             </h4>
         </h5>
     </div>
-    <div class="card-body collapse" id="results">
-        <div class="row" data-bind="visible: pending">
+
+    <div id="collapseThree" class="collapse"
+         aria-labelledby="headingThree" data-parent="#accordion">
+        <div class="card-body collapse" id="results">
+            <div class="row" data-bind="visible: pending">
             <div class="progress-circular">
                 <div class="progress-circular-wrapper">
                     <div class="progress-circular-inner">
@@ -24,113 +27,77 @@
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
-        </div>
 
-        <div id="collapseThree" class="collapse"
-             aria-labelledby="headingThree" data-parent="#accordion">
+            <div class="row" data-bind="visible: results">
+                <div class="row" id="table-wrapper">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-responsive"
+                               id="result_table">
+                            <thead>
+                            <tr>
+                                <th>track name</th>
+                                <th>target gene</th>
+                                <th>data source</th>
+                                <th>score</th>
+                                <th>target site id</th>
+                                <th>target gene location</th>
+                                <th>target site location</th>
+                                <th>genomic target strand</th>
+                                <th>target site strand</th>
+                            </tr>
+                            </thead>
+                            <tbody data-bind="foreach: results">
+                            <tr>
+                                <td data-bind="text: track"></td>
+                                <td data-bind="text: gene"></td>
+                                <td data-bind="text: data_source"></td>
+                                <td data-bind="text: score"></td>
+                                <td style="word-break: break-all;"
+                                    data-bind="text: site"></td>
+                                <td><a target="_blank"
+                                       data-bind="text: location, attr: {href: ($parent.ucsc_url() + location())}"></a>
+                                </td>
+                                <td><a target="_blank"
+                                       data-bind="text: feature_location, attr: {href: ($parent.ucsc_url() + feature_location())}"></a>
+                                </td>
+                                <td data-bind="text: strand"></td>
+                                <td data-bind="text: feature_strand"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
 
             <div class="row">
-                <div class="col-md-1 text-right">
+                Showing <span data-bind="text: results().length"></span> of
+                <span data-bind="text: total_results"></span> results.
+            </div>
+            <div class="row ">
+                <div class="col-6 align-content-end">
                     <a href="{{ url_for('welcome') }}"
-                       class="btn btn-default btn-sm text-right">
-                        <span class="glyphicon glyphicon-star"></span> New
-                        search</a>
-                </div>
-                <div class="col-md-1 col-md-offset-4 text-right">
+                       class="btn btn-default"> New search</a>
                     <a href="{{ url_for('download_results', uuid=uuid) }}"
-                       class="btn btn-default btn-sm text-right">
-                        <span class="glyphicon glyphicon-download"></span>
-                        Download results (TSV file)</a>
+                       class="btn btn-default"> Download </a>
+                    {#                    <!-- ko if: galaxy_url -->#}
+                    {#                    <a data-bind="attr:{href:decodeURIComponent(galaxy_url())+'?tool_id=dorina_search&STATUS=OK&URL='+origin()+'{{ url_for('download_results', uuid=uuid) }}'}"#}
+                    {#                       class="btn btn-default btn-sm text-right">#}
+                    {#                        <span class="glyphicon glyphicon-share"></span> Send to#}
+                    {#                        Galaxy</a>#}
+                    {##}
+                    {#                    <!-- /ko -->#}
                 </div>
-                <!-- ko if: galaxy_url -->
-                <div class="col-md-1 col-md-offset-1 text-right">
-                    <a data-bind="attr:{href:decodeURIComponent(galaxy_url())+'?tool_id=dorina_search&STATUS=OK&URL='+origin()+'{{ url_for('download_results', uuid=uuid) }}'}"
-                       class="btn btn-default btn-sm text-right">
-                        <span class="glyphicon glyphicon-share"></span> Send to
-                        Galaxy</a>
-                </div>
-                <!-- /ko -->
-                <div class="col-md-3 col-md-offset-1 text-right">
-                    <button type="button" class="btn btn-default btn-sm"
-                            data-bind="click: new_search">
-                        <span class="glyphicon glyphicon-repeat"></span> Redo
-                        search
-                    </button>
-                </div>
-            </div>
-
-            <div class="row" id="table-wrapper">
-                <div class="col-md-12">
-                    <table class="table table-striped table-responsive"
-                           id="result_table">
-                        <thead>
-                        <tr>
-                            <th>track name</th>
-                            <th>target gene</th>
-                            <th>data source</th>
-                            <th>score</th>
-                            <th>target site id</th>
-                            <th>target gene location</th>
-                            <th>target site location</th>
-                            <th>genomic target strand</th>
-                            <th>target site strand</th>
-                        </tr>
-                        </thead>
-                        <tbody data-bind="foreach: results">
-                        <tr>
-                            <td data-bind="text: track"></td>
-                            <td data-bind="text: gene"></td>
-                            <td data-bind="text: data_source"></td>
-                            <td data-bind="text: score"></td>
-                            <td style="word-break: break-all;"
-                                data-bind="text: site"></td>
-                            <td><a target="_blank"
-                                   data-bind="text: location, attr: {href: ($parent.ucsc_url() + location())}"></a>
-                            </td>
-                            <td><a target="_blank"
-                                   data-bind="text: feature_location, attr: {href: ($parent.ucsc_url() + feature_location())}"></a>
-                            </td>
-                            <td data-bind="text: strand"></td>
-                            <td data-bind="text: feature_strand"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                Loading
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-1 text-right">
-                <a href="{{ url_for('welcome') }}"
-                   class="btn btn-default btn-sm text-right">
-                    <span class="glyphicon glyphicon-star"></span> New
-                    search</a>
-            </div>
-            <div class="col-md-2">
                 <button type="button" class="btn btn-default btn-sm"
                         data-bind="visible: more_results, click: load_more_results">
                     Load more results
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </button>
             </div>
-
-            <div class="col-md-3">
-                Showing <span data-bind="text: results().length"></span> of
-                <span data-bind="text: total_results"></span> results.
-            </div>
-
-            <div class="col-md-3 col-md-offset-3 text-right">
-                <button type="button" class="btn btn-default btn-sm"
-                        data-bind="click: new_search">
-                    <span class="glyphicon glyphicon-repeat"></span> Redo
-                    search
-                </button>
-            </div>
         </div>
     </div>
 </div>
+
+
