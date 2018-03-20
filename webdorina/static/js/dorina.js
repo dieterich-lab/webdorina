@@ -333,8 +333,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
                 $shown_types = $('#shown-types').selectize({
                     options: self.regulator_types(),
-                    valueField: 'id',
-                    labelField: 'id',
+                    items: [],
+                    plugins: {
+                        "remove_button": {title: "Remove"}
+                    },
+                    valueField: "id",
+                    labelField: "id",
+                    create: false,
                     onChange: function (values) {
                         regulators.disable();
                         regulators.clearOptions();
@@ -342,20 +347,19 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                             var filtered_regs = self.regulators().filter(function (reg) {
                                 return values.indexOf(reg.experiment) > -1;
                             });
-
                             for (var i in filtered_regs) {
                                 regulators.addOption(filtered_regs[i]);
                             }
                         }
-
                         regulators.refreshOptions();
                         regulators.enable();
-                    }
+                    },
                 });
                 shown_types = $shown_types[0].selectize;
 
                 $shown_types_setb = $('#shown-types-setb').selectize({
                     options: self.regulator_types(),
+                    items: [],
                     valueField: 'id',
                     labelField: 'id',
                     onChange: function (values) {
@@ -416,13 +420,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     }
                 });
                 regulators_setb = $regulators_setb[0].selectize;
-
-                for (var i in self.regulator_types()) {
-                    var reg = self.regulator_types()[i].id;
-                    shown_types.addItem(reg);
-                    shown_types_setb.addItems(reg);
-                }
-
                 if (self.custom_regulator()) {
                     regulators.addItem(self.uuid());
                 }
@@ -529,8 +526,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.run_simple_search = function () {
         self.run_search(false);
         self.mode('results');
-        $('#search').collapse('hide');
-        $('#results').collapse('show');
+        $("#search").collapse("hide");
+        $("#results").collapse("show");
         $(document.getElementById("collapseThree")).collapse("show");
 
     };
@@ -544,6 +541,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         $('#results').collapse('hide');
         $('#chooseDatabase').collapse('hide');
         $('#search').collapse('show');
+        $(document.getElementById("collapseTwo")).collapse("show");
         self.mode('search');
     };
 

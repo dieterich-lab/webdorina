@@ -220,7 +220,7 @@
 }
 
 @media (min-width: 992px) {
-  .navdrawer-permanent-lg ~ .doc-jumbotron {
+  .navdrawer-permanent~ .doc-jumbotron {
     margin-left: 17.5rem;
   }
 }
@@ -231,7 +231,7 @@
 }
 
 @media (min-width: 992px) {
-  .navdrawer-permanent-lg ~ .doc-main {
+  .navdrawer-permanent~ .doc-main {
     margin-left: 17.5rem;
   }
 }
@@ -261,11 +261,18 @@
 }
 
 @media (min-width: 992px) {
-  .navdrawer-permanent-lg ~ .doc-toolbar {
+  .navdrawer-permanent~ .doc-toolbar {
     margin-left: 17.5rem;
   }
 }
-
-.doc-body {
+.doc-body{
   background-color: #F5F5F5;
+}
+
+.doc-main {
+  font-size: large;
+}
+
+.nav-link{
+  font-size: large;
 }
