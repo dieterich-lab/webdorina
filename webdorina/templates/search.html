@@ -21,7 +21,8 @@
                     <div class="row form-group">
                         <div class="col-6">
                             <label for="regulators">Regulators (set A)</label>
-                            <select multiple class="form-control" id="regulators"
+                            <select multiple class="form-control"
+                                    id="regulators"
                                     data-bind="selectedOptions: selected_regulators"
                                     placeholder="Select one or more regulators...">
                             </select>
@@ -59,10 +60,8 @@
                     <div class="form-group">
                         <label for="genes" data-toggle="collapse"
                                data-target="#genes-container">
-                            <span class="glyphicon glyphicon-plus"
-                                  id="genes-icon"></span>
-                            Limit to a set of candidate genes (by RefSeq
-                            ID):
+                            <span class="material-icons" id="genes-icon">expand_more</span>
+                            Limit to a set of candidate genes (by RefSeq ID):
                             <a href="#" data-toggle="tooltip"
                                data-placement="right"
                                title="Enter one or more RefSeq IDs.">
@@ -119,8 +118,7 @@
                     <div class="row form-group">
                         <label class="col-md-6 control-label"
                                for="window_a">Restrict
-                            to overlapping features with a maximal distance
-                            of:</label>
+                            to overlapping features (max. distance) of:</label>
                         <div class="input-group col-md-3">
                   <span class="input-group-addon">
                     <input type="checkbox" data-bind="checked: use_window_a">
@@ -136,20 +134,19 @@
 
                     <div class="row form-group" data-toggle="collapse"
                          data-target=".combinatorial">
+
                         <label>
-                            <span class="glyphicon glyphicon-plus"
-                                  id="combinatorial control"></span>
+                            <span class="material-icons" id="genes-icon">expand_more</span>
                             Combinatorial search
                             <a href="#" data-toggle="tooltip"
                                data-placement="right"
                                title="click to expand">
-                                <span class="glyphicon glyphicon-question-sign"></span>
                             </a>
                         </label>
                     </div>
 
                     <div class="row form-group combinatorial collapse">
-                        <div class="col-md-5">
+                        <div class="col-6">
                             <label>Look for binding sites in region:</label>
                             <div class="btn-group" data-toggle="buttons"
                                  data-bind="radio: region_b">
@@ -185,7 +182,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-3 col-md-offset-1"
+                        <div class="col-md-3 "
                              data-bind="visible: selected_regulators_setb().length > 1">
                             <label>Regulators that must match:</label>
                             <div class="btn-group" data-toggle="buttons"
@@ -203,7 +200,7 @@
                     </div>
 
                     <div class="row form-group combinatorial collapse">
-                        <div class="col-xs-6">
+                        <div class="col-6">
                             <label for="shown-types-setb">Regulator types to
                                 show</label>
                             <select class="form-control"
@@ -212,7 +209,7 @@
                                     multiple>
                             </select>
                         </div>
-                        <div class="col-xs-6">
+                        <div class="col-6">
                             <label for="regulators_setb">Regulators (set
                                 B)</label>
                             <select class="form-control"
@@ -260,7 +257,7 @@
                     </div>
 
                     <div class="row form-group combinatorial collapse">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <img class="img-responsive"
                                  data-bind="attr: {src :combinatorialOpImagePath}">
                         </div>
@@ -291,7 +288,7 @@
                     <div class="row justify-content-lg-end">
                         <button type="submit"
                                 class="btn btn-info btn-lg"
-                                data-bind="enable: custom_regulator() || selected_regulators().length > 0">
+                                data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
                             <span class="material-icons">search</span>
                             Search
                         </button>
@@ -301,6 +298,24 @@
                             <span class="material-icons">clear</span>
                             Clear
                         </button>
+
+                        <div class="form-inline col-sm-1"
+                             data-bind="visible: pending">
+                            <div class="progress-circular">
+                                <div class="progress-circular-wrapper">
+                                    <div class="progress-circular-inner">
+                                        <div class="progress-circular-left">
+                                            <div class="progress-circular-spinner"></div>
+                                        </div>
+                                        <div class="progress-circular-gap"></div>
+                                        <div class="progress-circular-right">
+                                            <div class="progress-circular-spinner"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>

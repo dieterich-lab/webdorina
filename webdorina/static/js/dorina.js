@@ -144,10 +144,11 @@ function DoRiNAResult(line) {
 function DoRiNAViewModel(net, uuid, custom_regulator) {
     var self = this;
     self.mode = ko.observable("choose_db");
-    self.retry_after = 1000;
+    self.retry_after = 10000;
     self.loading_regulators = ko.observable(false);
     self.uuid = ko.observable(uuid);
     self.custom_regulator = ko.observable(custom_regulator);
+
 
     self.galaxy_url = ko.computed(function () {
         var qstring = window.location.search,
@@ -364,7 +365,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     labelField: 'id',
                     onChange: function (values) {
                         regulators_setb.disable();
-                        regulators_setb.clearOptions();
                         if (values && values.length > 0) {
                             var filtered_regs = self.regulators().filter(function (reg) {
                                 return values.indexOf(reg.experiment) > -1;
@@ -491,17 +491,39 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
         net.getJSON(url).then(function (data) {
             self.pending(false);
-
+            $("#search").collapse("hide");
+            $("#results").collapse("show");
+            $(document.getElementById("collapseThree")).collapse("show");
 
             self.more_results(data.more_results);
             self.total_results(data.total_results);
             for (var i in data.results) {
-                self.results.push(new DoRiNAResult(data.results[i]));
+                self.results.push(new DoRiNAResult(data.results[i]).cols);
             }
             if (data.more_results && data.next_offset) {
                 self.offset(data.next_offset);
                 self.uuid(uuid);
             }
+            $('#example').DataTable({
+                data: self.results(),
+                columns: [
+                    {title: "track name"},
+                    {title: "target gene"},
+                    {title: "data source"},
+                    {title: "target site id"},
+                    {title: "target gene location"},
+                    {title: "target site location"},
+                    {title: "genomic target strand"},
+                    {title: "target site strand"},
+                    {title: "target site strand1"},
+                    {title: "target site strand2"},
+                    {title: "target site strand3"},
+                    {title: "target site strand4"},
+                    {title: "target site strand5"},
+                    {title: "target site strand6"},
+                ]
+            });
+
         });
     };
 
@@ -526,9 +548,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.run_simple_search = function () {
         self.run_search(false);
         self.mode('results');
-        $("#search").collapse("hide");
-        $("#results").collapse("show");
-        $(document.getElementById("collapseThree")).collapse("show");
 
     };
 

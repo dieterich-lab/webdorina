@@ -14,63 +14,13 @@
     <div id="collapseThree" class="collapse"
          aria-labelledby="headingThree" data-parent="#accordion">
         <div class="card-body collapse" id="results">
-            <div class="row" data-bind="visible: pending">
-                <div class="progress-circular">
-                    <div class="progress-circular-wrapper">
-                        <div class="progress-circular-inner">
-                            <div class="progress-circular-left">
-                                <div class="progress-circular-spinner"></div>
-                            </div>
-                            <div class="progress-circular-gap"></div>
-                            <div class="progress-circular-right">
-                                <div class="progress-circular-spinner"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="row" data-bind="visible: results">
                 <div class="row" id="table-wrapper">
                     <div class="col-md-12">
                         <table class="table table-striped table-responsive"
-                               id="result_table">
-                            <thead>
-                            <tr>
-                                <th>track name</th>
-                                <th>target gene</th>
-                                <th>data source</th>
-                                <th>score</th>
-                                <th>target site id</th>
-                                <th>target gene location</th>
-                                <th>target site location</th>
-                                <th>genomic target strand</th>
-                                <th>target site strand</th>
-                            </tr>
-                            </thead>
-                            <tbody data-bind="foreach: results">
-                            <tr>
-                                <td data-bind="text: track"></td>
-                                <td data-bind="text: gene"></td>
-                                <td data-bind="text: data_source"></td>
-                                <td data-bind="text: score"></td>
-                                <td style="word-break: break-all;"
-                                    data-bind="text: site"></td>
-                                <td><a target="_blank"
-                                       data-bind="text: location, attr: {href: ($parent.ucsc_url() + location())}"></a>
-                                </td>
-                                <td><a target="_blank"
-                                       data-bind="text: feature_location, attr: {href: ($parent.ucsc_url() + feature_location())}"></a>
-                                </td>
-                                <td data-bind="text: strand"></td>
-                                <td data-bind="text: feature_strand"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                               id="example">
 
-            </div>
 
             <div class="row">
                 Showing <span data-bind="text: results().length"></span> of
