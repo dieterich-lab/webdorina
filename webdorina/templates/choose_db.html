@@ -1,33 +1,57 @@
-      <div class="panel panel-default" style="overflow: visible" data-bind="visible: mode() == 'choose_db'">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            Choose a doRiNA database
-          </h4>
+<div id="accordion">
+    <div class="card">
+        <div class="card-header" id="headingOne">
+            <h5 class="mb-0">
+                <h4 class="panel-title collapsed"
+                    data-toggle="collapse"
+                    data-target="#collapseOne"
+                    aria-expanded="false"
+                    aria-controls="collapseOne">
+                    <span data-bind="text: chosenAssembly() ? chosenAssembly() + ' assembly selected' : 'Choose an assembly '"></span>
+                </h4>
+            </h5>
         </div>
-        <div id="chooseDatabase" class="panel-collapse collapse in">
-          <div class="panel-body">
-            <form class="form-inline" role="form" data-bind="submit: show_simple_search">
-              <div class="row">
-                <div class="form-group col-xs-2">
-                  <label for="assembly">Assembly</label>
-                </div>
-              </div>
-              <div class="row">
-              <div class="form-group col-xs-10">
-                <select class="form-control" id="assembly" data-bind="value: chosenAssembly" placeholder="Select assembly...">
-                </select>
-              </div>
-              <div class="form-group col-xs-2">
-              <button type="submit" class="btn btn-primary" data-bind="enable: chosenAssembly">
-                <span class="glyphicon glyphicon-hdd"></span> Search Database</button>
-              </div>
-              <div class="form-group col-xs-2" data-bind="visible: loading_regulators">
-                <p class="text-center">Loading regulators...</p>
-                </select>
-              </div>
-             </div>
-            </form>
-          </div>
-        </div>
-      </div>
+        <div id="collapseOne" class="collapse show"
+             aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="card-body">
+                <form class="form-inline" role="form"
+                      data-bind="submit: show_simple_search">
+                    <select class="form-inline col-sm-7"
+                            id="assembly"
+                            data-bind="value: chosenAssembly"
+                            placeholder="Select assembly..."
+                            type="submit ">
+                    </select>
+                    <div class="form col-sm-4">
+                        <button type="submit"
+                                class="btn btn-info"
+                                data-bind="enable: chosenAssembly">
+                            <label>
+                                <span class="material-icons">search</span>
+                                Search
+                            </label>
+                        </button>
+                    </div>
 
+
+                    <div class="form-inline col-sm-1"
+                         data-bind="visible: loading_regulators">
+                        <div class="progress-circular">
+                            <div class="progress-circular-wrapper">
+                                <div class="progress-circular-inner">
+                                    <div class="progress-circular-left">
+                                        <div class="progress-circular-spinner"></div>
+                                    </div>
+                                    <div class="progress-circular-gap"></div>
+                                    <div class="progress-circular-right">
+                                        <div class="progress-circular-spinner"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

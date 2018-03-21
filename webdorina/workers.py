@@ -12,7 +12,9 @@ from redis import Redis
 
 logger = logging.getLogger('webdorina')
 
-def run_analyse(datadir, query_key, query_pending_key, query, uuid, SESSION_STORE=None,
+
+def run_analyse(datadir, query_key, query_pending_key, query, uuid,
+                SESSION_STORE=None,
                 RESULT_TTL=None, SESSION_TTL=None):
     logger.info('Running analysis for {}'.format(query_key))
     dorina = run.Dorina(datadir)
@@ -44,33 +46,9 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid, SESSION_STOR
     except Exception as e:
         result = '\t\t\t\t\t\t\t\tJob failed: %s' % str(e).replace(
             '\n', ' ').replace('\t', ' ')
-
-    lines = result.split('\n')
-    if lines[-1] == '':
-        lines = lines[:-1]
-
-    def get_score(x):
-        cols = x.split('\t')
-        if len(cols) < 14:
-            return -1
-        try:
-            return float(cols[13])
-        except ValueError:
-            return -1
-
-    lines.sort(key=get_score, reverse=True)
-
-    num_results = len(lines)
-    logger.debug("returning {} rows".format(num_results))
-
-    if num_results == 0:
-        lines = ['\t\t\t\t\t\t\t\tNo results found']
-        num_results += 1
-
-    for i in range(0, num_results, 1000):
-        res = lines[i:i + 1000]
-        redis_store.rpush(query_key, *res)
-
+    lines = result.splitlines()
+    logger.debug("returning {} rows".format(len(lines)))
+    redis_store.rpush(query_key, *lines)
     redis_store.expire(query_key, RESULT_TTL)
     redis_store.setex('sessions:{0}'.format(uuid), json.dumps(dict(
         state='done', uuid=uuid)), SESSION_TTL)
@@ -98,13 +76,12 @@ def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid,
                 results.append(res_string)
 
     num_results = len(results)
-    if num_results == 0:
-        results.append('\t\t\t\t\t\t\t\tNo results found')
-        num_results += 1
-
-    for i in range(0, num_results, 1000):
-        res = results[i:i + 1000]
-        redis_store.rpush(query_key, *res)
+    if num_results:
+        for i in range(0, num_results, 1000):
+            res = results[i:i + 1000]
+            redis_store.rpush(query_key, *res)
+    else:
+        redis_store.rpush(query_key, [])
 
     redis_store.expire(query_key, RESULT_TTL)
     redis_store.delete(query_pending_key)

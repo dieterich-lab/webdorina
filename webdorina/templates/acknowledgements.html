@@ -1,36 +1,46 @@
 {% extends 'layout.html' %}
+{% set active_page = 'acknowledgements' -%}
 {% block body %}
-    <div class="panel-group">
-      <h2>Acknowledgements</h2>
-      <p>
-      This version of doRiNA was developed at the Max Planck Institute for
-      Biology of Ageing in Cologne, Germany in cooperation with the Berlin
-      Institute for Medical Systems Biology, a part of the Max Delbr&uuml;ck
-      Center for Molecular Medicine in Berlin, Germany.
-      </p>
-      <div class="row">
-        <div class="col-xs-5 col-md-3 col-md-offset-1">
-          <a href="//www.age.mpg.de">
-            <img src="{{ url_for('static', filename='images/logo_mpi_age.jpg') }}"
-             class="img-responsive">
-          </a>
-        </div>
-        <div class="col-xs-5 col-md-3 col-xs-offset-2 col-md-offset-3">
-          <a href="//www.mdc-berlin.de/13800178/en/bimsb">
-            <img src="{{ url_for('static', filename='images/logo_mdc_bimsb.png') }}"
-             class="img-responsive">
-          </a>
-        </div>
-      </div>
+    <div class="jumbotron">
 
-      <p>
-        If you are using doRiNA please consider citing:
-      </p>
+        <div class="panel-group">
+            <h4 class="typography-display-1">Acknowledgements</h4>
 
-      <p class="citation">
-        Blin, K., Dieterich, C., Wurmus, R., Rajewsky, N., Landthaler, M., &amp; Akalin, A. (2014).<br/>
-        <a href="http://www.ncbi.nlm.nih.gov/pubmed/25416797">DoRiNA 2.0&mdash;upgrading the doRiNA database of RNA interactions in post-transcriptional regulation.</a>
-        <span class="journal">Nucleic Acids Research</span>.
-      </p>
+            <p>
+                This version of doRiNA was developed at the Max Planck Institute
+                for
+                Biology of Ageing in Cologne, Germany in cooperation with the
+                Berlin
+                Institute for Medical Systems Biology, a part of the Max Delbr&uuml;ck
+                Center for Molecular Medicine in Berlin, Germany.
+            </p>
+            {#            <div class="row">#}
+            {#                <div class="col-xs-5 col-md-3 col-md-offset-1">#}
+            {#                    <a href="//www.age.mpg.de">#}
+            {#                        <img src="{{ url_for('static', filename='images/logo_mpi_age.jpg') }}"#}
+            {#                             class="img-responsive">#}
+            {#                    </a>#}
+            {#                </div>#}
+            {#                <div class="col-xs-5 col-md-3 col-xs-offset-2 col-md-offset-3">#}
+            {#                    <a href="//www.mdc-berlin.de/13800178/en/bimsb">#}
+            {#                        <img src="{{ url_for('static', filename='images/logo_mdc_bimsb.png') }}"#}
+            {#                             class="img-responsive">#}
+            {#                    </a>#}
+            {#                </div>#}
+            {#            </div>#}
+
+            <p>
+                If you are using doRiNA please consider citing:
+            </p>
+
+            <p class="citation">
+                Blin, K., Dieterich, C., Wurmus, R., Rajewsky, N., Landthaler,
+                M., &amp; Akalin, A. (2014).<br/>
+                <a href="http://www.ncbi.nlm.nih.gov/pubmed/25416797">DoRiNA 2.0&mdash;upgrading
+                    the doRiNA database of RNA interactions in
+                    post-transcriptional regulation.</a>
+                <span class="journal">Nucleic Acids Research</span>.
+            </p>
+        </div>
     </div>
 {% endblock %}

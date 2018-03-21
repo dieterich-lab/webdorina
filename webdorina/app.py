@@ -1,18 +1,19 @@
 # !/usr/bin/env python3
 # coding=utf-8
 from __future__ import print_function
+from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
 import json
 import os
+import sys
 import uuid
 from io import StringIO
 
+import flask
 from dorina.genome import Genome
 from dorina.regulator import Regulator
 from redis import Redis
-import flask
 from rq import Queue
 
 from webdorina.workers import filter_genes, run_analyse
@@ -33,12 +34,13 @@ except IndexError:
           'configuration file. Please see example_user_config.py'
     app.logger.warn(msg)
 
+Genome.init(app.config['DATA_PATH'])
+Regulator.init(app.config['DATA_PATH'])
+
 redis_store = Redis(charset="utf-8", decode_responses=True)
 # assert redis is running
 redis_store.ping()
-
-Genome.init(app.config['DATA_PATH'])
-Regulator.init(app.config['DATA_PATH'])
+os.system("rqworker &")
 
 
 def _create_session(create_dir=False):
@@ -59,10 +61,8 @@ def _list_genomes():
         del h1['assemblies']
         return h1
 
-    # genome_list = [without_assemblies(x) for x in Genome.all().values()]
     genome_list = list(map(without_assemblies, Genome.all().values()))
-    # genome_list.sort(key=lambda x, y: cmp(x['weight'], y['weight']),
-    #                  reverse=True)
+
     return genome_list
 
 
@@ -91,6 +91,13 @@ def _dict_to_bed(data):
         **data)
 
 
+@app.context_processor
+def inject_data():
+    assemblies = [x['assemblies'] for x in Genome.all().values()]
+    assemblies = (xx for x in assemblies for xx in x)
+    return dict(_assemblies=assemblies)
+
+
 @app.route('/')
 def welcome():
     return flask.render_template('welcome.html')
@@ -107,8 +114,10 @@ def index():
             dirname = app.config['SESSION_STORE'].format(unique_id=unique_id)
             bedfile.save(os.path.join(dirname, filename))
             custom_regulator = 'true'
+            flask.flash(u'File loaded"', 'success')
         else:
-            flask.flash(u'Bedfile must end on ".bed"', 'error')
+            flask.flash(u'The file must end on ".bed"', 'danger')
+            return flask.render_template('welcome.html')
     else:
         unique_id = _create_session()
 
@@ -201,7 +210,8 @@ def search():
             q = Queue(connection=redis_store, default_timeout=600)
 
             q.enqueue(filter_genes, query['genes'], full_query_key, query_key,
-                      query_pending_key, unique_id, SESSION_TTL=app.config['SESSION_TTL'],
+                      query_pending_key, unique_id,
+                      SESSION_TTL=app.config['SESSION_TTL'],
                       RESULT_TTL=app.config['RESULT_TTL'])
             return flask.jsonify(session_dict)
 
@@ -218,8 +228,10 @@ def search():
 
     q = Queue(connection=redis_store, default_timeout=600)
     q.enqueue(run_analyse, app.config['DATA_PATH'], query_key,
-              query_pending_key, query, unique_id, SESSION_STORE=app.config['SESSION_STORE'],
-                RESULT_TTL=app.config['RESULT_TTL'], SESSION_TTL=app.config['SESSION_TTL'] )
+              query_pending_key, query, unique_id,
+              SESSION_STORE=app.config['SESSION_STORE'],
+              RESULT_TTL=app.config['RESULT_TTL'],
+              SESSION_TTL=app.config['SESSION_TTL'])
 
     return flask.jsonify(session_dict)
 
@@ -273,9 +285,13 @@ def acknowledgements():
     return flask.render_template('acknowledgements.html')
 
 
-@app.route('/regulators')
-def regulators():
-    return flask.render_template('regulators.html')
+@app.route('/regulators/<assembly>')
+def regulators(assembly=None):
+    if assembly is None:
+        return flask.render_template('regulators.html')
+    else:
+        return flask.render_template(
+            'regulators_for_assembly.html', assembly=assembly)
 
 
 @app.route('/docs/api/<page>')
