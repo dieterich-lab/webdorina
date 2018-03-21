@@ -194,6 +194,27 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.use_window_b = ko.observable(false);
     self.window_b = ko.observable(0);
 
+
+    self.table = $("#resultTable").DataTable(
+        {
+            columns: [
+                {title: "Reg. chr"},
+                {title: "Sel. assembly"},
+                {title: "Sel. feature"},
+                {title: "Reg. start"},
+                {title: "Reg. end"},
+                {title: "."},
+                {title: "Reg. strand"},
+                {title: "."},
+                {title: "Reg. name"},
+                {title: "Tar. chr"},
+                {title: "Tar. start"},
+                {title: "Tar. end"},
+                {title: "Site"},
+            ]
+        }
+    );
+
     // Generate URL parametres for the UCSC URL to make selected supertracks
     // and subtracks visible.
     self.trackVisibility = ko.computed(function () {
@@ -504,25 +525,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 self.offset(data.next_offset);
                 self.uuid(uuid);
             }
-            $('#example').DataTable({
-                data: self.results(),
-                columns: [
-                    {title: "track name"},
-                    {title: "target gene"},
-                    {title: "data source"},
-                    {title: "target site id"},
-                    {title: "target gene location"},
-                    {title: "target site location"},
-                    {title: "genomic target strand"},
-                    {title: "target site strand"},
-                    {title: "target site strand1"},
-                    {title: "target site strand2"},
-                    {title: "target site strand3"},
-                    {title: "target site strand4"},
-                    {title: "target site strand5"},
-                    {title: "target site strand6"},
-                ]
-            });
+        self.table.rows.add(self.results()).draw();
 
         });
     };
@@ -553,6 +556,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.load_more_results = function () {
         self.get_results(self.uuid(), true);
+        $('#example').DataTable().draw();
     };
 
     self.new_search = function () {
