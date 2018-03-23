@@ -14,44 +14,59 @@
         <div id="collapseOne" class="collapse show"
              aria-labelledby="headingOne" data-parent="#accordion">
             <div class="card-body">
-                <form class="form-inline" role="form"
+                <form class="form" role="form"
                       data-bind="submit: show_simple_search">
-                    <select class="form-inline col-sm-7"
-                            id="assembly"
-                            data-bind="value: chosenAssembly"
-                            placeholder="Select assembly..."
-                            type="submit ">
-                    </select>
-                    <div class="form col-sm-4">
-                        <button type="submit"
-                                class="btn btn-info"
-                                data-bind="enable: chosenAssembly">
-                            <label>
-                                <span class="material-icons">search</span>
-                                Search
-                            </label>
-                        </button>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <small class="text-muted ">
+                                    (Optional) upload a .bed file
+                                </small>
+                            </div>
+                            <div class="col-sm">
+                                <input type="file" class="input btn-lg"
+                                       title="upload"
+                                       id="bedfile" name="bedfile">
+                            </div>
+                        </div>
                     </div>
-
-
-                    <div class="form-inline col-sm-1"
-                         data-bind="visible: loading_regulators">
-                        <div class="progress-circular">
-                            <div class="progress-circular-wrapper">
-                                <div class="progress-circular-inner">
-                                    <div class="progress-circular-left">
-                                        <div class="progress-circular-spinner"></div>
-                                    </div>
-                                    <div class="progress-circular-gap"></div>
-                                    <div class="progress-circular-right">
-                                        <div class="progress-circular-spinner"></div>
-                                    </div>
-                                </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <small class="text-muted">
+                                    Select an assembly
+                                </small>
+                            </div>
+                            <div class="col-sm">
+                                <select class="form-inline"
+                                        id="assembly"
+                                        data-bind="value: chosenAssembly"
+                                        placeholder="Select assembly..."
+                                        type="submit">
+                                </select>
                             </div>
                         </div>
                     </div>
                 </form>
+
+                <div class="form-inline"
+                     data-bind="visible: loading_regulators">
+                    <div class="progress-circular">
+                        <div class="progress-circular-wrapper">
+                            <div class="progress-circular-inner">
+                                <div class="progress-circular-left">
+                                    <div class="progress-circular-spinner"></div>
+                                </div>
+                                <div class="progress-circular-gap"></div>
+                                <div class="progress-circular-right">
+                                    <div class="progress-circular-spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+

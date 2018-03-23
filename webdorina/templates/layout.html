@@ -33,7 +33,7 @@
 
 {% set navigation_bar = [
     ('/', 'index', 'Home'),
-    ('/go', 'Search', 'Search'),
+    ('/go', 'Search', 'Search regulators'),
     ('/news', 'news', 'News'),
     ('/tutorials', 'tutorials', 'Tutorials'),
     ('/docs', 'documentation', 'Documentation'),
@@ -69,6 +69,9 @@
     <div class="navdrawer-content">
         <div class="d-flex flex-column doc-navdrawer-body">
             <div class="navdrawer-header">
+                <img style="max-width:100px; margin-top: -7px;"
+                     src="../static/images/heart-test.pdf">
+
                 <a class="navbar-brand px-0">Carina</a>
             </div>
             <nav class="navdrawer-nav">
@@ -88,7 +91,7 @@
                     class="nav-link nav-item text-black-secondary"
                 {% endif %}
                     data-toggle="collapse" href="#doc-navdrawer-components">
-                    Regulators
+                    List regulators
                 </a>
 
                 <div class="collapse pb-2 " id="doc-navdrawer-components">

@@ -5,7 +5,7 @@
         <h4 class="typography-display-1">Available regulators
             for {{ assembly | safe }}
         </h4>
-        <div class="spacer-2">&nbsp;
+        <div class="mt-3">&nbsp;
             <div class="regulator-group"
                  data-bind="foreach: regulators">
                 <div class="jumbotron">
@@ -37,8 +37,6 @@
             SetViewModel(viewmodel);
             viewmodel.init();
         });
-
-
     </script>
 {% endblock %}
 
