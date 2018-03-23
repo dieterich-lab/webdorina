@@ -16,41 +16,26 @@
             <div class="card-body">
                 <form class="form" role="form"
                       data-bind="submit: show_simple_search">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm">
-                                <small class="text-muted ">
-                                    (Optional) upload a .bed file
-                                </small>
-                            </div>
-                            <div class="col-sm">
-                                <input type="file" class="input btn-lg"
-                                       title="upload"
-                                       id="bedfile" name="bedfile">
-                            </div>
+                    <div class="row">
+                        <div class="col-lg-6 align-content-start">
+                            <label for="bedfile"> (Optional) upload a .bed
+                                file </label>
+                            <input type="file" class="input"
+                                   title="upload"
+                                   id="bedfile" name="bedfile">
                         </div>
-                    </div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm">
-                                <small class="text-muted">
-                                    Select an assembly
-                                </small>
-                            </div>
-                            <div class="col-sm">
-                                <select class="form-inline"
-                                        id="assembly"
-                                        data-bind="value: chosenAssembly"
-                                        placeholder="Select assembly..."
-                                        type="submit">
-                                </select>
-                            </div>
+                        <div class="col-lg-6 align-content-center">
+                            <label for="assembly"> Select an
+                                assembly </label>
+                            <select id="assembly"
+                                    data-bind="value: chosenAssembly"
+                                    placeholder="Select assembly..."
+                                    type="submit">
+                            </select>
                         </div>
                     </div>
                 </form>
-
-                <div class="form-inline"
-                     data-bind="visible: loading_regulators">
+                <div class="row" data-bind="visible: loading_regulators">
                     <div class="progress-circular">
                         <div class="progress-circular-wrapper">
                             <div class="progress-circular-inner">
