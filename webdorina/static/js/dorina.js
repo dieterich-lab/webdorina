@@ -323,7 +323,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.loading_regulators(true);
         setTimeout(function () {
             self.get_regulators(self.chosenAssembly()).then(function () {
-                $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
                 $(document.getElementById('collapseTwo')).collapse('show');
                 self.mode('search');
@@ -512,6 +511,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
         net.getJSON(url).then(function (data) {
             self.pending(false);
+            $('#results').collapse('show');
             $(document.getElementById("collapseThree")).collapse("show");
 
             self.more_results(data.more_results);
@@ -554,7 +554,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.load_more_results = function () {
         self.get_results(self.uuid(), true);
-        $('#example').DataTable().draw();
+        $('#resultTable').DataTable().draw();
     };
 
     self.new_search = function () {
