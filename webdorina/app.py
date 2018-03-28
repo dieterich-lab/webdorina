@@ -40,7 +40,6 @@ Regulator.init(app.config['DATA_PATH'])
 redis_store = Redis(charset="utf-8", decode_responses=True)
 # assert redis is running
 redis_store.ping()
-os.system("rqworker &")
 
 
 def _create_session(create_dir=False):

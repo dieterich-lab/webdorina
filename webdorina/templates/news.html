@@ -1,24 +1,31 @@
 {% extends 'layout.html' %}
 {% set active_page = 'news' -%}
 {% block body %}
-    <div class="jumbotron">
+    <div class="jumbotron px-lg-3">
         <div class="panel-group">
             <h4 class="typography-display-1">What's new</h4>
-            <dl class="dl-horizontal news-list">
-                <dt>2014-10-22</dt>
-                <dd>
-                    <div class="news-header">Documentation updated.</div>
-                    Check out the "Documentation" tab for tutorials on
-                    regulator-centric
-                    and target-centric searches using the web interface.
-                </dd>
-                <dt>2014-10-20</dt>
-                <dd>
-                    <div class="news-header">Public release of the updated
-                        doRiNA database.
+            <div class="list-group mt-3">
+                <a href="https://github.com/dieterich-lab/dorina/commit/035fa4fc00d437a3ae2cbb825c233b2da4821da4"
+                   class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">doRiNA was ported to python 3</h5>
+                        <small class="text-muted"> 18 Dec 2017</small>
                     </div>
-                </dd>
-            </dl>
+                    <p class="mb-1"> doRiNA was updated to work with
+                    python3 </p>
+                    <small class="text-muted"> Click for more details</small>
+                </a>
+
+                <a href="#"
+                   class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Carina webpage first test</h5>
+                        <small class="text-muted">22 Mar 2018</small>
+                    </div>
+                    <p class="mb-1"> Just test</p>
+                    <small class="text-muted"> Click for more details</small>
+                </a>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -323,7 +323,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.loading_regulators(true);
         setTimeout(function () {
             self.get_regulators(self.chosenAssembly()).then(function () {
-                $('#chooseDatabase').collapse('hide');
                 $('#search').collapse('show');
                 $(document.getElementById('collapseTwo')).collapse('show');
                 self.mode('search');
@@ -512,8 +511,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
         net.getJSON(url).then(function (data) {
             self.pending(false);
-            $("#search").collapse("hide");
-            $("#results").collapse("show");
+            $('#results').collapse('show');
             $(document.getElementById("collapseThree")).collapse("show");
 
             self.more_results(data.more_results);
@@ -525,7 +523,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 self.offset(data.next_offset);
                 self.uuid(uuid);
             }
-        self.table.rows.add(self.results()).draw();
+            self.table.rows.add(self.results()).draw();
 
         });
     };
@@ -556,14 +554,11 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.load_more_results = function () {
         self.get_results(self.uuid(), true);
-        $('#example').DataTable().draw();
+        $('#resultTable').DataTable().draw();
     };
 
     self.new_search = function () {
         self.reset_search_state();
-        $('#results').collapse('hide');
-        $('#chooseDatabase').collapse('hide');
-        $('#search').collapse('show');
         $(document.getElementById("collapseTwo")).collapse("show");
         self.mode('search');
     };

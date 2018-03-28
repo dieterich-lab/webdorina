@@ -21,14 +21,11 @@
 
     <!-- jQuery DataTables http://datatables.net -->
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-
-
     <script type="text/javascript">
         var net = new DoRiNANet();
         var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
 
         $(document).ready(function () {
-
             ko.applyBindings(viewmodel);
             SetViewModel(viewmodel);
             $('#assembly').selectize({
@@ -47,7 +44,10 @@
                             ' (<span class="font-italic">' + escape(data.scientific) +
                             '</span>)</div>';
                     }
-                }
+                },
+                onChange: function () {
+                    this.$input.closest('form').submit()
+                },
             });
 
         });
