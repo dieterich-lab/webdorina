@@ -14,11 +14,9 @@ setup(
     maintainer_email="thiago.brittoborges@uni-heidelberg.de",
     keywords="bioinformatics",
     packages=find_packages(),
-    description='web front-end for the doRiNA database',
     include_package_data=True,
-    package_data={'wedorina.test.data': ['*'],
-                  '': ['config.json']},
+    zip_safe=False,
+    description='web front-end for the doRiNA database',
     install_requires='rq redis flask dorina daemon'.split(),
     tests_require=['nose']
 )
-
