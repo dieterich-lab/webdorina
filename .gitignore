@@ -4,3 +4,5 @@ dorina
 .coverage
 cover/*
 .idea/
+__pycache__/
+!/webdorina/static/js/dorina.js

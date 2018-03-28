@@ -1,60 +1,64 @@
 {% extends 'layout.html' %}
+{% set active_page = "index" %}
 {% block body %}
-    <div class="jumbotron">
-      <h2 style="margin-bottom: 2em">Carina <small>a database of RNA interactions in
-          post-transcriptional regulation</small></h2>
-      <form action="{{ url_for('index') }}" method="POST" enctype="multipart/form-data">
-      <div class="row">
-        <div class="col-md-5">
-          <a class="btn btn-primary btn-lg" id="no-upload-go" href="{{ url_for('index') }}">Search</a>
-        </div>
-        <div class="col-md-6 col-md-offset-1">
-            <input type="file" class="btn-lg" title="upload" id="bedfile" name="bedfile">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-5">
-          using the curated regulator database
-        </div>
-        <div class="col-md-6 col-md-offset-1">
-          <span id="upload-desc">your own BED file containing regulator positions to search along with the curated database entries.</span>
-          <input class="btn btn-primary btn-lg btn-block" id="upload-go" type="submit" value="Go">
-        </div>
-      </div>
-      </form>
-    </div>
-    <div>
-      <p>Directly access the track hubs on the UCSC browser for
-        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt">hg19</a>,
-        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=mm9&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt">mm9</a>,
-        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=ce6&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt">ce6</a>, or
-        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=dm3&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt">dm3</a>.
-      </p>
-    </div>
-    <div>
-      <p>
-        If you are using doRiNA please consider citing:
-      </p>
+    <div class="jumbotron mb-5 px-lg-3">
 
-      <p class="citation">
-        Blin, K., Dieterich, C., Wurmus, R., Rajewsky, N., Landthaler, M., &amp; Akalin, A. (2014).<br/>
-        <a href="http://www.ncbi.nlm.nih.gov/pubmed/25416797">DoRiNA 2.0&mdash;upgrading the doRiNA database of RNA interactions in post-transcriptional regulation.</a>
-        <span class="journal">Nucleic Acids Research</span>.
-      </p>
+        <div class="col-8">
+
+            <h2 class="typography-display-4">Carina</h2>
+            <p class="mt-3 font-weight-light typography-title">
+                is a database of RNA post-transcriptional
+                regulators and transcriptions event associated with health and
+                disease of the cardiovascular system.</p>
+        </div>
+
+        <div class="doc-main px-lg-3">
+            <div class="container">
+                <div class="row  ustify-content-center">
+                    <div class="col-xl-9">
+                        <div class="bd-content mb-5">
+
+                            <p> doRiNA and its web-interface, webDorina, focused
+                                on to collect the interactions between
+                                post-transcriptional regulators,
+                                specifically microRNAs(miRNAs) and RNA-binding
+                                proteins (RBPs). Carina extends this
+                                 functionally by:</p>
+
+
+                            <ul class="list-group">
+                                <li class="list-group-item">including recent
+                                    experiments that identify RBPs and
+                                    its targets
+                                </li>
+                                <li class="list-group-item">integration genomic
+                                    variation that may be relevant
+                                    to the heart malfunction
+                                </li>
+                                <li class="list-group-item">facilitating the
+                                    filtering
+                                    for genes that are
+                                    expressed or enriched in heart disease
+                                </li>
+                                <li class="list-group-item">curating the
+                                    elements
+                                    relevant to heart physiology
+                                </li>
+                                <li class="list-group-item">providing new ways
+                                    to
+                                    integrate and visualize the
+                                    above listed
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
-  <script src="{{ url_for('static', filename='js/bootstrap.file-input.js') }}"></script>
-  <script type="text/javascript">
-    function file_uploaded() {
-        $('#upload-go').show();
-        $('#upload-desc').hide();
-        $('#no-upload-go').removeClass('btn-primary').addClass('btn-default');
-    }
-    $(document).ready(function() {
-        $('#bedfile').on('change', file_uploaded).bootstrapFileInput();
-        $('#upload-go').hide();
-    });
-  </script>
 {% endblock %}

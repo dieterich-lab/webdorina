@@ -1,55 +1,175 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>doRiNA</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-theme.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/selectize.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/selectize.bootstrap3.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/prism.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {% block extra_headers %}{% endblock %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <title>Carina &middot; {{ active_page | title }} </title>
+    <meta name="description" content="Carina curates post-transcription
+    information associated with the heart physiology and cardiovascular
+    diseases">
+    <meta content="initial-scale=1, shrink-to-fit=no, width=device-width"
+          name="viewport">
+    <meta name="author" content="Thiago Britto-Borges">
+    <!-- CSS -->
+    <!-- Add Material font (Roboto) and Material icon as needed -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <!-- Add Material CSS, replace Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.css">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/material.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/selectize.css') }}">
+
+    {% block extra_headers %}{% endblock %}
 </head>
-<body role="document">
-  <div class="container" role="main">
 
-    <nav class="navbar navbar-default" role="navigation">
-      <a href="{{ url_for('welcome') }}" class="navbar-brand">doRiNA</a>
-      <ul class="nav navbar-nav">
-        <li><a href="{{ url_for('welcome') }}">New Search</a></li>
-        <li><a href="{{ url_for('regulators') }}">Show available regulators</a></li>
-        <li><a href="{{ url_for('news') }}">What's new</a></li>
-        <li>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="{{ url_for('tutorials') }}">Tutorials</a></li>
-            <li><a href="{{ url_for('docs') }}">API documentation</a></li>
-          </ul>
-        </li>
-        <li><a href="{{ url_for('acknowledgements') }}">Acknowledgements</a></li>
-      </ul>
-    </nav>
+<body class="doc-body">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class=flashes>
-          {% for category, message in messages %}
-            <li class="{{category}}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    {% block body %}{% endblock %}
+{% set navigation_bar = [
+    ('/', 'index', 'Home'),
+    ('/go', 'Search', 'Search regulators'),
+    ('/news', 'news', 'News'),
+    ('/tutorials', 'tutorials', 'Tutorials'),
+    ('/docs', 'documentation', 'Documentation'),
+    ('/acknowledgements', 'acknowledgements', 'Acknowledgements')] -%}
 
-  </div>
-  <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/knockstrap.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/selectize.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dorina.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dorina.net.js') }}"></script>
-  {% block extra_scripts %}{% endblock %}
+<div class="navbar toolbar-waterfall doc-navbar" id="doc-navbar">
+    <button aria-controls="doc-navdrawer" aria-expanded="false"
+            aria-label="Toggle Navdrawer" class="navbar-toggler d-lg-none"
+            data-breakpoint="lg" data-target="#doc-navdrawer"
+            data-toggle="navdrawer" data-type="permanent">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand d-lg-none mr-auto"></a>
+    {#  <div class="d-lg-none ml-auto">#}
+    {#    <div class="dropdown">#}
+    {#      <button aria-expanded="false" aria-haspopup="true" class="navbar-toggler" data-toggle="dropdown" id="doc-dropdown-follow" type="button">#}
+    {#        <i class="material-icons mx-auto">more_vert</i>#}
+    {#      </button>#}
+    {#      <div aria-labelledby="doc-dropdown-follow" class="dropdown-menu dropdown-menu-right">#}
+    {#        <a class="dropdown-item" href="https://github.com/Daemonite/material" target="_blank">#}
+    {#          <i class="material-icons mr-3">code</i>Fork me on GitHub#}
+    {#        </a>#}
+    {#        <a class="dropdown-item" href="http://www.daemon.com.au/" target="_blank">#}
+    {#          <i class="material-icons mr-3 text-danger">favorite</i>Made by Daemon#}
+    {#        </a>#}
+    {#      </div>#}
+    {#    </div>#}
+    {#  </div>#}
+</div>
+
+<div aria-hidden="true" class="navdrawer navdrawer-permanent doc-navdrawer"
+     id="doc-navdrawer" tabindex="-1">
+    <div class="navdrawer-content">
+        <div class="d-flex flex-column doc-navdrawer-body">
+            <div class="navdrawer-header">
+                <img style="max-width:100px; margin-top: -7px;"
+                     src="../static/images/heart-test.pdf">
+
+                <a class="navbar-brand px-0">Carina</a>
+            </div>
+            <nav class="navdrawer-nav">
+                {% for href, id, caption in navigation_bar %}
+                    <a {% if id == active_page %}
+                        class="nav-link nav-item text-black font-weight-bold"
+                    {% else %}
+                        class="nav-link nav-item text-black-secondary"
+                    {% endif %}
+                        href="{{ href|e }}"> {{ caption|e }}
+                    </a>
+                {% endfor %}
+
+                <a {% if 'regulators' == active_page %}
+                    class="nav-link nav-item text-black font-weight-bold"
+                {% else %}
+                    class="nav-link nav-item text-black-secondary"
+                {% endif %}
+                    data-toggle="collapse" href="#doc-navdrawer-components">
+                    List regulators
+                </a>
+
+                <div class="collapse pb-2 " id="doc-navdrawer-components">
+                    {% for assembly in _assemblies %}
+                        <a class="nav-item nav-link pl-4 py-2 text-black-secondary"
+                           href=" {{ url_for('regulators', assembly=assembly) }}">
+                            {{ assembly | safe }} </a>
+                    {% endfor %}
+                </div>
+            </nav>
+
+            <div class="mt-auto">
+                <div class="navdrawer-divider mt-no"></div>
+                <div class="navdrawer-nav">
+                    <a class="nav-item nav-link text-black-secondary"
+                       href="https://github.com/dieterich-lab/webdorina"
+                       target="_blank">
+                        <i class="material-icons mr-3">code</i>Source code
+                    </a>
+                    <a class="nav-item nav-link text-black-secondary"
+                       href="mailto:thiago.brittoborges@uni-heidelberg.de"
+                       target="_blank">
+                        <i class="material-icons mr-3">email</i> Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="doc-main px-lg-3">
+    <div class="container">
+        {# pt-4 adjust padding to the top from 1 to 5 #}
+        <div class="row justify-content-center pt-5 ">
+            <div class="col-10 col-xl-12">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}
+                                alert-dismissible fade show"
+                                 role="alert">
+                                <button type="button"
+                                        class="close"
+                                        data-dismiss="alert"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <div class="bd-content mb-5">
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+<!-- Then Material JavaScript on top of Bootstrap JavaScript -->
+<script src="{{ url_for('static', filename='js/material.min.js') }}"></script>
+<!-- Optional JavaScript -->
+<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+<script src="{{ url_for('static', filename='js/knockstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dorina.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dorina.net.js') }}"></script>
+<script src="{{ url_for('static', filename='js/selectize.min.js') }}"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+{% block extra_scripts %}{% endblock %}
 </body>
+</html>

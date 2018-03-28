@@ -1,5 +1,5 @@
 // -*- mode: js2; js2-additional-externs: '("$" "ko" "setTimeout") -*-
-
+/*global ko*/
 /*
 FIXME: the hub ID depends on internal state of the UCSC browser.  Our hub
        was assigned this particular identifier.  For different browsers and
@@ -12,13 +12,13 @@ function DoRiNAResult(line) {
     self.cols = line.split('\t');
     self.error_state = ko.observable(false);
 
-    self.annotations = ko.computed(function() {
+    self.annotations = ko.computed(function () {
         return (self.cols.length > 12) ? self.cols[12] : 'unknown#unknown*unknown';
     }, self);
 
     self.ann_regex = /(.*)#(.*)\*(.*)/;
 
-    self.track = ko.computed(function() {
+    self.track = ko.computed(function () {
         var match = self.annotations().match(self.ann_regex);
 
         if (self.error_state()) {
@@ -41,7 +41,7 @@ function DoRiNAResult(line) {
         return track;
     }, self);
 
-    self.data_source = ko.computed(function() {
+    self.data_source = ko.computed(function () {
         var match = self.annotations().match(self.ann_regex);
         if (self.error_state()) {
             return '';
@@ -59,7 +59,7 @@ function DoRiNAResult(line) {
         return 'CUSTOM';
     }, self);
 
-    self.site = ko.computed(function() {
+    self.site = ko.computed(function () {
         var match = self.annotations().match(self.ann_regex);
         if (self.error_state()) {
             return '';
@@ -81,7 +81,7 @@ function DoRiNAResult(line) {
         return site;
     }, self);
 
-    self.gene = ko.computed(function() {
+    self.gene = ko.computed(function () {
         if (self.cols.length < 9) {
             return 'unknown';
         }
@@ -99,14 +99,14 @@ function DoRiNAResult(line) {
         return keyvals;
     }, self);
 
-    self.score = ko.computed(function() {
+    self.score = ko.computed(function () {
         if (self.error_state()) {
             return '';
         }
         return (self.cols.length > 13) ? self.cols[13] : '-1';
     }, self);
 
-    self.location = ko.computed(function() {
+    self.location = ko.computed(function () {
         if (self.error_state()) {
             return '';
         }
@@ -116,7 +116,7 @@ function DoRiNAResult(line) {
         return self.cols[0] + ':' + self.cols[3] + '-' + self.cols[4];
     }, self);
 
-    self.feature_location = ko.computed(function() {
+    self.feature_location = ko.computed(function () {
         if (self.error_state()) {
             return '';
         }
@@ -126,43 +126,45 @@ function DoRiNAResult(line) {
         return self.cols[9] + ':' + self.cols[10] + '-' + self.cols[11];
     }, self);
 
-    self.strand = ko.computed(function() {
+    self.strand = ko.computed(function () {
         if (self.error_state()) {
             return '';
         }
         return (self.cols.length > 6) ? self.cols[6] : '.';
     }, self);
 
-    self.feature_strand = ko.computed(function() {
+    self.feature_strand = ko.computed(function () {
         if (self.error_state()) {
             return '';
         }
         return (self.cols.length > 14) ? self.cols[14] : '.';
     }, self);
 }
+
 function DoRiNAViewModel(net, uuid, custom_regulator) {
     var self = this;
     self.mode = ko.observable("choose_db");
-    self.retry_after = 1000;
+    self.retry_after = 10000;
     self.loading_regulators = ko.observable(false);
     self.uuid = ko.observable(uuid);
     self.custom_regulator = ko.observable(custom_regulator);
 
-    self.galaxy_url = ko.computed(function() {
-      var qstring = window.location.search,
-          i, l, temp, params = {}, queries;
 
-      if (qstring.length) {
-        queries = qstring.split("?")[1].split("&");
-        // Convert the array of strings into an object
-        for (i=0, l=queries.length; i<l; i++) {
-          temp = queries[i].split('=');
-          params[temp[0]] = temp[1];
+    self.galaxy_url = ko.computed(function () {
+        var qstring = window.location.search,
+            i, l, temp, params = {}, queries;
+
+        if (qstring.length) {
+            queries = qstring.split("?")[1].split("&");
+            // Convert the array of strings into an object
+            for (i = 0, l = queries.length; i < l; i++) {
+                temp = queries[i].split('=');
+                params[temp[0]] = temp[1];
+            }
+            return params['GALAXY_URL'];
+        } else {
+            return null;
         }
-        return params['GALAXY_URL'];
-      } else {
-        return null;
-      }
     }, self);
     self.origin = ko.observable(window.location.origin);
 
@@ -192,56 +194,77 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.use_window_b = ko.observable(false);
     self.window_b = ko.observable(0);
 
+
+    self.table = $("#resultTable").DataTable(
+        {
+            columns: [
+                {title: "Reg. chr"},
+                {title: "Sel. assembly"},
+                {title: "Sel. feature"},
+                {title: "Reg. start"},
+                {title: "Reg. end"},
+                {title: "."},
+                {title: "Reg. strand"},
+                {title: "."},
+                {title: "Reg. name"},
+                {title: "Tar. chr"},
+                {title: "Tar. start"},
+                {title: "Tar. end"},
+                {title: "Site"},
+            ]
+        }
+    );
+
     // Generate URL parametres for the UCSC URL to make selected supertracks
     // and subtracks visible.
     self.trackVisibility = ko.computed(function () {
-      /* A supertrack is identified by the "experiment" field in the regulator
-       * structure.  A subtrack is identified by the basename of the
-       * associated metadata file stored in the "file" field.
-       */
-      if (self.selected_regulators().length > 0) {
-        // selected_regulators only contains the ids but we need the full
-        // objects.
-        var regs = self.selected_regulators().reduce(function (acc, reg) {
-          var full = self.regulators().find(function (obj) {
-            return obj.id === reg;
-          });
-          return full ? acc.concat([full]) : acc;
-        }, []);
+        /* A supertrack is identified by the "experiment" field in the regulator
+         * structure.  A subtrack is identified by the basename of the
+         * associated metadata file stored in the "file" field.
+         */
+        if (self.selected_regulators().length > 0) {
+            // selected_regulators only contains the ids but we need the full
+            // objects.
+            var regs = self.selected_regulators().reduce(function (acc, reg) {
+                var full = self.regulators().find(function (obj) {
+                    return obj.id === reg;
+                });
+                return full ? acc.concat([full]) : acc;
+            }, []);
 
-        var supertracks = regs.reduce(function (acc, reg) {
-          if (acc.indexOf(reg.experiment) === -1) {
-            return acc.concat([reg.experiment]);
-          } else {
-            return acc;
-          }
-        }, []).map(function (name) {
-          // Remove invalid characters.  I don't know why they didn't use just
-          // one replacement character for invalid characters...
-          return name.replace(/\s/g, '-').replace(/:/g, '_');
-        });
+            var supertracks = regs.reduce(function (acc, reg) {
+                if (acc.indexOf(reg.experiment) === -1) {
+                    return acc.concat([reg.experiment]);
+                } else {
+                    return acc;
+                }
+            }, []).map(function (name) {
+                // Remove invalid characters.  I don't know why they didn't use just
+                // one replacement character for invalid characters...
+                return name.replace(/\s/g, '-').replace(/:/g, '_');
+            });
 
-        var trackNamePattern = /([^\/]+)\.json/;
-        var subtracks = regs.reduce(function (acc, reg) {
-          var trackName = reg.file.match(trackNamePattern)[1];
-          return acc.concat([trackName]);
-        }, []);
+            var trackNamePattern = /([^\/]+)\.json/;
+            var subtracks = regs.reduce(function (acc, reg) {
+                var trackName = reg.file.match(trackNamePattern)[1];
+                return acc.concat([trackName]);
+            }, []);
 
-        var hubPrefix = "hub_" + DorinaHubId + "_";
-        var result = "&" +
-          supertracks.map(function (name) {
-            return hubPrefix + name + "=show";
-          }).join("&") + "&" +
-          subtracks.map(function (name) {
-            return hubPrefix + name + "=dense";
-          }).join("&");
-        return result;
-      } else {
-        return "";
-      }
+            var hubPrefix = "hub_" + DorinaHubId + "_";
+            var result = "&" +
+                supertracks.map(function (name) {
+                    return hubPrefix + name + "=show";
+                }).join("&") + "&" +
+                subtracks.map(function (name) {
+                    return hubPrefix + name + "=dense";
+                }).join("&");
+            return result;
+        } else {
+            return "";
+        }
     }, self);
 
-    self.ucsc_url = ko.computed(function() {
+    self.ucsc_url = ko.computed(function () {
         var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
         url += "&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt";
         url += self.trackVisibility();
@@ -251,7 +274,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.combinatorialOperation = ko.observable('or');
 
-    self.readableSetOperation = ko.computed(function() {
+    self.readableSetOperation = ko.computed(function () {
         switch (self.combinatorialOperation()) {
             case 'or':
                 return "found in set A or set B";
@@ -264,13 +287,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }
     }, self);
 
-    self.combinatorialOpImagePath = ko.computed(function() {
+    self.combinatorialOpImagePath = ko.computed(function () {
         return "/static/images/" + self.combinatorialOperation() + ".svg";
     }, self);
 
-    self.get_regulators = function(assembly) {
+    self.get_regulators = function (assembly) {
         var search_path = "api/v1.0/regulators/" + assembly;
-        return net.getJSON(search_path).then(function(data) {
+        return net.getJSON(search_path).then(function (data) {
             self.regulators.removeAll();
             self.regulator_types.removeAll();
             var regulator_types = {};
@@ -296,12 +319,12 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         });
     };
 
-    self.show_simple_search = function() {
+    self.show_simple_search = function () {
         self.loading_regulators(true);
-        setTimeout(function() {
-            self.get_regulators(self.chosenAssembly()).then(function() {
-                $('#chooseDatabase').collapse('hide');
+        setTimeout(function () {
+            self.get_regulators(self.chosenAssembly()).then(function () {
                 $('#search').collapse('show');
+                $(document.getElementById('collapseTwo')).collapse('show');
                 self.mode('search');
 
                 var $genes, genes;
@@ -316,49 +339,54 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     labelField: 'id',
                     searchField: 'id',
                     create: false,
-                    load: function(query, callback) {
+                    load: function (query, callback) {
                         if (query.length == 0) {
                             return callback();
                         }
-                        net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function(res) {
+                        net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
 
-                          callback(res.genes.map(function(r) {return {id: r};}));
+                            callback(res.genes.map(function (r) {
+                                return {id: r};
+                            }));
                         });
                     }
                 });
 
                 $shown_types = $('#shown-types').selectize({
                     options: self.regulator_types(),
-                    valueField: 'id',
-                    labelField: 'id',
-                    onChange: function(values) {
+                    items: [],
+                    plugins: {
+                        "remove_button": {title: "Remove"}
+                    },
+                    valueField: "id",
+                    labelField: "id",
+                    create: false,
+                    onChange: function (values) {
                         regulators.disable();
                         regulators.clearOptions();
                         if (values && values.length > 0) {
-                            var filtered_regs = self.regulators().filter(function(reg) {
+                            var filtered_regs = self.regulators().filter(function (reg) {
                                 return values.indexOf(reg.experiment) > -1;
                             });
-
                             for (var i in filtered_regs) {
                                 regulators.addOption(filtered_regs[i]);
                             }
                         }
-
                         regulators.refreshOptions();
                         regulators.enable();
-                    }
+                    },
                 });
                 shown_types = $shown_types[0].selectize;
 
                 $shown_types_setb = $('#shown-types-setb').selectize({
                     options: self.regulator_types(),
+                    items: [],
                     valueField: 'id',
                     labelField: 'id',
-                    onChange: function(values) {
+                    onChange: function (values) {
                         regulators_setb.disable();
-                        regulators_setb.clearOptions();
                         if (values && values.length > 0) {
-                            var filtered_regs = self.regulators().filter(function(reg) {
+                            var filtered_regs = self.regulators().filter(function (reg) {
                                 return values.indexOf(reg.experiment) > -1;
                             });
 
@@ -384,10 +412,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     optgroupValueField: 'id',
                     optgroupLabelField: 'id',
                     render: {
-                        option: function(item, escape) {
+                        option: function (item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
-                                   '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
-                                   + escape(item.description) + '</span></div>';
+                                '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
+                                + escape(item.description) + '</span></div>';
                         }
                     }
                 });
@@ -404,21 +432,14 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     optgroupValueField: 'id',
                     optgroupLabelField: 'id',
                     render: {
-                        option: function(item, escape) {
+                        option: function (item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
-                                   '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
-                                   + escape(item.description) + '</span></div>';
+                                '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
+                                + escape(item.description) + '</span></div>';
                         }
                     }
                 });
                 regulators_setb = $regulators_setb[0].selectize;
-
-                for (var i in self.regulator_types()) {
-                    var reg = self.regulator_types()[i].id;
-                    shown_types.addItem(reg);
-                    shown_types_setb.addItems(reg);
-                }
-
                 if (self.custom_regulator()) {
                     regulators.addItem(self.uuid());
                 }
@@ -428,7 +449,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }, 10);
     };
 
-    self.run_search = function(keep_data) {
+    self.run_search = function (keep_data) {
         var search_data = {
             set_a: self.selected_regulators(),
             assembly: self.chosenAssembly(),
@@ -446,7 +467,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         // send set B data
         if (self.selected_regulators_setb().length > 0) {
             search_data.set_b = self.selected_regulators_setb();
-            search_data.match_b= self.match_b();
+            search_data.match_b = self.match_b();
             search_data.region_b = self.region_b();
             search_data.combinatorial_op = self.combinatorialOperation();
             if (self.use_window_b()) {
@@ -456,50 +477,58 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
 
         self.pending(true);
+
         if (!keep_data) {
             self.results.removeAll();
         }
-        return net.post('api/v1.0/search', search_data).then(function(data) {
+        return net.post('api/v1.0/search', search_data).then(function (data) {
             self.uuid(data.uuid);
             self.poll_result(data.uuid);
         });
     };
 
-    self.poll_result = function(uuid) {
+    self.poll_result = function (uuid) {
         var url = 'api/v1.0/status/' + uuid;
-        net.getJSON(url).then(function(data) {
+        net.getJSON(url).then(function (data) {
             if (data.state == 'pending') {
-                setTimeout(function() {
+                setTimeout(function () {
                     self.poll_result(uuid);
                 }, self.retry_after);
                 return;
             }
+
             return self.get_results(uuid);
+
         });
     };
 
 
-    self.get_results = function(uuid, more) {
+    self.get_results = function (uuid, more) {
         var url = 'api/v1.0/result/' + uuid;
         if (more) {
             url += '/' + self.offset();
         }
 
-        net.getJSON(url).then(function(data) {
+        net.getJSON(url).then(function (data) {
             self.pending(false);
+            $('#results').collapse('show');
+            $(document.getElementById("collapseThree")).collapse("show");
+
             self.more_results(data.more_results);
             self.total_results(data.total_results);
             for (var i in data.results) {
-                self.results.push(new DoRiNAResult(data.results[i]));
+                self.results.push(new DoRiNAResult(data.results[i]).cols);
             }
             if (data.more_results && data.next_offset) {
                 self.offset(data.next_offset);
                 self.uuid(uuid);
             }
+            self.table.rows.add(self.results()).draw();
+
         });
     };
 
-    self.reset_search_state = function() {
+    self.reset_search_state = function () {
         self.more_results(false);
         self.offset(0);
         self.match_a('any');
@@ -509,7 +538,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.genes('');
     };
 
-    self.clear_selections = function() {
+    self.clear_selections = function () {
         $('#regulators')[0].selectize.clear();
         $('#regulators_setb')[0].selectize.clear();
     };
@@ -517,107 +546,58 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     /* These functions break the ViewModel abstraction a bit, as they trigger
      * view changes, but I can't think of a better way to implement this at the
      * moment */
-    self.run_simple_search = function() {
+    self.run_simple_search = function () {
         self.run_search(false);
-        $('#search').collapse('hide');
-        $('#results').collapse('show');
         self.mode('results');
+
     };
 
-    self.load_more_results = function() {
+    self.load_more_results = function () {
         self.get_results(self.uuid(), true);
+        $('#resultTable').DataTable().draw();
     };
 
-    self.new_search = function() {
+    self.new_search = function () {
         self.reset_search_state();
-        $('#results').collapse('hide');
-        $('#chooseDatabase').collapse('hide');
-        $('#search').collapse('show');
+        $(document.getElementById("collapseTwo")).collapse("show");
         self.mode('search');
     };
 
 }
 
-function RegulatorViewModel(net) {
+function RegulatorViewModel(net, value) {
     var self = this;
-    self.genomes = ko.observableArray([]);
-    self.assemblies = ko.observableArray([]);
+
     self.regulators = ko.observableArray([]);
 
-    self.selected_assembly = ko.observable();
-
-    self.init = function() {
-        self.get_genomes().then(function() {
-            var promises = [];
-            for (var i in self.genomes()) {
-                var genome = self.genomes()[i].id;
-                promises.push(self.get_assemblies(genome));
-            }
-
-            $.when.apply(null, promises).then(function() {
-                $('#assembly').selectize({
-                    valueField: 'id',
-                    labelField: 'id',
-                    searchField: 'id',
-                    options: self.assemblies(),
-                    sortField: [{ field: 'weight', direction: 'desc'}],
-                    optgroupField: 'genome',
-                    optgroupValueField: 'id',
-                    optgroups: self.genomes(),
-                    plugins: ['optgroup_columns'],
-                    render: {
-                        optgroup_header: function(data, escape) {
-                            return '<div class="optgroup-header">' + escape(data.label) +
-                                   ' (<span class="scientific">' + escape(data.scientific) +
-                                   '</span>)</div>';
-                         }
-                    },
-                    onChange: function(value) {
-                        if (!value) {
-                            return;
-                        }
-                        self.get_regulators(value);
-                    }
-                });
-            });
-        });
+    self.init = function () {
+        self.get_regulators(value);
     };
 
-    self.get_genomes = function() {
-        return net.getJSON('api/v1.0/genomes').then(function(data) {
-            self.genomes = ko.observableArray(data.genomes);
-        });
-    };
+    self.get_regulators = function (assembly) {
 
-    self.get_assemblies = function(genome) {
-        return net.getJSON('api/v1.0/assemblies/' + genome).then(function(data) {
-            for (var i in data.assemblies) {
-                self.assemblies.push(data.assemblies[i]);
-            }
-        });
-    };
-
-    self.get_regulators = function(assembly) {
-        return net.getJSON('api/v1.0/regulators/' + assembly).then(function(data) {
+        return net.getJSON('/api/v1.0/regulators/' + assembly).then(function (data) {
             self.regulators.removeAll();
-            self.regulators.extend({ rateLimit: 100 });
+            self.regulators.extend({rateLimit: 60});
             for (var reg in data) {
                 self.regulators.push(data[reg]);
             }
-            self.regulators.sort(function(a, b){
+
+            self.regulators.sort(function (a, b) {
+
                 return (a.summary.toUpperCase() > b.summary.toUpperCase()) -
-                       (b.summary.toUpperCase() > a.summary.toUpperCase());
+                    (b.summary.toUpperCase() > a.summary.toUpperCase());
+
             });
         });
     };
-
 }
 
 function SetViewModel(view_model) {
-        $(document).data('view_model', view_model);
+    $(document).data('view_model', view_model);
 }
 
 function GetViewModel() {
-        return $(document).data('view_model');
+    return $(document).data('view_model');
 }
 

@@ -1,53 +1,55 @@
+{% set active_page = "Search" %}
 {% extends 'layout.html' %}
-{% block body %}
-    <div class="panel-group" id="accordion">
 
-      {% include "choose_db.html" %}
-
-      {% include "search.html" %}
-
-      {% include "results.html" %}
-
-    </div>
+{% block extra_headers %}
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 {% endblock %}
 
+{% block body %}
+    <div id="accordion" class="">
 
+        {% include "choose_db.html" %}
+        {% include "search.html" %}
+        {% include "results.html" %}
+    </div>
+{% endblock %}
 {% block extra_scripts %}
-  <script type="text/javascript">
 
-    $(document).ready(function() {
+    <!-- KnockoutJS Mapping http://knockoutjs.com/documentation/plugins-mapping.html -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.min.js"></script>
+
+    <!-- jQuery DataTables http://datatables.net -->
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
         var net = new DoRiNANet();
         var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
-        ko.applyBindings(viewmodel);
-        SetViewModel(viewmodel);
-        $("[data-toggle='tooltip']").tooltip();
-        $('#assembly').selectize({
-            valueField: 'id',
-            labelField: 'id',
-            searchField: 'id',
-            options: {{ assemblies|safe }},
-            sortField: [{ field: 'weight', direction: 'desc'}],
-            optgroupField: 'genome',
-            optgroupValueField: 'id',
-            optgroups: {{ genomes|safe }},
-            plugins: ['optgroup_columns'],
-            render: {
-                optgroup_header: function(data, escape) {
-                    return '<div class="optgroup-header">' + escape(data.label) +
-                           ' (<span class="scientific">' + escape(data.scientific) +
-                           '</span>)</div>';
-                 }
-            }
-        });
 
-        $('#genes').on('show.bs.collapse', function() {
-            $('#genes-icon').removeClass('glyphicon-plus')
-              .addClass('glyphicon-minus');
-        }).on('hide.bs.collapse', function() {
-            $('#genes-icon').removeClass('glyphicon-minus')
-              .addClass('glyphicon-plus');
-        });
-    });
+        $(document).ready(function () {
+            ko.applyBindings(viewmodel);
+            SetViewModel(viewmodel);
+            $('#assembly').selectize({
+                valueField: 'id',
+                labelField: 'id',
+                searchField: 'id',
+                create: false,
+                options: {{ assemblies|safe }},
+                sortField: [{field: 'weight', direction: 'desc'}],
+                optgroupField: 'genome',
+                optgroupValueField: 'id',
+                optgroups: {{ genomes|safe }},
+                render: {
+                    optgroup_header: function (data, escape) {
+                        return '<div class="optgroup-header">' + escape(data.label) +
+                            ' (<span class="font-italic">' + escape(data.scientific) +
+                            '</span>)</div>';
+                    }
+                },
+                onChange: function () {
+                    this.$input.closest('form').submit()
+                },
+            });
 
-  </script>
+        });
+    </script>
 {% endblock %}
