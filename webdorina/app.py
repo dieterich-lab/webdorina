@@ -102,7 +102,7 @@ def welcome():
     return flask.render_template('welcome.html')
 
 
-@app.route('/go', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET', 'POST'])
 def index():
     custom_regulator = 'false'
     if flask.request.method == 'POST':

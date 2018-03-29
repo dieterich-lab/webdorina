@@ -601,3 +601,13 @@ function GetViewModel() {
     return $(document).data('view_model');
 }
 
+
+function validateBedFile(){
+    var input  = document.getElementById("bedfileUpload");
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+        var text = reader.result;
+        var firstLine = text.split("\n").shift();
+    };
+}
