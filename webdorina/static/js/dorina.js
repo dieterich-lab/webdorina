@@ -474,8 +474,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 search_data.window_b = self.window_b();
             }
         }
-
-
         self.pending(true);
 
         if (!keep_data) {
@@ -602,12 +600,3 @@ function GetViewModel() {
 }
 
 
-function validateBedFile(){
-    var input  = document.getElementById("bedfileUpload");
-    var reader = new FileReader();
-
-    reader.onload = function(e) {
-        var text = reader.result;
-        var firstLine = text.split("\n").shift();
-    };
-}
