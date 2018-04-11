@@ -26,6 +26,13 @@
         var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
 
         $(document).ready(function () {
+            $('input:file').change(
+                function () {
+                    if ($(this).val()) {
+                        $('input:submit').attr('disabled', false);
+                    }
+                });
+
             ko.applyBindings(viewmodel);
             SetViewModel(viewmodel);
             $('#assembly').selectize({
@@ -46,14 +53,14 @@
                     }
                 },
                 onChange: function () {
-                    this.$input.closest('form').submit()
+                    this.$input.closest('form').submit();
+                    this.disable();
+                    $('#bedfile').attr('disabled', true);
                 }
 
+                {#https://github.com/selectize/selectize.js/issues/1162#}
             });
-{##}
-{#            $('#bedfileUpload').on(#}
-{#                'change', net.post()#}
-{#            )#}
+
         });
     </script>
 {% endblock %}

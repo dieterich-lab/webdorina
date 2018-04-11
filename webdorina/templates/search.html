@@ -20,32 +20,32 @@
                 <form class="form-horizontal" role="form"
                       data-bind="submit: run_simple_search">
                     {# SET A #}
-                    <div class="form-group">
+                    <div class="form" role="form">
                         <div class="row">
-                            <div class="col-lg-6 mt-2 align-content-start">
-
+                            <div class="col-6">
                                 <label for="regulators">Regulators (set
                                     A)</label>
-                                <select multiple class="form-control"
+                                <select multiple class="form"
                                         id="regulators"
                                         data-bind="selectedOptions: selected_regulators"
                                         placeholder="Select one or more regulators...">
                                 </select>
                             </div>
-                            <div class="col-lg-6 mt-2  align-content-center">
+                            <div class="col-6">
                                 <label class="text-muted" for="shown-types">
                                     Regulator types to show
                                 </label>
-                                <select multiple
-                                        class="form-control"
+                                <select multiple class="form"
                                         id="shown-types"
                                         placeholder="Select regulator types to show...">
                                 </select>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <label>Regulators that must match:</label>
+
+
+                        <div class="row form-group">
+                            <div class="col-6 mt-2 align-content-start">
+                                <label>Regulators that must match:</label><br>
                                 <div class="btn-group" id="match_a"
                                      data-toggle="buttons"
                                      data-bind="radio: match_a">
@@ -60,270 +60,276 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row form-group">
-                        <div class="col-6 align-content-start">
-                            <label>Look for binding sites in region:</label>
-                            <div class="btn-group" data-toggle="buttons"
-                                 data-bind="radio: region_a">
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_a_group"
-                                           value="any"> any
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_a_group"
-                                           value="CDS"> CDS
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_a_group"
-                                           value="5prime"> 5' UTR
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_a_group"
-                                           value="3prime"> 3' UTR
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_a_group"
-                                           value="intron"> intron
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_a_group"
-                                           value="intergenic"> intergenic
-                                </label>
+
+                        <div class="row form-group">
+                            <div class="col-6 mt-2 align-content-start">
+                                <label>Look for binding sites in
+                                    region:</label>
+                                <div class="btn-group" data-toggle="buttons"
+                                     data-bind="radio: region_a">
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_a_group"
+                                               value="any"> any
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_a_group"
+                                               value="CDS"> CDS
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_a_group"
+                                               value="5prime"> 5' UTR
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_a_group"
+                                               value="3prime"> 3' UTR
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_a_group"
+                                               value="intron"> intron
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_a_group"
+                                               value="intergenic">
+                                        intergenic
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row form-group">
-                        <label class="col-md-6 control-label"
-                               for="window_a">Restrict
-                            to overlapping features (max. distance) of:</label>
-                        <div class="input-group col-md-3">
-                  <span class="input-group-addon">
+                        <div class="row form-group">
+                            <label class="col-6 control-label"
+                                   for="window_a">Restrict
+                                to overlapping features (max. distance)
+                                of:</label>
+                            <span class="input-group-addon">
                     <input type="checkbox" data-bind="checked: use_window_a">
                   </span>
                             <input type="text"
-                                   class="form-control text-right"
+                                   class="form text-right"
                                    id="window_a"
                                    name="window_a" placeholder="0"
                                    data-bind="value: window_a">
                             <span class="input-group-addon">bp</span>
                         </div>
-                    </div>
 
-
-                    <div class="form-group">
-                        <label for="genes" data-toggle="collapse"
-                               data-target="#genes-container">
-                    <span class="material-icons"
-                          id="genes-icon">expand_more</span>
-                            Limit to a set of candidate genes (by RefSeq ID):
-                        </label>
-                        <div class="collapse" id="genes-container">
-                            <select class="form-control" id="genes" multiple
-                                    data-bind="selectedOptions: genes"></select>
+                        <div class="form-group">
+                            <label for="genes" data-toggle="collapse"
+                                   data-target="#genes-container">
+                                    <span class="material-icons"
+                                          id="genes-icon">expand_more</span>
+                                Limit to a set of candidate genes (by RefSeq
+                                ID):
+                            </label>
+                            <div class="collapse" id="genes-container">
+                                <select multiple class="form" id="genes"
+                                        data-bind="selectedOptions: genes"></select>
+                            </div>
                         </div>
-                    </div>
-
-
-                    <div class="row form-group" data-toggle="collapse"
-                         data-target=".combinatorial">
-
-                        <label class="col-12 control-label">
+                        <div class="row form-group" data-toggle="collapse"
+                             data-target=".combinatorial">
+                            <label class="col-12 control-label">
                             <span class="material-icons"
                                   id="genes-icon">expand_more</span>
-                            Combinatorial search
-
-                            <a href="#" data-toggle="tooltip"
-                               data-placement="right"
-                               title="click to expand">
-                            </a>
-                        </label>
-                    </div>
-
-                    <div class="row form-group combinatorial collapse">
-                        <span>Choose set B</span>
-
-                        <div class="col-6">
-                            <label>Look for binding sites in region:</label>
-                            <div class="btn-group" data-toggle="buttons"
-                                 data-bind="radio: region_b">
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_b_group"
-                                           value="any"> any
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_b_group"
-                                           value="CDS"> CDS
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_b_group"
-                                           value="5prime"> 5' UTR
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_b_group"
-                                           value="3prime"> 3' UTR
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_b_group"
-                                           value="intron"> intron
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio"
-                                           name="region_b_group"
-                                           value="intergenic"> intergenic
-                                </label>
-                            </div>
+                                Combinatorial search
+                            </label>
                         </div>
-                    </div>
 
-                    <div class="form-group combinatorial collapse">
-                        <div class="row">
-                            <div class="col-lg-6 align-content-start">
-                                <label for="shown-types-setb">Regulator types to
-                                    show</label>
-                                <select class="form-control"
-                                        id="shown-types-setb"
-                                        placeholder="Select regulator types to show..."
-                                        multiple>
-                                </select>
+                        <div class="combinatorial collapse">
+                            <span>Choose set B</span>
+
+                            <div class="form-group combinatorial collapse">
+                                <div class="row">
+                                    <div class="col-6"
+                                         data-bind="visible: selected_regulators_setb().length > 1">
+                                        <label>Set B that must
+                                            match:</label>
+                                        <div class="btn-group"
+                                             data-toggle="buttons"
+                                             data-bind="radio: match_b">
+                                            <label class="btn btn-default">
+                                                <input type="radio"
+                                                       name="match_b_group"
+                                                       value="any"> any
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio"
+                                                       name="match_b_group"
+                                                       value="all"> all
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 ">
+                                        <label for="shown-types-setb">Regulator
+                                            types to show</label>
+                                        <select multiple class="form"
+                                                id="shown-types-setb"
+                                                placeholder="Select regulator types to show...">
+                                        </select>
+                                    </div>
+                                    <div class="col-6 ">
+                                        <label for="regulators_setb">Regulators
+                                            (set
+                                            B)</label>
+                                        <select multiple class="form"
+                                                id="regulators_setb"
+                                                data-bind="selectedOptions: selected_regulators_setb"
+                                                placeholder="Select one or more regulators...">
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-lg-6 align-content-center">
-                                <label for="regulators_setb">Regulators (set
-                                    B)</label>
-                                <select class="form-control"
-                                        id="regulators_setb"
-                                        data-bind="selectedOptions: selected_regulators_setb"
-                                        placeholder="Select one or more regulators..."
-                                        multiple>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6"
-                                 data-bind="visible: selected_regulators_setb().length > 1">
-                                <label>Set B that must match:</label>
+
+                            <div class="col-6 mt-2 align-content-start">
+                                <label>Look for binding sites in
+                                    region:</label>
                                 <div class="btn-group" data-toggle="buttons"
-                                     data-bind="radio: match_b">
+                                     data-bind="radio: region_b">
                                     <label class="btn btn-default">
-                                        <input type="radio" name="match_b_group"
+                                        <input type="radio"
+                                               name="region_b_group"
                                                value="any"> any
                                     </label>
                                     <label class="btn btn-default">
-                                        <input type="radio" name="match_b_group"
-                                               value="all"> all
+                                        <input type="radio"
+                                               name="region_b_group"
+                                               value="CDS"> CDS
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_b_group"
+                                               value="5prime"> 5' UTR
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_b_group"
+                                               value="3prime"> 3' UTR
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_b_group"
+                                               value="intron"> intron
+                                    </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio"
+                                               name="region_b_group"
+                                               value="intergenic">
+                                        intergenic
                                     </label>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="row form-group combinatorial collapse">
-                        <div class="col-md-4">
-                            <label>Define set operations</label>
-                        </div>
-                    </div>
-                    <div class="row form-group combinatorial collapse">
-                        <div class="col-lg-6">
-                            <p> Return binding sites of set A and set B
-                                being </p>
-                            <p id="readable-set-operation"
-                               data-bind="text: readableSetOperation"></p>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="btn-group" data-toggle="buttons"
-                                 data-bind="radio: combinatorialOperation">
-                                <label class="btn btn-default">
-                                    <input type="radio" name="set_op_group"
-                                           value="and"> AND
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio" name="set_op_group"
-                                           value="or"> OR
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio" name="set_op_group"
-                                           value="xor"> XOR
-                                </label>
-                                <label class="btn btn-default">
-                                    <input type="radio" name="set_op_group"
-                                           value="not"> NOT
-                                </label>
+                            <div class="form-group combinatorial collapse">
+                                <div class="row">
+
+                                    <label class="col-6" for="window_b">Restrict
+                                        to overlapping features with a
+                                        maximal
+                                        distance
+                                        of:</label>
+                                    <div class="input-group col-6">
+                                <span class="input-group-addon">
+                                    <input type="checkbox"
+                                           data-bind="checked: use_window_b">
+                                    </span>
+                                        <input type="text"
+                                               class="form text-right"
+                                               id="window_b"
+                                               name="window_b"
+                                               placeholder="0"
+                                               data-bind="value: window_b">
+                                        <span class="input-group-addon">bp</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <img class="img-responsive"
-                                 data-bind="attr: {src :combinatorialOpImagePath}">
-                        </div>
-                    </div>
 
-                    <div class="form-group combinatorial collapse">
-                        <label class="col-md-6 control-label"
-                               for="window_b">Restrict
-                            to overlapping features with a maximal distance
-                            of:</label>
-                        <div class="input-group col-md-3">
-                  <span class="input-group-addon">
-                    <input type="checkbox" data-bind="checked: use_window_b">
-                  </span>
-                            <input type="text"
-                                   class="form-control text-right"
-                                   id="window_b"
-                                   name="window_b" placeholder="0"
-                                   data-bind="value: window_b">
-                            <span class="input-group-addon">bp</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group combinatorial collapse">
-                        <!-- placeholder -->
-                    </div>
-
-                    <div class="row justify-content-end">
-                        <div class="form-inline col-sm-1"
-                             data-bind="visible: pending">
-                            <div class="progress-circular">
-                                <div class="progress-circular-wrapper">
-                                    <div class="progress-circular-inner">
-                                        <div class="progress-circular-left">
-                                            <div class="progress-circular-spinner"></div>
+                            <div class="form-group combinatorial collapse">
+                                <label>Define set operations</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="btn-group"
+                                             style="width: 15rem;"
+                                             data-toggle="buttons"
+                                             data-bind="radio: combinatorialOperation">
+                                            <label class="btn btn-default">
+                                                <input type="radio"
+                                                       name="set_op_group"
+                                                       value="and"> AND
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio"
+                                                       name="set_op_group"
+                                                       value="or"> OR
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio"
+                                                       name="set_op_group"
+                                                       value="xor"> XOR
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio"
+                                                       name="set_op_group"
+                                                       value="not"> NOT
+                                            </label>
                                         </div>
-                                        <div class="progress-circular-gap"></div>
-                                        <div class="progress-circular-right">
-                                            <div class="progress-circular-spinner"></div>
+
+                                        <div class="card"
+                                             style="width: 15rem;">
+                                            <img class="card-img-top"
+                                                 data-bind="attr: {src :combinatorialOpImagePath}">
+                                            <div class="card-body">
+                                                <p class="card-text"
+                                                   id="readable-set-operation"
+                                                   data-bind="text: 'Return binding sites of set A and set B being ' + readableSetOperation()"></p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="submit"
-                                class="btn btn-info btn-lg"
-                                data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
-                            <span class="material-icons">search</span>
-                            Search
-                        </button>
-                        <button type="button" class="btn btn-lg"
-                                data-bind="click: clear_selections">
-                            <span class="material-icons">clear</span>
-                            Clear
-                        </button>
+                        <div class="row justify-content-end">
+                            <div class="form-inline col-sm-1"
+                                 data-bind="visible: pending">
+                                <div class="progress-circular">
+                                    <div class="progress-circular-wrapper">
+                                        <div class="progress-circular-inner">
+                                            <div class="progress-circular-left">
+                                                <div class="progress-circular-spinner"></div>
+                                            </div>
+                                            <div class="progress-circular-gap"></div>
+                                            <div class="progress-circular-right">
+                                                <div class="progress-circular-spinner"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit"
+                                    class="btn btn-info btn-lg"
+                                    data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
+                                <span class="material-icons">search</span>
+                                Search
+                            </button>
+                            <button type="button" class="btn btn-lg"
+                                    data-bind="click: clear_selections">
+                                <span class="material-icons">clear</span>
+                                Clear
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 

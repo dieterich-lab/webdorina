@@ -327,11 +327,11 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 $(document.getElementById('collapseTwo')).collapse('show');
                 self.mode('search');
 
-                var $genes, genes;
-                var $regulators, regulators;
-                var $regulators_setb, regulators_setb;
-                var $shown_types, shown_types;
-                var $shown_types_setb, shown_types_setb;
+                var $genes;
+                var $regulators;
+                var $regulators_setb;
+                var $shown_types;
+                var $shown_types_setb;
 
                 $genes = $('#genes').selectize({
                     options: [],
@@ -344,7 +344,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                             return callback();
                         }
                         net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
-
                             callback(res.genes.map(function (r) {
                                 return {id: r};
                             }));
@@ -374,7 +373,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         }
                         regulators.refreshOptions();
                         regulators.enable();
-                    },
+                    }
                 });
                 shown_types = $shown_types[0].selectize;
 
@@ -414,8 +413,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     render: {
                         option: function (item, escape) {
                             return '<div><span class="regulator">' + escape(item.summary) +
-                                '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
-                                + escape(item.description) + '</span></div>';
+                                '</span><br><span class="description">' + escape(item.description) + '</span></div>';
                         }
                     }
                 });
@@ -521,8 +519,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 self.offset(data.next_offset);
                 self.uuid(uuid);
             }
-            self.table.rows.add(self.results()).draw();
-
+            try {
+                self.table.rows.add(self.results()).draw();
+            }
+            catch (err) {
+                document.getElementById('page').innerHTML = '' +
+                    'An error occurred: ' + err.message;
+            }
         });
     };
 
@@ -598,5 +601,4 @@ function SetViewModel(view_model) {
 function GetViewModel() {
     return $(document).data('view_model');
 }
-
 

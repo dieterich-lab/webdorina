@@ -16,7 +16,6 @@ from dorina.regulator import Regulator
 from flask import flash, request, redirect, jsonify, render_template
 from redis import Redis
 from rq import Queue
-from werkzeug.utils import secure_filename
 
 from webdorina.workers import filter_genes, run_analyse
 
@@ -104,10 +103,10 @@ def welcome():
     return render_template('welcome.html')
 
 
-def count_columns(filename, sep='\t'):
+def count_columns(filename):
     with open(filename) as open_f:
         first_line = next(open_f).rstrip()
-        data = first_line.split(sep)
+        data = first_line.split()
         return len(data)
 
 
@@ -118,18 +117,20 @@ def index():
         unique_id = _create_session(True)
         bedfile = request.files['bedfile']
         if bedfile and bedfile.filename.endswith('.bed'):
-            filename = secure_filename(bedfile.filename)
+            filename = "{}.bed".format(unique_id)
             dirname = app.config['SESSION_STORE'].format(unique_id=unique_id)
             bedfile.save(os.path.join(dirname, filename))
-            if count_columns(os.path.join(dirname, filename)) != 6:
+            if count_columns(os.path.join(dirname, filename)) < 3:
                 flash(u'Please upload a valid .bed '
-                      u'file with at least six columns.', 'danger')
+                      u'file with at least three columns.', 'danger')
+                return redirect(flask.url_for('index'))
             custom_regulator = 'true'
             flash(u'File {} loaded'.format(bedfile.filename), 'success')
         else:
             flash(u'Please upload a valid .bed '
                   u'file with at least six columns.', 'danger')
             return redirect(flask.url_for('index'))
+
     else:
         unique_id = _create_session()
 
@@ -165,7 +166,7 @@ def search():
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
     query['set_a'] = request.form.getlist('set_a[]')
-    # offset = request.form.get('offset', 0, int)
+    offset = request.form.get('offset', 0, int)
 
     query['set_b'] = request.form.getlist('set_b[]')
     # werkzeug/Flask insists on returning an empty list, but dorina.analyse
@@ -372,10 +373,18 @@ def get_result(uuid, offset):
         return jsonify(dict(uuid=uuid, state='expired'))
 
     rec = json.loads(redis_store.get(key))
+    print(rec)
     query_key = str(rec['redirect'])
     redis_store.expire(query_key, app.config['RESULT_TTL'])
     result = redis_store.lrange(
         query_key, offset + 0, offset + app.config['MAX_RESULTS'] - 1)
+
+    if 'Job failed' in result[0]:
+        app.logger.error(result[0])
+        flash(result, 'danger')
+
+        return redirect(flask.url_for('index'))
+
     next_offset = offset + app.config['MAX_RESULTS']
     total_results = redis_store.llen(query_key)
     more_results = True if total_results > offset + app.config[

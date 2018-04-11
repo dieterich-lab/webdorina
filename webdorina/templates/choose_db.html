@@ -15,20 +15,20 @@
              aria-labelledby="headingOne" data-parent="#accordion">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-6 col-md-10">
+                    <div class="col-md-5">
                         <label for="bedfile"> (Optional) upload a .bed
                             file </label>
                         <form method=post enctype=multipart/form-data
                               action="{{ url_for('index') }}">
                             <input type=file name=bedfile id="bedfile">
-                            <input type=submit class="btn-dark" value=Upload>
+                            <input disabled type=submit class="btn-dark"
+                                   value=Upload>
                         </form>
                     </div>
-                    <div class="col-lg-6 col-md-10 justify-content-center">
+                    <div class="col-md-5">
                         <form class="form" role="form"
                               data-bind="submit: show_simple_search">
-                            <label for="assembly"> Select an
-                                assembly </label>
+                            <label for="assembly"> Select an assembly </label>
                             <select id="assembly"
                                     data-bind="value: chosenAssembly"
                                     placeholder="Select assembly..."
@@ -36,17 +36,18 @@
                             </select>
                         </form>
                     </div>
-                </div>
-                <div class="row" data-bind="visible: loading_regulators">
-                    <div class="progress-circular">
-                        <div class="progress-circular-wrapper">
-                            <div class="progress-circular-inner">
-                                <div class="progress-circular-left">
-                                    <div class="progress-circular-spinner"></div>
-                                </div>
-                                <div class="progress-circular-gap"></div>
-                                <div class="progress-circular-right">
-                                    <div class="progress-circular-spinner"></div>
+                    <div class="col-md-1"
+                         data-bind="visible: loading_regulators">
+                        <div class="progress-circular">
+                            <div class="progress-circular-wrapper">
+                                <div class="progress-circular-inner">
+                                    <div class="progress-circular-left">
+                                        <div class="progress-circular-spinner"></div>
+                                    </div>
+                                    <div class="progress-circular-gap"></div>
+                                    <div class="progress-circular-right">
+                                        <div class="progress-circular-spinner"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
