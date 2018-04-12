@@ -41,17 +41,20 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid,
     try:
         logger.debug('Storing analysis result for {}'.format(query_key))
         result = str(dorina.analyse(**query))
+        lines = result.splitlines()
+        logger.debug("returning {} rows".format(len(lines)))
+        redis_store.rpush(query_key, *lines)
+        redis_store.setex('results:sessions:{0}'.format(uuid), json.dumps(dict(
+            redirect=query_key)), SESSION_TTL)
     except Exception as e:
         result = 'Job failed: %s' % str(e)
-    lines = result.splitlines()
-    logger.debug("returning {} rows".format(len(lines)))
-    redis_store.rpush(query_key, *lines)
+        redis_store.setex('sessions:{0}'.format(uuid), json.dumps(dict(
+            state='error', uuid=uuid)), SESSION_TTL)
+        redis_store.rpush(query_key, result)
+
     redis_store.expire(query_key, RESULT_TTL)
     redis_store.setex('sessions:{0}'.format(uuid), json.dumps(dict(
         state='done', uuid=uuid)), SESSION_TTL)
-    redis_store.setex('results:sessions:{0}'.format(uuid), json.dumps(dict(
-        redirect=query_key)), SESSION_TTL)
-
     redis_store.delete(query_pending_key)
 
 
