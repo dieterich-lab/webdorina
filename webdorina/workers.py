@@ -12,10 +12,8 @@ from redis import Redis
 
 logger = logging.getLogger('webdorina')
 
-
 def run_analyse(datadir, query_key, query_pending_key, query, uuid,
-                SESSION_STORE=None,
-                RESULT_TTL=None, SESSION_TTL=None):
+                SESSION_STORE=None, RESULT_TTL=None, SESSION_TTL=None):
     logger.info('Running analysis for {}'.format(query_key))
     dorina = run.Dorina(datadir)
 
@@ -44,8 +42,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid,
         logger.debug('Storing analysis result for {}'.format(query_key))
         result = str(dorina.analyse(**query))
     except Exception as e:
-        result = '\t\t\t\t\t\t\t\tJob failed: %s' % str(e).replace(
-            '\n', ' ').replace('\t', ' ')
+        result = 'Job failed: %s' % str(e)
     lines = result.splitlines()
     logger.debug("returning {} rows".format(len(lines)))
     redis_store.rpush(query_key, *lines)
