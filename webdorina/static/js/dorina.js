@@ -207,7 +207,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 {title: "Target site location"},
                 {title: "Genomic target strand"},
                 {title: "Target site strand"},
-            ]
+            ],
+             "order": [[ 3, "desc" ]]
         }
     );
 
@@ -527,7 +528,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     self.uuid(uuid);
                 }
                 try {
-                    self.table.rows.add(self.results()).draw();
+                    self.table.rows.add(self.results()).unique().draw();
                 }
                 catch (err) {
                     document.getElementById('page').innerHTML = '' +
@@ -564,7 +565,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.load_more_results = function () {
         self.get_results(self.uuid(), true);
-        $('#resultTable').DataTable().draw();
+        $('#resultTable').DataTable().unique().draw();
     };
 
     self.new_search = function () {
