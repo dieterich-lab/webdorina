@@ -198,19 +198,15 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.table = $("#resultTable").DataTable(
         {
             columns: [
-                {title: "Reg. chr"},
-                {title: "Sel. assembly"},
-                {title: "Sel. feature"},
-                {title: "Reg. start"},
-                {title: "Reg. end"},
-                {title: "."},
-                {title: "Reg. strand"},
-                {title: "."},
-                {title: "Reg. name"},
-                {title: "Tar. chr"},
-                {title: "Tar. start"},
-                {title: "Tar. end"},
-                {title: "Site"},
+                {title: "Track name"},
+                {title: "Target gene"},
+                {title: "Data source"},
+                {title: "Score"},
+                {title: "Target site id"},
+                {title: "Target gene location"},
+                {title: "Target site location"},
+                {title: "Genomic target strand"},
+                {title: "Target site strand"},
             ]
         }
     );
@@ -506,28 +502,41 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }
 
         net.getJSON(url).then(function (data) {
-            self.pending(false);
-            $('#results').collapse('show');
-            $(document.getElementById("collapseThree")).collapse("show");
+                self.pending(false);
+                $('#results').collapse('show');
+                $(document.getElementById("collapseThree")).collapse("show");
 
-            self.more_results(data.more_results);
-            self.total_results(data.total_results);
-            for (var i in data.results) {
-                self.results.push(new DoRiNAResult(data.results[i]).cols);
+                self.more_results(data.more_results);
+                self.total_results(data.total_results);
+                for (var i in data.results) {
+                    result_i = new DoRiNAResult(data.results[i]);
+                    self.results.push(Array(
+                        result_i.track,
+                        result_i.gene,
+                        result_i.data_source,
+                        result_i.score,
+                        result_i.site,
+                        result_i.location,
+                        result_i.feature_location,
+                        result_i.strand,
+                        result_i.feature_strand)
+                    );
+                }
+                if (data.more_results && data.next_offset) {
+                    self.offset(data.next_offset);
+                    self.uuid(uuid);
+                }
+                try {
+                    self.table.rows.add(self.results()).draw();
+                }
+                catch (err) {
+                    document.getElementById('page').innerHTML = '' +
+                        'An error occurred: ' + err.message;
+                }
             }
-            if (data.more_results && data.next_offset) {
-                self.offset(data.next_offset);
-                self.uuid(uuid);
-            }
-            try {
-                self.table.rows.add(self.results()).draw();
-            }
-            catch (err) {
-                document.getElementById('page').innerHTML = '' +
-                    'An error occurred: ' + err.message;
-            }
-        });
-    };
+        );
+    }
+    ;
 
     self.reset_search_state = function () {
         self.more_results(false);
