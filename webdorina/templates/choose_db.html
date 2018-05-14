@@ -1,13 +1,13 @@
 <div id="accordion">
     <div class="card">
-        <div class="card-header bg-info" id="headingOne">
+        <div class="card-header bg-theme" id="headingOne">
             <h5 class="mb-0">
                 <h4 class="panel-title collapsed"
                     data-toggle="collapse"
                     data-target="#collapseOne"
                     aria-expanded="false"
                     aria-controls="collapseOne">
-                    <span class="text-white"
+                    <span class="text-black"
                           data-bind="text: chosenAssembly() ? chosenAssembly() + ' assembly selected' : 'Choose an assembly '"></span>
                 </h4>
             </h5>
@@ -17,14 +17,14 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-5">
-                        <form method=post enctype=multipart/form-data
-                              action="{{ url_for('index') }}"
-                              class="form-group">
+                        <form method=post action="#" class="form-group"
+                              enctype=multipart/form-data>
                             <label for="bedfile"> (Optional) upload a .bed
                                 file </label>
-                            <input type='file' class="form-control-file"
-                                   name=bedfile id="bedfile">
-                            <button disabled type=submit class="btn-dark">Upload</button>
+                            <input type="file" name="bedfile" id="bedfile"
+                                   class="form-control-file"/>
+                            <input type="submit" value="submit" disabled/>
+
                         </form>
                     </div>
                     <div class="col-md-5">

@@ -26,6 +26,7 @@ app = flask.Flask('webdorina',
 app.secret_key = os.urandom(24)
 app.config.from_pyfile(os.path.join(this_dir, 'config.py'))
 app.logger.addHandler(logging.getLogger('rq.worker'))
+app.logger.addHandler(logging.getLogger('pybedtools'))
 
 try:
     user_config = app.config.from_pyfile(sys.argv[1])

@@ -26,7 +26,7 @@
         var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
 
         $(document).ready(function () {
-            $('input:file').change(
+            $('#bedfile').change(
                 function () {
                     if ($(this).val()) {
                         $('input:submit').attr('disabled', false);

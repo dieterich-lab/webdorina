@@ -1,12 +1,12 @@
 <div class="card">
-    <div class="card-header bg-info" id="headingTwo">
+    <div class="card-header bg-theme" id="headingTwo">
         <h5 class="mb-0">
             <h4 class="panel-title collapsed"
                 data-toggle="collapse"
                 data-target="#collapseTwo"
                 aria-expanded="false"
                 aria-controls="collapseTwo">
-                <span class="text-white"
+                <span class="text-black"
                       data-bind="text: selected_regulators().length > 0 ? selected_regulators().length  + ' regulators selected' : 'Choose regulators '"></span>
             </h4>
         </h5>
@@ -44,7 +44,7 @@
 
 
                         <div class="row form-group">
-                            <div class="col-3">
+                            <div class="col-3-md ml-3">
                                 <label>Regulators match:</label><br>
                                 <div class="btn-group" id="match_a"
                                      data-toggle="buttons"
@@ -61,7 +61,7 @@
                             </div>
 
 
-                            <div class="col-8 justify-content-center">
+                            <div class="col-8-md ml-5 justify-content-center">
                                 <label>Filter by feature:</label><br>
                                 <div class="btn-group" data-toggle="buttons"
                                      data-bind="radio: region_a">

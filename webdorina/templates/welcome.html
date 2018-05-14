@@ -1,62 +1,77 @@
 {% extends 'layout.html' %}
 {% set active_page = "index" %}
 {% block body %}
-    <div class="jumbotron mb-5 px-lg-3">
+    <div class="jumbotron mb-5 px-lg-3"
+         style="background-color: #a5bcb7 !important;">
+        <h2 class="typography-display-4 font-weight-bold d-flex justify-content-center">
+            Carina</h2>
+        <br>
+        <p class="d-flex justify-content-center mt-3 font-weight-light typography-title">
+            is a database of RNA post-transcriptional
+            regulators and event associated alternative
+            splicing with health and disease of the cardiovascular system.
+        </p>
+    </div>
 
-        <div class="col-8">
-
-            <h2 class="typography-display-4">Carina</h2>
-            <p class="mt-3 font-weight-light typography-title">
-                is a database of RNA post-transcriptional
-                regulators and transcriptions event associated with health and
-                disease of the cardiovascular system.</p>
-        </div>
-
-        <div class="doc-main px-lg-3">
+    <div class="jumbotron px-lg-3">
+        <div class="doc-main">
             <div class="container">
-                <div class="row  ustify-content-center">
-                    <div class="col-xl-9">
-                        <div class="bd-content mb-5">
+                <div class="row justify-content-center">
 
-                            <p> doRiNA and its web-interface, webDorina, focused
-                                on to collect the interactions between
-                                post-transcriptional regulators,
-                                specifically microRNAs(miRNAs) and RNA-binding
-                                proteins (RBPs). Carina extends this
-                                 functionally by:</p>
+                    <div class="bd-content mb-5">
+
+                        <p> doRiNA and its web-interface, webDorina, focused
+                            on to collect the interactions between
+                            post-transcriptional regulators,
+                            specifically microRNAs (miRNAs) and RNA-binding
+                            proteins (RBPs). Carina extends this
+                            functionally by:</p>
 
 
-                            <ul class="list-group">
-                                <li class="list-group-item">including recent
-                                    experiments that identify RBPs and
-                                    its targets
-                                </li>
-                                <li class="list-group-item">integration genomic
-                                    variation that may be relevant
-                                    to the heart malfunction
-                                </li>
-                                <li class="list-group-item">facilitating the
-                                    filtering
-                                    for genes that are
-                                    expressed or enriched in heart disease
-                                </li>
-                                <li class="list-group-item">curating the
-                                    elements
-                                    relevant to heart physiology
-                                </li>
-                                <li class="list-group-item">providing new ways
-                                    to
-                                    integrate and visualize the
-                                    above listed
-                                </li>
-                            </ul>
+                        <ul class="list-group">
+                            <li class="list-group-item">including recent
+                                experiments that identify RBPs and
+                                its targets
+                            </li>
+                            <li class="list-group-item">integration genomic
+                                variation that may be relevant
+                                to the heart malfunction
+                            </li>
+                            <li class="list-group-item">facilitating the
+                                filtering
+                                for genes that are
+                                expressed or enriched in heart disease
+                            </li>
+                            <li class="list-group-item">curating the
+                                elements
+                                relevant to heart physiology
+                            </li>
+                            <li class="list-group-item">providing new ways
+                                to
+                                integrate and visualize the
+                                above listed
+                            </li>
+                        </ul>
 
-                        </div>
+                        <p class="mt-2">
+                            The tool is developed by Thiago Britto-Borges
+                            and Christoph Dieterich from
+                            the <a class="text-info"
+                                   href="https://dieterichlab.org/">
+                            Dieterich Lab </a> Section of Bioinformatics
+                            and Systems Cardiology, Klaus Tschira Institute
+                            for Integrative Computational Cardiology
+                            Department of Internal Medicine III -
+                            University Hospital Heidelberg and German Center
+                            for Cardiovascular Research (DZHK) - Partner
+                            site Heidelberg/Mannheim.
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
 {% endblock %}
 
