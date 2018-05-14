@@ -7,6 +7,7 @@ FIXME: the hub ID depends on internal state of the UCSC browser.  Our hub
 */
 var DorinaHubId = 39859;
 
+
 function DoRiNAResult(line) {
     var self = this;
     self.cols = line.split('\t');
@@ -113,7 +114,10 @@ function DoRiNAResult(line) {
         if (self.cols.length < 5) {
             return 'unknown:0-0';
         }
-        return self.cols[0] + ':' + self.cols[3] + '-' + self.cols[4];
+
+
+        return self.cols[0] + ':' + self.cols[3] + '-' + self.cols[4] +
+            "(" + self.cols[6] + ")";
     }, self);
 
     self.feature_location = ko.computed(function () {
@@ -123,22 +127,10 @@ function DoRiNAResult(line) {
         if (self.cols.length < 12) {
             return 'unknown:0-0';
         }
-        return self.cols[9] + ':' + self.cols[10] + '-' + self.cols[11];
+        return self.cols[9] + ':' + self.cols[10] + '-' + self.cols[11] + "(" +
+            self.cols[14] + ")";
     }, self);
 
-    self.strand = ko.computed(function () {
-        if (self.error_state()) {
-            return '';
-        }
-        return (self.cols.length > 6) ? self.cols[6] : '.';
-    }, self);
-
-    self.feature_strand = ko.computed(function () {
-        if (self.error_state()) {
-            return '';
-        }
-        return (self.cols.length > 14) ? self.cols[14] : '.';
-    }, self);
 }
 
 function DoRiNAViewModel(net, uuid, custom_regulator) {
@@ -204,11 +196,18 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                 {title: "Score"},
                 {title: "Target site id"},
                 {title: "Target gene location"},
-                {title: "Target site location"},
-                {title: "Genomic target strand"},
-                {title: "Target site strand"},
+                {title: "Target site location"}],
+            columnDefs: [
+                {
+                    targets: [5, 6],
+                    render: function (data, type, row) {
+                        data = '<a href="' + self.ucsc_url() +
+                            data().split('(')[0] + '">' + data() + '</a>';
+                        return data;
+                    }
+                }
             ],
-             "order": [[ 3, "desc" ]]
+            "order": [[3, "desc"]]
         }
     );
 
@@ -262,8 +261,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     }, self);
 
     self.ucsc_url = ko.computed(function () {
-        var url = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" + self.chosenAssembly();
-        url += "&hubUrl=http://dorina.mdc-berlin.de/dorinaHub/hub.txt";
+        var url = "http://genome.dieterichlab.org/cgi-bin/hgTracks?db=" +
+            self.chosenAssembly();
+        url += "&hubUrl=http://porta.dieterichlab.org/trackhubs/dorinaHub/hub.txt";
         url += self.trackVisibility();
         url += "&position=";
         return url;
@@ -518,9 +518,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         result_i.score,
                         result_i.site,
                         result_i.location,
-                        result_i.feature_location,
-                        result_i.strand,
-                        result_i.feature_strand)
+                        result_i.feature_location)
                     );
                 }
                 if (data.more_results && data.next_offset) {
