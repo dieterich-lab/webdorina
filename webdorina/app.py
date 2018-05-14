@@ -1,10 +1,10 @@
 # !/usr/bin/env python3
 # coding=utf-8
 from __future__ import print_function
-from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
+import logging
 import os
 import sys
 import uuid
@@ -25,6 +25,8 @@ app = flask.Flask('webdorina',
                   static_folder=os.path.join(this_dir, 'static'))
 app.secret_key = os.urandom(24)
 app.config.from_pyfile(os.path.join(this_dir, 'config.py'))
+app.logger.addHandler(logging.getLogger('rq.worker'))
+
 try:
     user_config = app.config.from_pyfile(sys.argv[1])
 except FileNotFoundError:
@@ -320,7 +322,6 @@ def api_list_genomes():
 @app.route('/api/v1.0/assemblies/<genome>')
 def api_list_assemblies(genome):
     assemblies = [x for x in _list_assemblies() if x['genome'] == genome]
-    # assemblies.sort(lambda x, y: cmp(x['weight'], y['weight']), reverse=True)
     return jsonify(dict(assemblies=assemblies))
 
 
