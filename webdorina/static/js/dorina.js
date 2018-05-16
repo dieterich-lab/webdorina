@@ -187,30 +187,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.window_b = ko.observable(0);
 
 
-    self.table = $("#resultTable").DataTable(
-        {
-            columns: [
-                {title: "Track name"},
-                {title: "Target gene"},
-                {title: "Data source"},
-                {title: "Score"},
-                {title: "Target site id"},
-                {title: "Target gene location"},
-                {title: "Target site location"}],
-            columnDefs: [
-                {
-                    targets: [5, 6],
-                    render: function (data, type, row) {
-                        data = '<a href="' + self.ucsc_url() +
-                            data().split('(')[0] + '">' + data() + '</a>';
-                        return data;
-                    }
-                }
-            ],
-            "order": [[3, "desc"]]
-        }
-    );
-
     // Generate URL parametres for the UCSC URL to make selected supertracks
     // and subtracks visible.
     self.trackVisibility = ko.computed(function () {
@@ -491,51 +467,72 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             }
 
             return self.get_results(uuid);
-
         });
     };
 
-
     self.get_results = function (uuid, more) {
-        var url = 'api/v1.0/result/' + uuid;
-        if (more) {
-            url += '/' + self.offset();
-        }
+        var url = '/api/v1.0/result/' + uuid;
+        self.more_results(true);
 
-        net.getJSON(url).then(function (data) {
-                self.pending(false);
-                $('#results').collapse('show');
-                $(document.getElementById("collapseThree")).collapse("show");
+        self.table = $("#resultTable").DataTable(
+            {
+                ajax: {
+                    "url": url,
+                    // "data":,
+                    "dataSrc": function (json) {
+                        var temp = [];
+                        for (var x in json.results) {
+                            result_i = new DoRiNAResult(json.results[x]);
 
-                self.more_results(data.more_results);
-                self.total_results(data.total_results);
-                for (var i in data.results) {
-                    result_i = new DoRiNAResult(data.results[i]);
-                    self.results.push(Array(
-                        result_i.track,
-                        result_i.gene,
-                        result_i.data_source,
-                        result_i.score,
-                        result_i.site,
-                        result_i.location,
-                        result_i.feature_location)
-                    );
-                }
-                if (data.more_results && data.next_offset) {
-                    self.offset(data.next_offset);
-                    self.uuid(uuid);
-                }
-                try {
-                    self.table.rows.add(self.results()).unique().draw();
-                }
-                catch (err) {
-                    document.getElementById('page').innerHTML = '' +
-                        'An error occurred: ' + err.message;
-                }
+                            temp.push(
+                                Array(
+                                    result_i.track,
+                                    result_i.gene,
+                                    result_i.data_source,
+                                    result_i.score,
+                                    result_i.site,
+                                    result_i.location,
+                                    result_i.feature_location));
+                        }
+                        return temp;
+                    }
+                },
+                deferRender: true,
+                responsive: true,
+                language:
+                    {
+                        lengthMenu: "Display _MENU_ records per page",
+                        zeroRecords: "No records available",
+                        infoEmpty: "No data",
+                        loadingRecords: "Loading...",
+                        processing: "Processing..."
+                    },
+                columns: [
+                    {title: "Track name"},
+                    {title: "Target gene"},
+                    {title: "Data source"},
+                    {title: "Score"},
+                    {title: "Target site id"},
+                    {title: "Target gene location"},
+                    {title: "Target site location"}],
+                columnDefs: [
+                    {
+                        targets: [5, 6],
+                        render: function (data, type, row) {
+                            data = '<a target="_blank" href="' + self.ucsc_url() +
+                                data().split('(')[0] + '">' + data() + '</a>';
+                            return data;
+                        }
+                    }
+                ],
+                "order":
+                    [[3, "desc"]]
             }
         );
-    }
-    ;
+        $('#results').collapse('show');
+        $(document.getElementById("collapseThree")).collapse("show");
+        self.pending(false);
+    };
 
     self.reset_search_state = function () {
         self.more_results(false);
@@ -563,7 +560,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.load_more_results = function () {
         self.get_results(self.uuid(), true);
-        $('#resultTable').DataTable().unique().draw();
+        // $('#resultTable').DataTable().unique().draw();
     };
 
     self.new_search = function () {

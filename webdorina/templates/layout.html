@@ -64,7 +64,7 @@
     {#  </div>#}
 </div>
 
-<div aria-hidden="true" class="navdrawer navdrawer-permanent doc-navdrawer"
+<div aria-hidden="true" class="navdrawer navdrawer-permanent"
      id="doc-navdrawer" tabindex="-1">
     <div class="navdrawer-content">
         <div class="flex-column doc-navdrawer-body">
@@ -122,11 +122,11 @@
     </div>
 </div>
 
-<main class="doc-main px-lg-3 col-lg-8">
+<main class="doc-main">
     <div class="container">
         {# pt-4 adjust padding to the top from 1 to 5 #}
         <div class="row pt-5 ">
-            <div class="col-10 col-xl-12">
+            <div class="col-12">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -146,7 +146,7 @@
                 {% endwith %}
 
 
-                <div class="bd-content mb-5 justify-content-center ">
+                <div class="bd-content">
                     {% block body %}{% endblock %}
                 </div>
             </div>

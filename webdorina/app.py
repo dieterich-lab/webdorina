@@ -375,11 +375,9 @@ def get_result(uuid, offset):
         return jsonify(dict(uuid=uuid, state='expired'))
 
     rec = json.loads(redis_store.get(key))
-    print(rec)
     query_key = str(rec['redirect'])
     redis_store.expire(query_key, app.config['RESULT_TTL'])
-    result = redis_store.lrange(
-        query_key, offset + 0, offset + app.config['MAX_RESULTS'] - 1)
+    result = redis_store.lrange(query_key, 0, -1)
 
     if 'Job failed' in result[0]:
         app.logger.error(result[0])
@@ -387,13 +385,9 @@ def get_result(uuid, offset):
 
         return redirect(flask.url_for('index'))
 
-    next_offset = offset + app.config['MAX_RESULTS']
-    total_results = redis_store.llen(query_key)
-    more_results = True if total_results > offset + app.config[
-        'MAX_RESULTS'] else False
     return jsonify(
-        dict(state='done', results=result, more_results=more_results,
-             next_offset=next_offset, total_results=total_results))
+        dict(state='done', results=result, more_results=False,
+             next_offset=0, total_results=111))
 
 
 if __name__ == "__main__":
