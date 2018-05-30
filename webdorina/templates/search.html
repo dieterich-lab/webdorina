@@ -23,21 +23,21 @@
                     <div class="form" role="form">
                         <div class="row">
                             <div class="col-6">
-                                <label for="regulators">Regulators (set
-                                    A)</label>
-                                <select multiple class="form"
-                                        id="regulators"
-                                        data-bind="selectedOptions: selected_regulators"
-                                        placeholder="Select one or more regulators...">
-                                </select>
-                            </div>
-                            <div class="col-6">
                                 <label class="text-muted" for="shown-types">
                                     Regulator types to show
                                 </label>
                                 <select multiple class="form"
                                         id="shown-types"
                                         placeholder="Select regulator types to show...">
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="regulators">Regulators (set
+                                    A)</label>
+                                <select multiple class="form"
+                                        id="regulators"
+                                        data-bind="selectedOptions: selected_regulators"
+                                        placeholder="Select one or more regulators...">
                                 </select>
                             </div>
                         </div>
@@ -132,7 +132,6 @@
                                 <select multiple class="form" id="genes"
                                         data-bind="selectedOptions: genes"></select>
                             </div>
-
 
                             <div class="form-group">
                                 <label class="collapsed"
@@ -235,7 +234,7 @@
                                 <div class="form-group combinatorial collapse">
                                     <div class="row">
 
-                                        <label class="col-6" for="window_b">Restrict
+                                        <label for="window_b">Restrict
                                             to overlapping features with a
                                             maximal
                                             distance
