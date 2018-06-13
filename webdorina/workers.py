@@ -10,12 +10,19 @@ import logging
 from dorina import run
 from redis import Redis
 
-logger = logging.getLogger('webdorina')
+logger = logging.getLogger('app')
+
 
 def run_analyse(datadir, query_key, query_pending_key, query, uuid,
                 SESSION_STORE=None, RESULT_TTL=None, SESSION_TTL=None):
     logger.info('Running analysis for {}'.format(query_key))
+    if query['tissue']:
+        datadir = '{datadir}/{tissue}/'.format(
+            datadir=datadir,
+            tissue=query['tissue'])
+
     dorina = run.Dorina(datadir)
+    query['tissue']
 
     redis_store = Redis(charset="utf-8", decode_responses=True)
 

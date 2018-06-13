@@ -1,10 +1,5 @@
 // -*- mode: js2; js2-additional-externs: '("$" "ko" "setTimeout") -*-
 /*global ko*/
-/*
-FIXME: the hub ID depends on internal state of the UCSC browser.  Our hub
-       was assigned this particular identifier.  For different browsers and
-       different hubs at different times this identifier will differ.
-*/
 var DorinaHubId = 39859;
 
 
@@ -175,6 +170,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.pending = ko.observable(false);
 
     self.genes = ko.observableArray([]);
+    self.tissue = ko.observable('');
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
 
@@ -288,136 +284,149 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             for (var e in regulator_types) {
                 self.regulator_types.push({id: e});
             }
-
         });
     };
 
     self.show_simple_search = function () {
         self.loading_regulators(true);
         setTimeout(function () {
-            self.get_regulators(self.chosenAssembly()).then(function () {
-                $('#search').collapse('show');
-                $(document.getElementById('collapseTwo')).collapse('show');
-                self.mode('search');
+                self.get_regulators(self.chosenAssembly()).then(function () {
 
-                var $genes;
-                var $regulators;
-                var $regulators_setb;
-                var $shown_types;
-                var $shown_types_setb;
+                        $('#search').collapse('show');
+                        $(document.getElementById('collapseTwo')).collapse('show');
+                        self.mode('search');
 
-                $genes = $('#genes').selectize({
-                    options: [],
-                    valueField: 'id',
-                    labelField: 'id',
-                    searchField: 'id',
-                    create: false,
-                    load: function (query, callback) {
-                        if (query.length == 0) {
-                            return callback();
-                        }
-                        net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
-                            callback(res.genes.map(function (r) {
-                                return {id: r};
-                            }));
+                        var $genes;
+                        var $regulators;
+                        var $regulators_setb;
+                        var $shown_types;
+                        var $shown_types_setb;
+
+                        tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
+                        net.getJSON(tissueURL, function (data) {
+                            let dropdown = $('#tissue');
+                            dropdown.prop('selectedIndex', 0);
+                            $.each(data['tissue'], function (index, value) {
+                                dropdown.append($('<option></option>').text(
+                                    value.replace('_', ' ')).val(value))
+                            })
                         });
-                    }
-                });
 
-                $shown_types = $('#shown-types').selectize({
-                    options: self.regulator_types(),
-                    items: [],
-                    plugins: {
-                        "remove_button": {title: "Remove"}
-                    },
-                    valueField: "id",
-                    labelField: "id",
-                    create: false,
-                    onChange: function (values) {
-                        regulators.disable();
-                        regulators.clearOptions();
-                        if (values && values.length > 0) {
-                            var filtered_regs = self.regulators().filter(function (reg) {
-                                return values.indexOf(reg.experiment) > -1;
-                            });
-                            for (var i in filtered_regs) {
-                                regulators.addOption(filtered_regs[i]);
+                        $genes = $('#genes').selectize({
+                            options: [],
+                            valueField: 'id',
+                            labelField: 'id',
+                            searchField: 'id',
+                            create: false,
+                            delimiter: ' ',
+                            load: function (query, callback) {
+                                if (query.length == 0) {
+                                    return callback();
+                                }
+                                net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
+                                    callback(res.genes.map(function (r) {
+                                        return {id: r};
+                                    }));
+                                });
                             }
-                        }
-                        regulators.refreshOptions();
-                        regulators.enable();
-                    }
-                });
-                shown_types = $shown_types[0].selectize;
+                        });
 
-                $shown_types_setb = $('#shown-types-setb').selectize({
-                    options: self.regulator_types(),
-                    items: [],
-                    valueField: 'id',
-                    labelField: 'id',
-                    onChange: function (values) {
-                        regulators_setb.disable();
-                        if (values && values.length > 0) {
-                            var filtered_regs = self.regulators().filter(function (reg) {
-                                return values.indexOf(reg.experiment) > -1;
-                            });
-
-                            for (var i in filtered_regs) {
-                                regulators_setb.addOption(filtered_regs[i]);
+                        $shown_types = $('#shown-types').selectize({
+                            options: self.regulator_types(),
+                            items: [],
+                            plugins: {
+                                "remove_button": {title: "Remove"}
+                            },
+                            valueField: "id",
+                            labelField: "id",
+                            create: false,
+                            onChange: function (values) {
+                                regulators.disable();
+                                regulators.clearOptions();
+                                if (values && values.length > 0) {
+                                    var filtered_regs = self.regulators().filter(function (reg) {
+                                        return values.indexOf(reg.experiment) > -1;
+                                    });
+                                    for (var i in filtered_regs) {
+                                        regulators.addOption(filtered_regs[i]);
+                                    }
+                                }
+                                regulators.refreshOptions();
+                                regulators.enable();
                             }
+                        });
+                        shown_types = $shown_types[0].selectize;
+
+                        $shown_types_setb = $('#shown-types-setb').selectize({
+                            options: self.regulator_types(),
+                            items: [],
+                            valueField: 'id',
+                            labelField: 'id',
+                            onChange: function (values) {
+                                regulators_setb.disable();
+                                if (values && values.length > 0) {
+                                    var filtered_regs = self.regulators().filter(function (reg) {
+                                        return values.indexOf(reg.experiment) > -1;
+                                    });
+
+                                    for (var i in filtered_regs) {
+                                        regulators_setb.addOption(filtered_regs[i]);
+                                    }
+                                }
+
+                                regulators_setb.refreshOptions();
+                                regulators_setb.enable();
+                            }
+                        });
+                        shown_types_setb = $shown_types_setb[0].selectize;
+
+                        $regulators = $('#regulators').selectize({
+                            options: self.regulators(),
+                            create: false,
+                            valueField: 'id',
+                            labelField: 'summary',
+                            searchField: 'summary',
+                            optgroups: self.regulator_types(),
+                            optgroupField: 'experiment',
+                            optgroupValueField: 'id',
+                            optgroupLabelField: 'id',
+                            render: {
+                                option: function (item, escape) {
+                                    return '<div><span class="regulator">' + escape(item.summary) +
+                                        '</span><br><span class="description">' + escape(item.description) + '</span></div>';
+                                }
+                            }
+                        });
+                        regulators = $regulators[0].selectize;
+
+                        $regulators_setb = $('#regulators_setb').selectize({
+                            options: self.regulators(),
+                            create: false,
+                            valueField: 'id',
+                            labelField: 'summary',
+                            searchField: 'summary',
+                            optgroups: self.regulator_types(),
+                            optgroupField: 'experiment',
+                            optgroupValueField: 'id',
+                            optgroupLabelField: 'id',
+                            render: {
+                                option: function (item, escape) {
+                                    return '<div><span class="regulator">' + escape(item.summary) +
+                                        '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
+                                        + escape(item.description) + '</span></div>';
+                                }
+                            }
+                        });
+                        regulators_setb = $regulators_setb[0].selectize;
+                        if (self.custom_regulator()) {
+                            regulators.addItem(self.uuid());
                         }
 
-                        regulators_setb.refreshOptions();
-                        regulators_setb.enable();
+                        self.loading_regulators(false);
                     }
-                });
-                shown_types_setb = $shown_types_setb[0].selectize;
-
-                $regulators = $('#regulators').selectize({
-                    options: self.regulators(),
-                    create: false,
-                    valueField: 'id',
-                    labelField: 'summary',
-                    searchField: 'summary',
-                    optgroups: self.regulator_types(),
-                    optgroupField: 'experiment',
-                    optgroupValueField: 'id',
-                    optgroupLabelField: 'id',
-                    render: {
-                        option: function (item, escape) {
-                            return '<div><span class="regulator">' + escape(item.summary) +
-                                '</span><br><span class="description">' + escape(item.description) + '</span></div>';
-                        }
-                    }
-                });
-                regulators = $regulators[0].selectize;
-
-                $regulators_setb = $('#regulators_setb').selectize({
-                    options: self.regulators(),
-                    create: false,
-                    valueField: 'id',
-                    labelField: 'summary',
-                    searchField: 'summary',
-                    optgroups: self.regulator_types(),
-                    optgroupField: 'experiment',
-                    optgroupValueField: 'id',
-                    optgroupLabelField: 'id',
-                    render: {
-                        option: function (item, escape) {
-                            return '<div><span class="regulator">' + escape(item.summary) +
-                                '</span><br><span class="description">(' + escape(item.sites) + ' sites) '
-                                + escape(item.description) + '</span></div>';
-                        }
-                    }
-                });
-                regulators_setb = $regulators_setb[0].selectize;
-                if (self.custom_regulator()) {
-                    regulators.addItem(self.uuid());
-                }
-
-                self.loading_regulators(false);
-            });
-        }, 10);
+                );
+            },
+            10);
     };
 
     self.run_search = function (keep_data) {
@@ -428,7 +437,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             region_a: self.region_a(),
             genes: self.genes(),
             offset: self.offset(),
-            uuid: self.uuid()
+            uuid: self.uuid(),
+            tissue: self.tissue()
         };
 
         if (self.use_window_a()) {
@@ -529,13 +539,13 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     [[3, "desc"]]
             }
         );
-        $('#results').collapse('show');
         $(document.getElementById("collapseThree")).collapse("show");
         self.pending(false);
     };
 
     self.reset_search_state = function () {
         self.more_results(false);
+        self.table.clear();
         self.offset(0);
         self.match_a('any');
         self.match_b('any');
@@ -555,7 +565,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.run_simple_search = function () {
         self.run_search(false);
         self.mode('results');
-
     };
 
     self.load_more_results = function () {

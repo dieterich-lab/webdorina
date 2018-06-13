@@ -8,12 +8,11 @@ import unittest
 import doctest
 
 import fakeredis
-from flask.ext.testing import TestCase
-from minimock import Mock, mock, restore, TraceTracker, assert_same_trace
+from flask_testing import TestCase
+from minimock import Mock, mock, restore, TraceTracker
 
-import run
-import webdorina
-from dorina.utils import DorinaUtils
+import webdorina.workers as run
+import webdorina.app as webdorina
 from dorina.regulator import Regulator
 
 doctest.testmod(verbose=True, optionflags=doctest.ELLIPSIS)

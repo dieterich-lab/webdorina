@@ -1,40 +1,34 @@
 <div class="card">
     <div class="card-header bg-theme" id="headingThree">
-
-        <h4 class="panel-title collapsed text-black"
-            data-toggle="collapse"
-            data-target="#collapseThree"
-            aria-expanded="false"
-            aria-controls="collapseThree">
-            Results
-        </h4>
-
+        <h5 class="mb-0 text-black">
+            <h4 class="panel-title collapsed"
+                data-toggle="collapse"
+                data-target="#collapseThree"
+                aria-expanded="false"
+                aria-controls="collapseThree">
+                Results
+            </h4>
+        </h5>
     </div>
-
     <div id="collapseThree" class="collapse"
          aria-labelledby="headingThree" data-parent="#accordion">
-        <div class="card-body collapse" id="results">
+        <div class="card-body">
             <div class="btn-group justify-content-end">
-                <button type="button" class="btn btn-info btn-lg"
-                        data-bind="click: new_search">
+                <button onClick="window.location.reload()"
+                class="btn btn-default btn-lg">
                     <span class="material-icons">search</span>
                     New search
                 </button>
                 <button href="{{ url_for('download_results', uuid=uuid) }}"
-                        class="btn btn-default btn-lg">
+                        class="btn btn-info btn-lg">
                     <span class="material-icons">file_download</span>
                     Download
                 </button>
             </div>
-
-
             <div class="row" id="table-wrapper">
-
                 <table class="table table-striped display"
                        style="width:100%;" id="resultTable">
                 </table>
-
-
             </div>
         </div>
     </div>

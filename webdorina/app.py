@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+import pathlib
 import sys
 import uuid
 from io import StringIO
@@ -26,13 +27,13 @@ app = flask.Flask('webdorina',
 app.secret_key = os.urandom(24)
 app.config.from_pyfile(os.path.join(this_dir, 'config.py'))
 app.logger.addHandler(logging.getLogger('rq.worker'))
-app.logger.addHandler(logging.getLogger('pybedtools'))
+app.logger.addHandler(logging.getLogger('dorina'))
 
 try:
     user_config = app.config.from_pyfile(sys.argv[1])
 except FileNotFoundError:
     msg = 'Using app defaults, please provide a valid config file'
-    app.logger.warn(msg)
+    app.logger.debug(msg)
 except IndexError:
     msg = 'webdorina/app.py receives a optional parameter, a Flask ' \
           'configuration file. Please see example_user_config.py'
@@ -77,7 +78,6 @@ def _list_assemblies():
             val['weight'] = int(key[2:])
             val['genome'] = g['id']
             assemblies.append(val)
-
     return assemblies
 
 
@@ -179,7 +179,7 @@ def search():
     query['match_b'] = request.form.get('match_b', u'any')
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
-
+    query['tissue'] = request.form.get('tissue')
     window_a = request.form.get('window_a', -1, int)
     if window_a > -1:
         query['window_a'] = window_a
@@ -189,9 +189,6 @@ def search():
 
     query_key = "results:%s" % json.dumps(query, sort_keys=True)
     query_pending_key = "%s_pending" % query_key
-
-    print(query_key)
-
     unique_id = request.form.get('uuid', u'invalid')
     session = "sessions:{}".format(unique_id)
     if unique_id == 'invalid' or not redis_store.exists(session):
@@ -381,13 +378,22 @@ def get_result(uuid, offset):
 
     if 'Job failed' in result[0]:
         app.logger.error(result[0])
-        flash(result, 'danger')
+        flash(result[0], 'danger')
 
         return redirect(flask.url_for('index'))
 
     return jsonify(
         dict(state='done', results=result, more_results=False,
-             next_offset=0, total_results=111))
+             next_offset=0, total_results=len(result)))
+
+
+@app.route('/api/v1.0/tissues/<assembly>')
+def get_tissues(assembly):
+    # this assumes there are no duplicated assembly is for different orgs
+    p = pathlib.Path(app.config["DATA_PATH"]) / "genomes"
+    return jsonify(dict(tissue=[str(x.name)
+                                for x in p.glob("*/{}/*".format(assembly)) if
+                                x.is_dir()]))
 
 
 if __name__ == "__main__":

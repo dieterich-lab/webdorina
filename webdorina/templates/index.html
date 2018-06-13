@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    <div id="accordion" class="">
+    <div id="accordion">
 
         {% include "choose_db.html" %}
         {% include "search.html" %}
@@ -17,15 +17,14 @@
 {% block extra_scripts %}
 
     <!-- KnockoutJS Mapping http://knockoutjs.com/documentation/plugins-mapping.html -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.min.js"></script>
+    {#    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.min.js"></script>#}
 
     <!-- jQuery DataTables http://datatables.net -->
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
-        var net = new DoRiNANet();
-        var viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
-
-        $(document).ready(function () {
+        let net = new DoRiNANet();
+        let viewmodel = new DoRiNAViewModel(net, '{{uuid}}', {{custom_regulator}});
+         $(document).ready(function () {
             $('#bedfile').change(
                 function () {
                     if ($(this).val()) {
