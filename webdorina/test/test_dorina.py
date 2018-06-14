@@ -170,8 +170,8 @@ class DorinaTestCase(TestCase):
         self.maxDiff = None
         self.tt = TraceTracker()
         webdorina.datadir = os.path.join(os.path.dirname(__file__), 'data')
-        webdorina.redis_store = RedisStore('fake_store', self.tt)
-        self.r = webdorina.redis_store.connection
+        webdorina.conn = RedisStore('fake_store', self.tt)
+        self.r = webdorina.conn.connection
         fake_queue = Mock('webdorina.Queue', tracker=self.tt)
         mock('webdorina.Queue', tracker=self.tt, returns=fake_queue)
         # use tracker=None to not track uuid4() calls

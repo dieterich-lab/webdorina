@@ -94,7 +94,7 @@
                         </div>
                     </div>
                     <div class="row form-group">
-                        <label class="col-6"
+                        <label class="col-3"
                                for="window_a">Restrict
                             to overlapping features (max. distance)
                             of:</label><br>
@@ -120,10 +120,10 @@
                         </div>
                         <div class="col-3 form-group">
                             <label for="tissue">Or by tissue:</label>
-                            <select class="form" id="tissue"
+                            <select class="form custom-select" id="tissue"
                                     placeholder="Limit targets by tissue expression"
                                     data-bind="selectedOptions: tissue">
-                                <option selected></option>
+                                <option value=" " selected>None</option>
                             </select>
                         </div>
                     </div>
@@ -227,25 +227,25 @@
                         </div>
 
                         <div class="form-group combinatorial collapse">
-                            <div class="row">
-
-                                <label for="window_b">Restrict
-                                    to overlapping features with a
-                                    maximal
-                                    distance
-                                    of:</label>
-                                <div class="input-group col-6">
-                                <span class="input-group-addon">
-                                    <input type="checkbox"
-                                           data-bind="checked: use_window_b">
-                                    </span>
-                                    <input type="text"
-                                           class="form text-right"
-                                           id="window_b"
-                                           name="window_b"
-                                           placeholder="0"
-                                           data-bind="value: window_b">
-                                    <span class="input-group-addon">bp</span>
+{#                            <div class="row">#}
+{##}
+{#                                <label for="window_b">Restrict#}
+{#                                    to overlapping features with a#}
+{#                                    maximal#}
+{#                                    distance#}
+{#                                    of:</label>#}
+{#                                <div class="input-group col-6">#}
+{#                                <span class="input-group-addon">#}
+{#                                    <input type="checkbox"#}
+{#                                           data-bind="checked: use_window_b">#}
+{#                                    </span>#}
+{#                                    <input type="text"#}
+{#                                           class="form text-right"#}
+{#                                           id="window_b"#}
+{#                                           name="window_b"#}
+{#                                           placeholder="0"#}
+{#                                           data-bind="value: window_b">#}
+{#                                    <span class="input-group-addon">bp</span>#}
                                 </div>
                             </div>
                         </div>

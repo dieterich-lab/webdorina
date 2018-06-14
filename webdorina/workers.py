@@ -14,15 +14,13 @@ logger = logging.getLogger('app')
 
 
 def run_analyse(datadir, query_key, query_pending_key, query, uuid,
-                SESSION_STORE=None, RESULT_TTL=None, SESSION_TTL=None):
+                SESSION_STORE=None, RESULT_TTL=None, SESSION_TTL=None,
+                tissue=None):
     logger.info('Running analysis for {}'.format(query_key))
-    if query['tissue']:
-        datadir = '{datadir}/{tissue}/'.format(
-            datadir=datadir,
-            tissue=query['tissue'])
-
-    dorina = run.Dorina(datadir)
-    query['tissue']
+    if tissue:
+        dorina = run.Dorina(datadir, ext=tissue)
+    else:
+        dorina = run.Dorina(datadir)
 
     redis_store = Redis(charset="utf-8", decode_responses=True)
 
@@ -66,7 +64,7 @@ def run_analyse(datadir, query_key, query_pending_key, query, uuid,
 
 
 def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid,
-                 SESSION_TTL=None, RESULT_TTL=None):
+                 session_ttl=None, result_ttl=None):
     """Filter for a given set of gene names"""
     redis_store = Redis(charset="utf-8", decode_responses=True)
 
@@ -90,10 +88,10 @@ def filter_genes(genes, full_query_key, query_key, query_pending_key, uuid,
     else:
         redis_store.rpush(query_key, [])
 
-    redis_store.expire(query_key, RESULT_TTL)
+    redis_store.expire(query_key, result_ttl)
     redis_store.delete(query_pending_key)
 
     redis_store.setex('sessions:{0}'.format(uuid), json.dumps(dict(
-        state='done', uuid=uuid)), SESSION_TTL)
+        state='done', uuid=uuid)), session_ttl)
     redis_store.setex('results:sessions:{0}'.format(uuid), json.dumps(dict(
-        redirect=query_key)), SESSION_TTL)
+        redirect=query_key)), session_ttl)

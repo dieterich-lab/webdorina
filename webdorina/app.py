@@ -27,7 +27,6 @@ app = flask.Flask('webdorina',
 app.secret_key = os.urandom(24)
 app.config.from_pyfile(os.path.join(this_dir, 'config.py'))
 app.logger.addHandler(logging.getLogger('rq.worker'))
-app.logger.addHandler(logging.getLogger('dorina'))
 
 try:
     user_config = app.config.from_pyfile(sys.argv[1])
@@ -42,18 +41,18 @@ except IndexError:
 Genome.init(app.config['DATA_PATH'])
 Regulator.init(app.config['DATA_PATH'])
 
-redis_store = Redis(charset="utf-8", decode_responses=True)
+conn = Redis(charset="utf-8", decode_responses=True)
 # assert redis is running
-redis_store.ping()
+conn.ping()
 
 
 def _create_session(create_dir=False):
     unique_id = str(uuid.uuid4())
     session = "sessions:{0}".format(unique_id)
     session_dict = dict(uuid=unique_id, state='initialised')
-    redis_store.setex(name=session,
-                      value=json.dumps(session_dict),
-                      time=app.config['SESSION_TTL'])
+    conn.setex(name=session,
+               value=json.dumps(session_dict),
+               time=app.config['SESSION_TTL'])
     if create_dir:
         os.mkdir(app.config['SESSION_STORE'].format(unique_id=unique_id))
     return unique_id
@@ -117,11 +116,11 @@ def count_columns(filename):
 def index():
     custom_regulator = 'false'
     if request.method == 'POST':
-        unique_id = _create_session(True)
+        uuid = _create_session(True)
         bedfile = request.files['bedfile']
         if bedfile and bedfile.filename.endswith('.bed'):
-            filename = "{}.bed".format(unique_id)
-            dirname = app.config['SESSION_STORE'].format(unique_id=unique_id)
+            filename = "{}.bed".format(uuid)
+            dirname = app.config['SESSION_STORE'].format(unique_id=uuid)
             bedfile.save(os.path.join(dirname, filename))
             if count_columns(os.path.join(dirname, filename)) < 3:
                 flash(u'Please upload a valid .bed '
@@ -134,13 +133,14 @@ def index():
                   u'file with at least six columns.', 'danger')
             return redirect(flask.url_for('index'))
 
+
     else:
-        unique_id = _create_session()
+        uuid = _create_session()
 
     genomes = json.dumps(_list_genomes())
     assemblies = json.dumps(_list_assemblies())
     return render_template('index.html', genomes=genomes,
-                           assemblies=assemblies, uuid=unique_id,
+                           assemblies=assemblies, uuid=uuid,
                            custom_regulator=custom_regulator)
 
 
@@ -149,9 +149,9 @@ def status(uuid):
     # uuid here shadows global uuid var,
     # but it seems a feature, not a bug
     key = "sessions:{0}".format(uuid)
-    if redis_store.exists(key):
-        _status = json.loads(redis_store.get(key))
-        _status['ttl'] = redis_store.ttl(key)
+    if conn.exists(key):
+        _status = json.loads(conn.get(key))
+        _status['ttl'] = conn.ttl(key)
     else:
         _status = dict(uuid=uuid, state='expired')
 
@@ -169,8 +169,7 @@ def search():
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
     query['set_a'] = request.form.getlist('set_a[]')
-    offset = request.form.get('offset', 0, int)
-
+    # query['offset'] = request.form.get('offset', -1, int)
     query['set_b'] = request.form.getlist('set_b[]')
     # werkzeug/Flask insists on returning an empty list, but dorina.analyse
     # expects 'None'
@@ -179,7 +178,7 @@ def search():
     query['match_b'] = request.form.get('match_b', u'any')
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
-    query['tissue'] = request.form.get('tissue')
+    query['tissue'] = request.form.get('tissue', None)
     window_a = request.form.get('window_a', -1, int)
     if window_a > -1:
         query['window_a'] = window_a
@@ -191,19 +190,19 @@ def search():
     query_pending_key = "%s_pending" % query_key
     unique_id = request.form.get('uuid', u'invalid')
     session = "sessions:{}".format(unique_id)
-    if unique_id == 'invalid' or not redis_store.exists(session):
+    if unique_id == 'invalid' or not conn.exists(session):
         unique_id = _create_session()
         session = "sessions:{}".format(unique_id)
 
-    if redis_store.exists(query_key):
+    if conn.exists(query_key):
         session_dict = dict(uuid=unique_id, state='done')
-        redis_store.expire(query_key, app.config['RESULT_TTL'])
-        redis_store.set(session, json.dumps(session_dict))
-        redis_store.expire(session, app.config['SESSION_TTL'])
-        redis_store.set("results:{0}".format(session),
-                        json.dumps(dict(redirect=query_key)))
-        redis_store.expire("results:{0}".format(session),
-                           app.config['SESSION_TTL'])
+        conn.expire(query_key, app.config['RESULT_TTL'])
+        conn.set(session, json.dumps(session_dict))
+        conn.expire(session, app.config['SESSION_TTL'])
+        conn.set("results:{0}".format(session),
+                 json.dumps(dict(redirect=query_key)))
+        conn.expire("results:{0}".format(session),
+                    app.config['SESSION_TTL'])
         return jsonify(session_dict)
 
     elif query['genes'][0] != u'all':
@@ -211,16 +210,16 @@ def search():
         full_query['genes'] = [u'all']
         full_query_key = "results:%s" % json.dumps(full_query, sort_keys=True)
 
-        if redis_store.exists(full_query_key):
-            redis_store.expire(full_query_key, app.config['RESULT_TTL'])
-            redis_store.set(query_pending_key, True)
-            redis_store.expire(query_pending_key, 30)
+        if conn.exists(full_query_key):
+            conn.expire(full_query_key, app.config['RESULT_TTL'])
+            conn.set(query_pending_key, True)
+            conn.expire(query_pending_key, 30)
             session_dict = dict(state='pending', uuid=unique_id)
-            redis_store.set('sessions:{0}'.format(unique_id),
-                            json.dumps(session_dict))
-            redis_store.expire(
+            conn.set('sessions:{0}'.format(unique_id),
+                     json.dumps(session_dict))
+            conn.expire(
                 'sessions:{0}'.format(unique_id), app.config['SESSION_TTL'])
-            q = Queue(connection=redis_store, default_timeout=600)
+            q = Queue(connection=conn, default_timeout=600)
 
             q.enqueue(filter_genes, query['genes'], full_query_key, query_key,
                       query_pending_key, unique_id,
@@ -229,17 +228,17 @@ def search():
             return jsonify(session_dict)
 
     session_dict = dict(state='pending', uuid=unique_id)
-    redis_store.set('sessions:{0}'.format(unique_id), json.dumps(session_dict))
-    redis_store.expire('sessions:{0}'.format(unique_id),
-                       app.config['SESSION_TTL'])
+    conn.set('sessions:{0}'.format(unique_id), json.dumps(session_dict))
+    conn.expire('sessions:{0}'.format(unique_id),
+                app.config['SESSION_TTL'])
 
-    if redis_store.get(query_pending_key):
+    if conn.get(query_pending_key):
         return jsonify(session_dict)
 
-    redis_store.set(query_pending_key, True)
-    redis_store.expire(query_pending_key, 30)
+    conn.set(query_pending_key, True)
+    conn.expire(query_pending_key, 30)
 
-    q = Queue(connection=redis_store, default_timeout=600)
+    q = Queue(connection=conn, default_timeout=600)
     q.enqueue(run_analyse, app.config['DATA_PATH'], query_key,
               query_pending_key, query, unique_id,
               SESSION_STORE=app.config['SESSION_STORE'],
@@ -263,11 +262,11 @@ def download_regulator(assembly, name):
 @app.route('/api/v1.0/download/results/<uuid>')
 def download_results(uuid):
     key = "results:sessions:{0}".format(uuid)
-    if not redis_store.exists(key):
+    if not conn.exists(key):
         flask.abort(404)
 
-    result_key = json.loads(redis_store.get(key))['redirect']
-    results = redis_store.lrange(result_key, 0, -1)
+    result_key = json.loads(conn.get(key))['redirect']
+    results = conn.lrange(result_key, 0, -1)
 
     out = StringIO()
     for res in results:
@@ -326,8 +325,8 @@ def api_list_assemblies(genome):
 @app.route('/api/v1.0/regulators/<assembly>')
 def list_regulators(assembly):
     cache_key = "regulators:{0}".format(assembly)
-    if redis_store.exists(cache_key):
-        regulators_ = json.loads(redis_store.get(cache_key))
+    if conn.exists(cache_key):
+        regulators_ = json.loads(conn.get(cache_key))
     else:
         regulators_ = {}
         available_regulators = Regulator.all()
@@ -337,8 +336,8 @@ def list_regulators(assembly):
                         available_regulators[genome][assembly].items()):
                     regulators_[key] = val
 
-                redis_store.set(cache_key, json.dumps(regulators_))
-                redis_store.expire(cache_key, app.config['REGULATORS_TTL'])
+                conn.set(cache_key, json.dumps(regulators_))
+                conn.expire(cache_key, app.config['REGULATORS_TTL'])
 
     return jsonify(regulators_)
 
@@ -355,12 +354,12 @@ def list_genes(assembly, query):
 
     cache_key = "genes:{0}".format(assembly)
 
-    if not redis_store.exists(cache_key):
+    if not conn.exists(cache_key):
         new_genes = Genome.get_genes(assembly)
         for gene in new_genes:
-            redis_store.zadd(cache_key, gene, 0)
+            conn.zadd(cache_key, gene, 0)
 
-    genes = redis_store.zrangebylex(cache_key, start, end)
+    genes = conn.zrangebylex(cache_key, start, end)
     return jsonify(dict(genes=genes[:500]))
 
 
@@ -368,19 +367,19 @@ def list_genes(assembly, query):
 @app.route('/api/v1.0/result/<uuid>/<int:offset>')
 def get_result(uuid, offset):
     key = "results:sessions:{0}".format(uuid)
-    if not redis_store.exists(key):
+    if not conn.exists(key):
         return jsonify(dict(uuid=uuid, state='expired'))
 
-    rec = json.loads(redis_store.get(key))
+    rec = json.loads(conn.get(key))
     query_key = str(rec['redirect'])
-    redis_store.expire(query_key, app.config['RESULT_TTL'])
-    result = redis_store.lrange(query_key, 0, -1)
+    conn.expire(query_key, app.config['RESULT_TTL'])
+    result = conn.lrange(query_key, 0, -1)
 
     if 'Job failed' in result[0]:
         app.logger.error(result[0])
-        flash(result[0], 'danger')
-
-        return redirect(flask.url_for('index'))
+        return jsonify(
+            dict(state='error', results=[], more_results=False,
+                 next_offset=0, total_results=0))
 
     return jsonify(
         dict(state='done', results=result, more_results=False,
