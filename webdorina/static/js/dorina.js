@@ -2,6 +2,12 @@
 /*global ko*/
 var DorinaHubId = 39859;
 
+function bootstrap_alert(message) {
+    $('#alert_placeholder').html(
+        '<div class="alert alert-danger alert-dismissable">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">' +
+        '&times;</button><span>' + message + '</span></div>')
+}
 
 function DoRiNAResult(line) {
     var self = this;
@@ -170,7 +176,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.pending = ko.observable(false);
 
     self.genes = ko.observableArray([]);
-    self.tissue = ko.observable('');
+    self.tissue = ko.observable(undefined);
+    self.available_tissues = ko.observable(false);
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
 
@@ -301,15 +308,19 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         var $regulators_setb;
                         var $shown_types;
                         var $shown_types_setb;
+                        var dropdown = $('#tissue');
 
                         tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
                         net.getJSON(tissueURL, function (data) {
-                            let dropdown = $('#tissue');
                             dropdown.prop('selectedIndex', 0);
-                            $.each(data['tissue'], function (index, value) {
-                                dropdown.append($('<option></option>').text(
-                                    value.replace('_', ' ')).val(value))
-                            })
+                            if (data['tissue'].length > 0) {
+                                self.available_tissues(true);
+
+                                $.each(data['tissue'], function (index, value) {
+                                    dropdown.append($('<option></option>').text(
+                                        value.replace('_', ' ')).val(value))
+                                })
+                            }
                         });
 
                         $genes = $('#genes').selectize({
@@ -426,8 +437,10 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     }
                 );
             },
-            10);
-    };
+            10
+        );
+    }
+    ;
 
     self.run_search = function (keep_data) {
         var search_data = {

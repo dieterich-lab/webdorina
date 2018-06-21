@@ -1,3 +1,17 @@
+:root {
+    --primary: #0000ff;
+    --primary-dark: #00008b;
+    --primary-light: #add8e6;
+}
+
+a {
+    color: blue !important;
+}
+
+a .active{
+     font-weight: bold !important;
+}
+
 #table-wrapper {
     overflow: auto;
 }
@@ -215,6 +229,6 @@
     display: none;
 }
 
-.bg-theme{
+.bg-theme {
     background-color: rgb(165, 188, 183);
 }

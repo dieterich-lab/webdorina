@@ -118,7 +118,9 @@
                             <select multiple class="form" id="genes"
                                     data-bind="selectedOptions: genes"></select>
                         </div>
-                        <div class="col-3 form-group">
+
+                        <div class="col-3 form-group"
+                             data-bind="visible: available_tissues">
                             <label for="tissue">Or by tissue:</label>
                             <select class="form custom-select" id="tissue"
                                     placeholder="Limit targets by tissue expression"
@@ -126,6 +128,7 @@
                                 <option value=" " selected>None</option>
                             </select>
                         </div>
+
                     </div>
 
                     <div class="form-group">
@@ -227,106 +230,106 @@
                         </div>
 
                         <div class="form-group combinatorial collapse">
-{#                            <div class="row">#}
-{##}
-{#                                <label for="window_b">Restrict#}
-{#                                    to overlapping features with a#}
-{#                                    maximal#}
-{#                                    distance#}
-{#                                    of:</label>#}
-{#                                <div class="input-group col-6">#}
-{#                                <span class="input-group-addon">#}
-{#                                    <input type="checkbox"#}
-{#                                           data-bind="checked: use_window_b">#}
-{#                                    </span>#}
-{#                                    <input type="text"#}
-{#                                           class="form text-right"#}
-{#                                           id="window_b"#}
-{#                                           name="window_b"#}
-{#                                           placeholder="0"#}
-{#                                           data-bind="value: window_b">#}
-{#                                    <span class="input-group-addon">bp</span>#}
-                                </div>
-                            </div>
+                            {#                            <div class="row">#}
+                            {##}
+                            {#                                <label for="window_b">Restrict#}
+                            {#                                    to overlapping features with a#}
+                            {#                                    maximal#}
+                            {#                                    distance#}
+                            {#                                    of:</label>#}
+                            {#                                <div class="input-group col-6">#}
+                            {#                                <span class="input-group-addon">#}
+                            {#                                    <input type="checkbox"#}
+                            {#                                           data-bind="checked: use_window_b">#}
+                            {#                                    </span>#}
+                            {#                                    <input type="text"#}
+                            {#                                           class="form text-right"#}
+                            {#                                           id="window_b"#}
+                            {#                                           name="window_b"#}
+                            {#                                           placeholder="0"#}
+                            {#                                           data-bind="value: window_b">#}
+                            {#                                    <span class="input-group-addon">bp</span>#}
                         </div>
-
-                        <div class="form-group combinatorial collapse">
-                            <label>Define set operations</label>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="btn-group"
-                                         style="width: 15rem;"
-                                         data-toggle="buttons"
-                                         data-bind="radio: combinatorialOperation">
-                                        <label class="btn btn-default">
-                                            <input type="radio"
-                                                   name="set_op_group"
-                                                   value="and"> AND
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="radio"
-                                                   name="set_op_group"
-                                                   value="or"> OR
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="radio"
-                                                   name="set_op_group"
-                                                   value="xor"> XOR
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="radio"
-                                                   name="set_op_group"
-                                                   value="not"> NOT
-                                        </label>
-                                    </div>
-
-                                    <div class="card"
-                                         style="width: 15rem;">
-                                        <img class="card-img-top"
-                                             data-bind="attr: {src :combinatorialOpImagePath}">
-                                        <div class="card-body">
-                                            <p class="card-text"
-                                               id="readable-set-operation"
-                                               data-bind="text: 'Return binding sites of set A and set B being ' + readableSetOperation()"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row col-12 justify-content-end">
-                        <div class="form-inline col-sm-1"
-                             data-bind="visible: pending">
-                            <div class="progress-circular">
-                                <div class="progress-circular-wrapper">
-                                    <div class="progress-circular-inner">
-                                        <div class="progress-circular-left">
-                                            <div class="progress-circular-spinner"></div>
-                                        </div>
-                                        <div class="progress-circular-gap"></div>
-                                        <div class="progress-circular-right">
-                                            <div class="progress-circular-spinner"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit"
-                                class="btn btn-info btn-lg"
-                                data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
-                            <span class="material-icons">search</span>
-                            Search
-                        </button>
-                        <button type="button" class="btn btn-lg"
-                                data-bind="click: clear_selections">
-                            <span class="material-icons">clear</span>
-                            Clear
-                        </button>
                     </div>
                 </div>
-            </form>
+
+                <div class="form-group combinatorial collapse">
+                    <label>Define set operations</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="btn-group"
+                                 style="width: 15rem;"
+                                 data-toggle="buttons"
+                                 data-bind="radio: combinatorialOperation">
+                                <label class="btn btn-default">
+                                    <input type="radio"
+                                           name="set_op_group"
+                                           value="and"> AND
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio"
+                                           name="set_op_group"
+                                           value="or"> OR
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio"
+                                           name="set_op_group"
+                                           value="xor"> XOR
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio"
+                                           name="set_op_group"
+                                           value="not"> NOT
+                                </label>
+                            </div>
+
+                            <div class="card"
+                                 style="width: 15rem;">
+                                <img class="card-img-top"
+                                     data-bind="attr: {src :combinatorialOpImagePath}">
+                                <div class="card-body">
+                                    <p class="card-text"
+                                       id="readable-set-operation"
+                                       data-bind="text: 'Return binding sites of set A and set B being ' + readableSetOperation()"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="row col-12 justify-content-end">
+            <div class="form-inline col-sm-1"
+                 data-bind="visible: pending">
+                <div class="progress-circular">
+                    <div class="progress-circular-wrapper">
+                        <div class="progress-circular-inner">
+                            <div class="progress-circular-left">
+                                <div class="progress-circular-spinner"></div>
+                            </div>
+                            <div class="progress-circular-gap"></div>
+                            <div class="progress-circular-right">
+                                <div class="progress-circular-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit"
+                    class="btn btn-info btn-lg"
+                    data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
+                <span class="material-icons">search</span>
+                Search
+            </button>
+            <button type="button" class="btn btn-lg"
+                    data-bind="click: clear_selections">
+                <span class="material-icons">clear</span>
+                Clear
+            </button>
         </div>
     </div>
+    </form>
+</div>
+</div>
 </div>
 
 

@@ -178,7 +178,8 @@ def search():
     query['match_b'] = request.form.get('match_b', u'any')
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
-    query['tissue'] = request.form.get('tissue', None)
+    query['tissue'] = request.form.get('tissue', 'None')
+    app.logger.info(query['tissue'])
     window_a = request.form.get('window_a', -1, int)
     if window_a > -1:
         query['window_a'] = window_a
@@ -374,12 +375,16 @@ def get_result(uuid, offset):
     query_key = str(rec['redirect'])
     conn.expire(query_key, app.config['RESULT_TTL'])
     result = conn.lrange(query_key, 0, -1)
+    if len(result) > 1000:
+        return jsonify(
+            dict(state='error', results=result[:1000], more_results=False,
+                 message='Result too long.', next_offset=0, total_results=0))
 
     if 'Job failed' in result[0]:
         app.logger.error(result[0])
         return jsonify(
             dict(state='error', results=[], more_results=False,
-                 next_offset=0, total_results=0))
+                 message=result[0], next_offset=0, total_results=0))
 
     return jsonify(
         dict(state='done', results=result, more_results=False,
