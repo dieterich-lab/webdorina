@@ -89,8 +89,8 @@ def _dict_to_bed(data):
     data['start'] = start
     data['end'] = end
 
-    return "{chrom}\t{start}\t{end}\t{data_source}#{track}*{site}\t{score}\t{strand}".format(
-        **data)
+    return "{chrom}\t{start}\t{end}\t{data_source}" \
+           "#{track}*{site}\t{score}\t{strand}".format(**data)
 
 
 @app.context_processor
@@ -169,7 +169,6 @@ def search():
     query['region_a'] = request.form.get('region_a', u'any')
     query['genome'] = request.form.get('assembly', None)
     query['set_a'] = request.form.getlist('set_a[]')
-    # query['offset'] = request.form.get('offset', -1, int)
     query['set_b'] = request.form.getlist('set_b[]')
     # werkzeug/Flask insists on returning an empty list, but dorina.analyse
     # expects 'None'
@@ -366,9 +365,8 @@ def list_genes(assembly, query):
     return jsonify(dict(genes=genes[:500]))
 
 
-@app.route('/api/v1.0/result/<uuid>', defaults={'offset': 0})
-@app.route('/api/v1.0/result/<uuid>/<int:offset>')
-def get_result(uuid, offset):
+@app.route('/api/v1.0/result/<uuid>')
+def get_result(uuid):
     key = "results:sessions:{0}".format(uuid)
     if not conn.exists(key):
         return jsonify(dict(uuid=uuid, state='expired'))
@@ -379,18 +377,19 @@ def get_result(uuid, offset):
     result = conn.lrange(query_key, 0, -1)
     if len(result) > 1000:
         return jsonify(
-            dict(state='error', results=result[:1000],
-                 message='Result too long.', next_offset=0, total_results=0))
+            dict(state='done', results=result[:999],
+                 message='The result table was limited due to its size, '
+                         'please limit your search query or use the download '
+                         'button.',
+                 total_results=len(result)))
 
     if 'Job failed' in result[0]:
         app.logger.error(result[0])
         return jsonify(
-            dict(state='error', results=[],
-                 message=result[0], next_offset=0, total_results=0))
+            dict(state='error', results=[], message=result[0], total_results=0))
 
     return jsonify(
-        dict(state='done', results=result,
-             next_offset=0, total_results=len(result)))
+        dict(state='done', results=result, total_results=len(result)))
 
 
 @app.route('/api/v1.0/tissues/<assembly>')

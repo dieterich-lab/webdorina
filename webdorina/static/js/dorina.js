@@ -160,20 +160,17 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }
     }, self);
     self.origin = ko.observable(window.location.origin);
-
     self.chosenAssembly = ko.observable();
-
     self.regulators = ko.observableArray([]);
     self.regulator_types = ko.observableArray([]);
     self.selected_regulators = ko.observableArray([]);
     self.selected_regulators_setb = ko.observableArray([]);
-
     self.results = ko.observableArray([]);
     self.total_results = ko.observable(0);
     self.offset = ko.observable(0);
     self.pending = ko.observable(false);
     self.genes = ko.observableArray([]);
-    self.tissue =  ko.observableArray([]);
+    self.tissue = ko.observableArray([]);
     self.available_tissues = ko.observable(false);
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
@@ -265,6 +262,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.get_regulators = function (assembly) {
         var search_path = "api/v1.0/regulators/" + assembly;
         return net.getJSON(search_path).then(function (data) {
+            if ('message' in data) {
+                bootstrap_alert(data.message);
+            }
             self.regulators.removeAll();
             self.regulator_types.removeAll();
             var regulator_types = {};
@@ -308,6 +308,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
                         net.getJSON(tissueURL, function (data) {
                             dropdown.prop('selectedIndex', 0);
+                            if ('message' in data) {
+                                bootstrap_alert(data.message);
+                            }
                             if (data['tissue'].length > 0) {
                                 self.available_tissues(true);
 
@@ -330,6 +333,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                     return callback();
                                 }
                                 net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
+                                    if ('message' in data) {
+                                        bootstrap_alert(data.message);
+                                    }
                                     callback(res.genes.map(function (r) {
                                         return {id: r};
                                     }));
@@ -471,6 +477,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         }
 
         return net.post('api/v1.0/search', search_data).then(function (data) {
+            if ('message' in data) {
+                bootstrap_alert(data.message);
+            }
             self.uuid(data.uuid);
             self.poll_result(data.uuid);
         });
@@ -479,6 +488,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.poll_result = function (uuid) {
         var url = 'api/v1.0/status/' + uuid;
         net.getJSON(url).then(function (data) {
+            if ('message' in data) {
+                bootstrap_alert(data.message);
+            }
             if (data.state == 'pending') {
                 setTimeout(function () {
                     self.poll_result(uuid);
@@ -514,6 +526,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                     result_i.location,
                                     result_i.feature_location));
                         }
+                        if ('message' in json) {
+                            bootstrap_alert(json.message);
+                        }
                         return temp;
                     }
                 },
@@ -524,8 +539,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         lengthMenu: "Display _MENU_ records per page",
                         zeroRecords: "No records available",
                         infoEmpty: "No data",
-                        loadingRecords: "Loading...",
-                        processing: "Processing..."
+                        loadingRecords: "Loadig, please wait",
+                        processing: "Processing, please wait",
                     },
                 columns: [
                     {title: "Track name"},
@@ -553,16 +568,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.pending(false);
     };
 
-    self.reset_search_state = function () {
-        self.table.clear();
-        self.offset(0);
-        self.match_a('any');
-        self.match_b('any');
-        self.region_a('any');
-        self.region_b('any');
-        self.genes('');
-    };
-
     self.clear_selections = function () {
         $('#regulators')[0].selectize.clear();
         $('#regulators_setb')[0].selectize.clear();
@@ -575,15 +580,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.run_search(false);
         self.mode('results');
     };
-
-
-
-    self.new_search = function () {
-        self.reset_search_state();
-        $(document.getElementById("collapseTwo")).collapse("show");
-        self.mode('search');
-    };
-
 }
 
 function RegulatorViewModel(net, value) {
@@ -598,8 +594,12 @@ function RegulatorViewModel(net, value) {
     self.get_regulators = function (assembly) {
 
         return net.getJSON('/api/v1.0/regulators/' + assembly).then(function (data) {
+
             self.regulators.removeAll();
             self.regulators.extend({rateLimit: 60});
+            if ('message' in data) {
+                bootstrap_alert(data.message);
+            }
             for (var reg in data) {
                 self.regulators.push(data[reg]);
             }
@@ -620,4 +620,3 @@ function SetViewModel(view_model) {
 function GetViewModel() {
     return $(document).data('view_model');
 }
-
