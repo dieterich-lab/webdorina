@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
-import pathlib
 import sys
 import uuid
 from io import StringIO
@@ -34,9 +33,7 @@ except FileNotFoundError:
     msg = 'Using app defaults, please provide a valid config file'
     app.logger.debug(msg)
 except IndexError:
-    msg = 'webdorina/app.py receives a optional parameter, a Flask ' \
-          'configuration file. Please see example_user_config.py'
-    app.logger.warn(msg)
+    pass
 
 Genome.init(app.config['DATA_PATH'])
 Regulator.init(app.config['DATA_PATH'])
@@ -392,13 +389,18 @@ def get_result(uuid):
         dict(state='done', results=result, total_results=len(result)))
 
 
-@app.route('/api/v1.0/tissues/<assembly>')
-def get_tissues(assembly):
-    # this assumes there are no duplicated assembly is for different orgs
-    p = pathlib.Path(app.config["DATA_PATH"]) / "genomes"
-    return jsonify(dict(tissue=[str(x.name)
-                                for x in p.glob("*/{}/*".format(assembly)) if
-                                x.is_dir()]))
+@app.route('/api/v1.0/tissues/<assembly>/')
+@app.route('/api/v1.0/tissues/<assembly>/<tissue>')
+def get_tissues(assembly, tissue=None):
+    path = app.config["DATA_PATH"] + '/{}_tissues.json'.format(assembly)
+    with open(path) as open_f:
+        genes_p_tissue = json.load(open_f)
+    if tissue is None:
+        return jsonify(dict(tissue=list(genes_p_tissue.keys())))
+    try:
+        return jsonify(dict(genes=genes_p_tissue[tissue]))
+    except KeyError:
+        return jsonify(dict(message='Tissue not found'))
 
 
 if __name__ == "__main__":

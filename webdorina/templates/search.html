@@ -296,41 +296,40 @@
                         </div>
                     </div>
                 </div>
-        </div>
-        <div class="row col-12 justify-content-end">
-            <div class="form-inline col-sm-1"
-                 data-bind="visible: pending">
-                <div class="progress-circular">
-                    <div class="progress-circular-wrapper">
-                        <div class="progress-circular-inner">
-                            <div class="progress-circular-left">
-                                <div class="progress-circular-spinner"></div>
-                            </div>
-                            <div class="progress-circular-gap"></div>
-                            <div class="progress-circular-right">
-                                <div class="progress-circular-spinner"></div>
+                <div class="row col-12 justify-content-end">
+                    <div class="form-inline col-sm-1"
+                         data-bind="visible: pending">
+                        <div class="progress-circular">
+                            <div class="progress-circular-wrapper">
+                                <div class="progress-circular-inner">
+                                    <div class="progress-circular-left">
+                                        <div class="progress-circular-spinner"></div>
+                                    </div>
+                                    <div class="progress-circular-gap"></div>
+                                    <div class="progress-circular-right">
+                                        <div class="progress-circular-spinner"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <button type="submit"
+                            class="btn btn-info btn-lg"
+                            data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
+                        <span class="material-icons">search</span>
+                        Search
+                    </button>
+                    <button type="button" class="btn btn-lg"
+                            data-bind="click: clear_selections">
+                        <span class="material-icons">clear</span>
+                        Clear
+                    </button>
                 </div>
-            </div>
-            <button type="submit"
-                    class="btn btn-info btn-lg"
-                    data-bind="enable: (custom_regulator() || selected_regulators().length > 0)">
-                <span class="material-icons">search</span>
-                Search
-            </button>
-            <button type="button" class="btn btn-lg"
-                    data-bind="click: clear_selections">
-                <span class="material-icons">clear</span>
-                Clear
-            </button>
+            </form>
         </div>
     </div>
-    </form>
 </div>
-</div>
-</div>
+
 
 
 

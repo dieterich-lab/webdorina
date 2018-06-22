@@ -305,7 +305,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         var $shown_types_setb;
                         var dropdown = $('#tissue');
 
-                        tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
+                        var tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
                         net.getJSON(tissueURL, function (data) {
                             dropdown.prop('selectedIndex', 0);
                             if ('message' in data) {
@@ -320,6 +320,16 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                 })
                             }
                         });
+
+                        $('#tissue').change(function () {
+
+                            // $('#genes').attr(disabledd)
+                            let genesURL = tissueURL + '/' + this.value;
+                            net.getJSON(genesURL, function (data) {
+                                self.genes(data.genes);
+                            })
+                        });
+
 
                         $genes = $('#genes').selectize({
                             options: [],
