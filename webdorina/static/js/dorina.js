@@ -170,20 +170,16 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.results = ko.observableArray([]);
     self.total_results = ko.observable(0);
-
     self.more_results = ko.observable(false);
     self.offset = ko.observable(0);
     self.pending = ko.observable(false);
-
     self.genes = ko.observableArray([]);
-    self.tissue = ko.observable(undefined);
+    self.tissue =  ko.observableArray([]);
     self.available_tissues = ko.observable(false);
     self.match_a = ko.observable('any');
     self.region_a = ko.observable('any');
-
     self.match_b = ko.observable('any');
     self.region_b = ko.observable('any');
-
     self.use_window_a = ko.observable(false);
     self.window_a = ko.observable(0);
     self.use_window_b = ko.observable(false);
@@ -444,6 +440,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.run_search = function (keep_data) {
         var search_data = {
+
             set_a: self.selected_regulators(),
             assembly: self.chosenAssembly(),
             match_a: self.match_a(),
@@ -473,6 +470,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         if (!keep_data) {
             self.results.removeAll();
         }
+        console.log(search_data);
+
         return net.post('api/v1.0/search', search_data).then(function (data) {
             self.uuid(data.uuid);
             self.poll_result(data.uuid);
@@ -501,7 +500,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
             {
                 ajax: {
                     "url": url,
-                    // "data":,
                     "dataSrc": function (json) {
                         var temp = [];
                         for (var x in json.results) {

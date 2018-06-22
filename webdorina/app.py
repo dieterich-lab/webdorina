@@ -178,8 +178,10 @@ def search():
     query['match_b'] = request.form.get('match_b', u'any')
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
-    query['tissue'] = request.form.get('tissue', 'None')
-    app.logger.info(query['tissue'])
+    query['tissue'] = request.form.getlist('tissue[]')
+    if not query['tissue']:
+        query['tissue'] = None
+
     window_a = request.form.get('window_a', -1, int)
     if window_a > -1:
         query['window_a'] = window_a
