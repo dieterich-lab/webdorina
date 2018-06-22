@@ -292,6 +292,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.show_simple_search = function () {
         self.loading_regulators(true);
         setTimeout(function () {
+
+
                 self.get_regulators(self.chosenAssembly()).then(function () {
 
                         $('#search').collapse('show');
@@ -314,22 +316,14 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                             if (data['tissue'].length > 0) {
                                 self.available_tissues(true);
 
-                                $.each(data['tissue'], function (index, value) {
-                                    dropdown.append($('<option></option>').text(
-                                        value.replace('_', ' ')).val(value))
-                                })
+                                $.each(
+                                    data['tissue'].sort(),
+                                    function (index, value) {
+                                        dropdown.append($('<option class="text-capitalize"></option>').text(
+                                            value.replace('_', ' ')).val(value))
+                                    })
                             }
                         });
-
-                        $('#tissue').change(function () {
-
-                            // $('#genes').attr(disabledd)
-                            let genesURL = tissueURL + '/' + this.value;
-                            net.getJSON(genesURL, function (data) {
-                                self.genes(data.genes);
-                            })
-                        });
-
 
                         $genes = $('#genes').selectize({
                             options: [],
@@ -342,14 +336,25 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                 if (query.length == 0) {
                                     return callback();
                                 }
+
                                 net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
-                                    if ('message' in data) {
-                                        bootstrap_alert(data.message);
-                                    }
                                     callback(res.genes.map(function (r) {
                                         return {id: r};
                                     }));
                                 });
+                            }
+                        });
+
+                        $('#tissue').change(function () {
+                            if (this.value != 'none') {
+                                $genes[0].selectize.disable();
+                                let genesURL = tissueURL + '/' + this.value;
+                                net.getJSON(genesURL, function (data) {
+                                    self.genes(data.genes);
+                                });
+                            }
+                            else {
+                                $genes[0].selectize.enable();
                             }
                         });
 

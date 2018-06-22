@@ -93,21 +93,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row form-group">
-                        <label class="col-3"
-                               for="window_a">Restrict
-                            to overlapping features (max. distance)
-                            of:</label><br>
-                        <span class="input-group-addon">
-                    <input type="checkbox"
-                           data-bind="checked: use_window_a"></span>
-                        <input type="text"
-                               class="form text-right col-3"
-                               id="window_a"
-                               name="window_a" placeholder="0"
-                               data-bind="value: window_a">
-                        <span class="input-group-addon">bp</span>
-                    </div>
+{#                    <div class="row form-group">#}
+{#                        <label class="col-3"#}
+{#                               for="window_a">Restrict#}
+{#                            to overlapping features (max. distance)#}
+{#                            of:</label><br>#}
+{#                        <span class="input-group-addon">#}
+{#                    <input type="checkbox"#}
+{#                           data-bind="checked: use_window_a"></span>#}
+{#                        <input type="text"#}
+{#                               class="form text-right col-3"#}
+{#                               id="window_a"#}
+{#                               name="window_a" placeholder="0"#}
+{#                               data-bind="value: window_a">#}
+{#                        <span class="input-group-addon">bp</span>#}
+{#                    </div>#}
 
                     <div class="row">
                         <div class="col-8 form-group">
@@ -125,7 +125,7 @@
                             <select class="form custom-select" id="tissue"
                                     placeholder="Limit targets by tissue expression"
                                     data-bind="selectedOptions: tissue">
-                                <option value=" " selected>None</option>
+                                <option value="none" selected>None</option>
                             </select>
                         </div>
 
