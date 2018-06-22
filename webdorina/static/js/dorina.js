@@ -170,7 +170,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.results = ko.observableArray([]);
     self.total_results = ko.observable(0);
-    self.more_results = ko.observable(false);
     self.offset = ko.observable(0);
     self.pending = ko.observable(false);
     self.genes = ko.observableArray([]);
@@ -470,7 +469,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         if (!keep_data) {
             self.results.removeAll();
         }
-        console.log(search_data);
 
         return net.post('api/v1.0/search', search_data).then(function (data) {
             self.uuid(data.uuid);
@@ -494,7 +492,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
 
     self.get_results = function (uuid, more) {
         var url = '/api/v1.0/result/' + uuid;
-        self.more_results(true);
 
         $("#collapseTwo").find("*").prop('disabled', true);
 
@@ -557,7 +554,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     };
 
     self.reset_search_state = function () {
-        self.more_results(false);
         self.table.clear();
         self.offset(0);
         self.match_a('any');
@@ -580,10 +576,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         self.mode('results');
     };
 
-    self.load_more_results = function () {
-        self.get_results(self.uuid(), true);
-        // $('#resultTable').DataTable().unique().draw();
-    };
+
 
     self.new_search = function () {
         self.reset_search_state();
@@ -612,7 +605,6 @@ function RegulatorViewModel(net, value) {
             }
 
             self.regulators.sort(function (a, b) {
-
                 return (a.summary.toUpperCase() > b.summary.toUpperCase()) -
                     (b.summary.toUpperCase() > a.summary.toUpperCase());
 
