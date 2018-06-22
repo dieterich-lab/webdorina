@@ -496,6 +496,8 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
         var url = '/api/v1.0/result/' + uuid;
         self.more_results(true);
 
+        $("#collapseTwo").find("*").prop('disabled', true);
+
         self.table = $("#resultTable").DataTable(
             {
                 ajax: {
