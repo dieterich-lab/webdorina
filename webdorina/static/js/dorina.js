@@ -292,8 +292,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
     self.show_simple_search = function () {
         self.loading_regulators(true);
         setTimeout(function () {
-
-
                 self.get_regulators(self.chosenAssembly()).then(function () {
 
                         $('#search').collapse('show');
@@ -319,7 +317,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                 $.each(
                                     data['tissue'].sort(),
                                     function (index, value) {
-                                        dropdown.append($('<option class="text-capitalize"></option>').text(
+                                        dropdown.append($('<option></option>').text(
                                             value.replace('_', ' ')).val(value))
                                     })
                             }
@@ -336,7 +334,6 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                 if (query.length == 0) {
                                     return callback();
                                 }
-
                                 net.getJSON('api/v1.0/genes/' + self.chosenAssembly() + '/' + query).then(function (res) {
                                     callback(res.genes.map(function (r) {
                                         return {id: r};
@@ -352,8 +349,28 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                 net.getJSON(genesURL, function (data) {
                                     self.genes(data.genes);
                                 });
+                                regulators.disable();
+                                regulators.clearOptions();
+                                var filtered_regs = self.regulators(
+                                ).filter(function (reg) {
+                                    // extract regulator for regulators obj
+                                    // check if it is the loaded genes
+                                    // filter searcheable regulators
+                                    return self.genes().indexOf(
+                                        reg.summary.split(' ')[0]) > -1;
+                                });
+                                for (var i in filtered_regs) {
+                                    regulators.addOption(filtered_regs[i]);
+                                };
+                                regulators.refreshOptions();
+                                regulators.enable();
                             }
                             else {
+                                for (var i in self.regulators()) {
+                                    regulators.addOption(self.regulators()[i]);
+                                };
+
+                                regulators.enable();Í
                                 $genes[0].selectize.enable();
                             }
                         });
