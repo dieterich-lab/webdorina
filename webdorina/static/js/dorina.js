@@ -369,7 +369,7 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                                 for (var i in self.regulators()) {
                                     regulators.addOption(self.regulators()[i]);
                                 };
-
+                                regulators.refreshOptions();
                                 regulators.enable();Í
                                 $genes[0].selectize.enable();
                             }
@@ -579,9 +579,9 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                     {title: "Target gene"},
                     {title: "Data source"},
                     {title: "Score"},
-                    {title: "Target site id"},
-                    {title: "Target gene location"},
-                    {title: "Target site location"}],
+                    {title: "Regulator"},
+                    {title: "Target coordinates"},
+                    {title: "Interaction coordinates"}],
                 columnDefs: [
                     {
                         targets: [5, 6],

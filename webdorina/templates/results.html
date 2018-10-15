@@ -15,15 +15,16 @@
         <div class="card-body">
             <div class="btn-group justify-content-end">
                 <button onClick="window.location.reload()"
-                class="btn btn-default btn-lg">
+                        class="btn btn-default btn-lg">
                     <span class="material-icons">search</span>
                     New search
                 </button>
-                <button href="{{ url_for('download_results', uuid=uuid) }}"
-                        class="btn btn-info btn-lg">
-                    <span class="material-icons">file_download</span>
-                    Download
-                </button>
+                <a href="{{ url_for('download_results', uuid=uuid) }}">
+                    <button class="btn btn-info btn-lg">
+                        <span class="material-icons">file_download</span>
+                        Download
+                    </button>
+                </a>
             </div>
             <div class="row" id="table-wrapper">
                 <table class="table table-striped display"

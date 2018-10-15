@@ -8,12 +8,12 @@ import logging
 import os
 import sys
 import uuid
-from io import StringIO
+from io import BytesIO
 
 import flask
 from dorina.genome import Genome
 from dorina.regulator import Regulator
-from flask import flash, request, redirect, jsonify, render_template
+from flask import flash, request, redirect, jsonify, render_template, send_file
 from redis import Redis
 from rq import Queue
 
@@ -222,8 +222,8 @@ def search():
 
             q.enqueue(filter_genes, query['genes'], full_query_key, query_key,
                       query_pending_key, unique_id,
-                      SESSION_TTL=app.config['SESSION_TTL'],
-                      RESULT_TTL=app.config['RESULT_TTL'])
+                      session_ttl=app.config['SESSION_TTL'],
+                      result_ttl=app.config['RESULT_TTL'])
             return jsonify(session_dict)
 
     session_dict = dict(state='pending', uuid=unique_id)
@@ -255,7 +255,7 @@ def download_regulator(assembly, name):
         app.logger.error(e, assembly, name)
         return flask.abort(404)
 
-    return flask.send_file(regulator.path, as_attachment=True)
+    return send_file(regulator.path, as_attachment=True)
 
 
 @app.route('/api/v1.0/download/results/<uuid>')
@@ -265,15 +265,11 @@ def download_results(uuid):
         flask.abort(404)
 
     result_key = json.loads(conn.get(key))['redirect']
-    results = conn.lrange(result_key, 0, -1)
-
-    out = StringIO()
-    for res in results:
-        out.write("{}\n".format(res))
-
-    response = flask.make_response(out.getvalue())
-    response.headers["Content-Disposition"] = "attachment; filename=dorina.tsv"
-    return response
+    result = '\n'.join(conn.lrange(result_key, 0, -1))
+    return send_file(BytesIO(result.encode('utf-8')),
+                     mimetype='text/tsv',
+                     attachment_filename='carina_{}.txt'.format(uuid),
+                     as_attachment=True)
 
 
 @app.route('/news')
