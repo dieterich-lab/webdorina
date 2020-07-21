@@ -1,5 +1,9 @@
 *.swp
 *.pyc
+*aux
+*swp
+*bak
+*.egg-info
 dorina
 .coverage
 cover/*

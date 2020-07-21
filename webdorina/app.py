@@ -174,9 +174,9 @@ def search():
     query['match_b'] = request.form.get('match_b', u'any')
     query['region_b'] = request.form.get('region_b', u'any')
     query['combine'] = request.form.get('combinatorial_op', u'or')
-    query['tissue'] = request.form.getlist('tissue[]')
-    if not query['tissue']:
-        query['tissue'] = None
+    #query['tissue'] = request.form.getlist('tissue[]')
+    #if not query['tissue']:
+        #query['tissue'] = None
 
     window_a = request.form.get('window_a', -1, int)
     if window_a > -1:
@@ -385,18 +385,18 @@ def get_result(uuid):
         dict(state='done', results=result, total_results=len(result)))
 
 
-@app.route('/api/v1.0/tissues/<assembly>/')
-@app.route('/api/v1.0/tissues/<assembly>/<tissue>')
-def get_tissues(assembly, tissue=None):
-    path = app.config["DATA_PATH"] + '/{}_tissues.json'.format(assembly)
-    with open(path) as open_f:
-        genes_p_tissue = json.load(open_f)
-    if tissue is None:
-        return jsonify(dict(tissue=list(genes_p_tissue.keys())))
-    try:
-        return jsonify(dict(genes=genes_p_tissue[tissue]))
-    except KeyError:
-        return jsonify(dict(message='Tissue not found'))
+#@app.route('/api/v1.0/tissues/<assembly>/')
+#@app.route('/api/v1.0/tissues/<assembly>/<tissue>')
+#def get_tissues(assembly, tissue=None):
+    #path = app.config["DATA_PATH"] + '/{}_tissues.json'.format(assembly)
+    #with open(path) as open_f:
+        #genes_p_tissue = json.load(open_f)
+    #if tissue is None:
+        #return jsonify(dict(tissue=list(genes_p_tissue.keys())))
+    #try:
+        #return jsonify(dict(genes=genes_p_tissue[tissue]))
+    #except KeyError:
+        #return jsonify(dict(message='Tissue not found'))
 
 
 if __name__ == "__main__":

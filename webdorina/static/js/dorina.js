@@ -303,25 +303,25 @@ function DoRiNAViewModel(net, uuid, custom_regulator) {
                         var $regulators_setb;
                         var $shown_types;
                         var $shown_types_setb;
-                        var dropdown = $('#tissue');
+//                         var dropdown = $('#tissue');
 
-                        var tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
-                        net.getJSON(tissueURL, function (data) {
-                            dropdown.prop('selectedIndex', 0);
-                            if ('message' in data) {
-                                bootstrap_alert(data.message);
-                            }
-                            if (data['tissue'].length > 0) {
-                                self.available_tissues(true);
-
-                                $.each(
-                                    data['tissue'].sort(),
-                                    function (index, value) {
-                                        dropdown.append($('<option></option>').text(
-                                            value.replace('_', ' ')).val(value))
-                                    })
-                            }
-                        });
+//                         var tissueURL = 'api/v1.0/tissues/' + self.chosenAssembly();
+//                         net.getJSON(tissueURL, function (data) {
+//                             dropdown.prop('selectedIndex', 0);
+//                             if ('message' in data) {
+//                                 bootstrap_alert(data.message);
+//                             }
+//                             if (data['tissue'].length > 0) {
+//                                 self.available_tissues(true);
+// 
+//                                 $.each(
+//                                     data['tissue'].sort(),
+//                                     function (index, value) {
+//                                         dropdown.append($('<option></option>').text(
+//                                             value.replace('_', ' ')).val(value))
+//                                     })
+//                             }
+//                         });
 
                         $genes = $('#genes').selectize({
                             options: [],
